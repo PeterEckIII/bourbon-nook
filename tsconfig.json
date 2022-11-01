@@ -1,9 +1,19 @@
 {
-  "exclude": ["./cypress", "./cypress.config.ts"],
+  "exclude": [
+    "./cypress",
+    "./cypress.config.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
   "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2019"],
-    "types": ["vitest/globals"],
+    "lib": ["DOM", "DOM.Iterable", "ES2019", "ES2021"],
+    "types": [
+      "vitest/globals",
+      "@headlessui/react",
+      "cypress",
+      "@testing-library/jest-dom"
+    ],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
