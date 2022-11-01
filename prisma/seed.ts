@@ -122,7 +122,7 @@ async function seed() {
       value: 6.5,
       overallRating: 6.0,
       userId: user.id,
-      imageId: "",
+      imageUrl: "",
     },
   });
 
@@ -184,7 +184,7 @@ async function seed() {
       overallRating: 9.5,
       value: 10.0,
       userId: user.id,
-      imageId: "",
+      imageUrl: "",
     },
   });
 
