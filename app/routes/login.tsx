@@ -1,42 +1,53 @@
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
+import { redirect, json } from "@remix-run/server-runtime";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/server-runtime";
+import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 
-import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { verifyLogin } from "~/models/user.server";
+import { validateEmail } from "~/utils";
 
-export async function loader({ request }: LoaderArgs) {
+export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
   return json({});
+};
+
+interface ActionData {
+  errors?: {
+    email?: string;
+    password?: string;
+  };
 }
 
-export async function action({ request }: ActionArgs) {
+export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+  const redirectTo = formData.get("redirectTo");
   const remember = formData.get("remember");
 
   if (!validateEmail(email)) {
-    return json(
-      { errors: { email: "Email is invalid", password: null } },
+    return json<ActionData>(
+      { errors: { email: "Email is invalid" } },
       { status: 400 }
     );
   }
 
-  if (typeof password !== "string" || password.length === 0) {
-    return json(
-      { errors: { password: "Password is required", email: null } },
+  if (typeof password !== "string") {
+    return json<ActionData>(
+      { errors: { password: "Password is required" } },
       { status: 400 }
     );
   }
 
   if (password.length < 8) {
-    return json(
-      { errors: { password: "Password is too short", email: null } },
+    return json<ActionData>(
+      { errors: { password: "Password is too short" } },
       { status: 400 }
     );
   }
@@ -44,8 +55,8 @@ export async function action({ request }: ActionArgs) {
   const user = await verifyLogin(email, password);
 
   if (!user) {
-    return json(
-      { errors: { email: "Invalid email or password", password: null } },
+    return json<ActionData>(
+      { errors: { email: "Invalid email or password" } },
       { status: 400 }
     );
   }
@@ -54,9 +65,9 @@ export async function action({ request }: ActionArgs) {
     request,
     userId: user.id,
     remember: remember === "on" ? true : false,
-    redirectTo,
+    redirectTo: typeof redirectTo === "string" ? redirectTo : "/reviews",
   });
-}
+};
 
 export const meta: MetaFunction = () => {
   return {
@@ -66,8 +77,8 @@ export const meta: MetaFunction = () => {
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/notes";
-  const actionData = useActionData<typeof action>();
+  const redirectTo = searchParams.get("redirectTo") || "/reviews";
+  const actionData = useActionData() as ActionData;
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
@@ -82,7 +93,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-full flex-col justify-center">
       <div className="mx-auto w-full max-w-md px-8">
-        <Form method="post" className="space-y-6" noValidate>
+        <Form method="post" className="space-y-6">
           <div>
             <label
               htmlFor="email"
@@ -162,6 +173,7 @@ export default function LoginPage() {
             <div className="text-center text-sm text-gray-500">
               Don't have an account?{" "}
               <Link
+                prefetch="intent"
                 className="text-blue-500 underline"
                 to={{
                   pathname: "/join",

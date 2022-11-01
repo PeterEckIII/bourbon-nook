@@ -9,3 +9,8 @@ node_modules
 /postgres-data
 
 /app/styles/tailwind.css
+
+/4.25.0_0/
+/.github/*
+.eslintrc.js
+.gitpod.yml
