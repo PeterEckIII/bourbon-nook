@@ -33,21 +33,21 @@ export const action: ActionFunction = async ({ request }) => {
   if (!validateEmail(email)) {
     return json<ActionData>(
       { errors: { email: "Email is invalid" } },
-      { status: 400 }
+      { status: 400, statusText: "Email is invalid" }
     );
   }
 
   if (typeof password !== "string") {
     return json<ActionData>(
       { errors: { password: "Password is required" } },
-      { status: 400 }
+      { status: 400, statusText: "Password is required" }
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
       { errors: { password: "Password is too short" } },
-      { status: 400 }
+      { status: 400, statusText: "Password is too short" }
     );
   }
 
@@ -55,7 +55,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (existingUser) {
     return json<ActionData>(
       { errors: { email: "A user already exists with this email" } },
-      { status: 400 }
+      { status: 400, statusText: "A user already exists with this email" }
     );
   }
 
