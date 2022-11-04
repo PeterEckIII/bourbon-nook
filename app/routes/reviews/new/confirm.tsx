@@ -27,6 +27,11 @@ import CollapsedStyles from "~/styles/collapsed.css";
 export const links: LinksFunction = () => {
   return [
     {
+      rel: "preload",
+      href: CollapsedStyles,
+      as: "style",
+    },
+    {
       rel: "stylesheet",
       href: CollapsedStyles,
     },

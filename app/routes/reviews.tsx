@@ -12,6 +12,18 @@ import Menu from "~/components/UI/Menu/Menu";
 export const links: LinksFunction = () => {
   return [
     {
+      rel: "preload",
+      href: "https://fonts.googleapis.com/css2?family=Courgette&family=Satisfy&display=swap",
+    },
+    {
+      rel: "preload",
+      href: "https://fonts.googleapis.com",
+    },
+    {
+      rel: "preload",
+      href: "https://fonts.gstatic.com",
+    },
+    {
       rel: "preconnect",
       href: "https://fonts.googleapis.com",
     },
