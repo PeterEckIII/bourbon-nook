@@ -1,5 +1,5 @@
 import * as redis from "redis";
-import type { CustomFormData } from "./helpers.server";
+import type { CustomFormData, SavedRedisData } from "./helpers.server";
 
 const client = redis.createClient({
   url: process.env.REDIS_URL,
@@ -7,7 +7,7 @@ const client = redis.createClient({
 
 client.on("error", (err) => console.log("Redis client error", err));
 
-export const saveToRedis = async (data: CustomFormData) => {
+export const saveToRedis = async (data: SavedRedisData) => {
   await client.connect();
   await client.set(`f-${data.redisId}`, JSON.stringify(data));
   await client.quit();
@@ -32,7 +32,7 @@ export const getDataFromRedis = async (
 
 export const requireFormData = async (
   request: Request
-): Promise<CustomFormData> => {
+): Promise<SavedRedisData | CustomFormData> => {
   // Get ID from search params
   const url = new URL(request.url);
   const id = url.searchParams.get("id");

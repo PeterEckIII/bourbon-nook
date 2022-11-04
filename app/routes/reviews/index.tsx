@@ -11,6 +11,21 @@ import StatusBarStyles from "~/styles/statusBar.css";
 export const links: LinksFunction = () => {
   return [
     {
+      rel: "preload",
+      href: GridStyles,
+      as: "style",
+    },
+    {
+      rel: "preload",
+      href: AlpineTheme,
+      as: "style",
+    },
+    {
+      rel: "preload",
+      href: StatusBarStyles,
+      as: "style",
+    },
+    {
       rel: "stylesheet",
       href: GridStyles,
     },

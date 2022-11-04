@@ -3,15 +3,15 @@ import type { LinksFunction } from "@remix-run/server-runtime";
 import { useOptionalUser } from "~/utils";
 // import banner from "~/images/EHT_Banner.png";
 
-// export const links: LinksFunction = () => {
-//   return [
-//     {
-//       rel: "preload",
-//       href: "/images/EHT_Banner.png",
-//       as: "image",
-//     },
-//   ];
-// };
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: "preload",
+      href: "https://res.cloudinary.com/jpeckiii/image/upload/v1649889142/common/EHT_zpzfun.png",
+      as: "image",
+    },
+  ];
+};
 
 export default function Index() {
   const user = useOptionalUser();
