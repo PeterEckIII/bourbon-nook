@@ -1,8 +1,10 @@
+import { cleanup } from "./../helpers/cleanup";
 import { logout } from "../../app/session.server";
 import { truncateDB } from "../helpers/truncateDB";
 import { loader as joinLoader } from "../../app/routes/join";
 import { action as joinAction } from "../../app/routes/join";
 import { createUser } from "../../app/models/user.server";
+import { prisma } from "../../app/db.server";
 
 beforeEach(async () => {
   await truncateDB();
@@ -11,6 +13,10 @@ beforeEach(async () => {
 afterEach(async () => {
   const req = new Request("http://localhost:3000");
   await logout(req);
+});
+
+afterEach(async () => {
+  await cleanup();
 });
 
 const URL = "http://localhost:3000/join";
@@ -32,7 +38,7 @@ describe("Join", () => {
   describe("Join Action", () => {
     it("Allows a user to register a new account", async () => {
       let body = new URLSearchParams({
-        email: "test@example.com",
+        email: "test2@example.com",
         password: "MyTestUser128838!",
       });
 
@@ -48,11 +54,14 @@ describe("Join", () => {
       });
 
       expect(response.status).toBe(302);
+      expect(
+        await prisma.user.findUnique({ where: { email: "test2@example.com" } })
+      ).not.toBeNull();
     });
 
     it("Shows a too short password error", async () => {
       let body = new URLSearchParams({
-        email: "test@example.com",
+        email: "test2@example.com",
         password: "gh!",
       });
 
@@ -69,11 +78,14 @@ describe("Join", () => {
 
       expect(response.status).toBe(400);
       expect(response.statusText).toBe("Password is too short");
+      expect(
+        await prisma.user.findUnique({ where: { email: "test2@example.com" } })
+      ).toBeNull();
     });
 
     it("Shows a password required error", async () => {
       let body = new URLSearchParams({
-        email: "test@example.com",
+        email: "test2@example.com",
       });
 
       let request = new Request(`${URL}?_data=routes%2Fjoin`, {
@@ -89,12 +101,15 @@ describe("Join", () => {
 
       expect(response.status).toBe(400);
       expect(response.statusText).toBe("Password is required");
+      expect(
+        await prisma.user.findUnique({ where: { email: "test2@example.com" } })
+      ).toBeNull();
     });
 
     it("Shows an error if the email is taken", async () => {
-      await createUser("test@example.com", "Vitest2022!!");
+      await createUser("test2@example.com", "Vitest2022!!");
       let body = new URLSearchParams({
-        email: "test@example.com",
+        email: "test2@example.com",
         password: "asdjhflkajsdhfjkalhsdfahsdf",
       });
 
