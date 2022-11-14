@@ -8,6 +8,14 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+export function assertNonNullable<T>(
+  value: unknown
+): asserts value is NonNullable<T> {
+  if (value === undefined || value === null) {
+    throw new Error(`Value is undefined or null`);
+  }
+}
+
 interface UploadImageProps {
   data: AsyncIterable<Uint8Array>;
   userId: string;
