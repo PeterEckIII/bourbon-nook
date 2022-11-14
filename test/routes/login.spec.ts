@@ -1,16 +1,17 @@
+import { cleanup } from "./../helpers/cleanup";
 import { logout } from "../../app/session.server";
 import { createUser } from "../../app/models/user.server";
 import { truncateDB } from "../helpers/truncateDB";
 import { loader as loginLoader } from "../../app/routes/login";
 import { action as loginAction } from "../../app/routes/login";
+import { prisma } from "../../app/db.server";
 
 beforeEach(async () => {
   await truncateDB();
 });
 
 afterEach(async () => {
-  const req = new Request("http://localhost:3000");
-  await logout(req);
+  await cleanup();
 });
 
 const URL = "http://localhost:3000/login";
@@ -31,10 +32,9 @@ describe("Login", () => {
 
   describe("Login Action", () => {
     it("Allows the user to login", async () => {
-      let newUser = await createUser("test@example.com", "vItEsT201!");
-
+      const user = await createUser("test2@example.com", "vItEsT201!");
       let body = new URLSearchParams({
-        email: "test@example.com",
+        email: user.email,
         password: "vItEsT201!",
         redirectTo: "http://localhost:3000/reviews",
       });
@@ -53,13 +53,13 @@ describe("Login", () => {
 
       expect(response.status).toBe(302);
       expect(response.headers.get("Set-Cookie")).toContain(`__session=`);
+      await cleanup();
     });
 
     it("Shows an incorrect password error", async () => {
-      let newUser = await createUser("test@example.com", "vItEsT201!");
-
+      const user = await createUser("test2@example.com", "vItEsT201!");
       let body = new URLSearchParams({
-        email: "test@example.com",
+        email: user.email,
         password: "akjsdhjkfjaksd",
         redirectTo: "http://localhost:300/reviews",
       });
@@ -77,13 +77,13 @@ describe("Login", () => {
       expect(response.status).toEqual(400);
       expect(response.statusText).toBe("Invalid email or password");
       expect(response.headers.get("Set-Cookie")).toBe(null);
+      await cleanup();
     });
 
     it("Shows a too short password error", async () => {
-      let newUser = await createUser("test@example.com", "vItEsT201!");
-
+      const user = await createUser("test2@example.com", "vItEsT201!");
       let body = new URLSearchParams({
-        email: "test@example.com",
+        email: user.email,
         password: "jdjk",
         redirectTo: "http://localhost:300/reviews",
       });
@@ -101,13 +101,13 @@ describe("Login", () => {
       expect(response.status).toEqual(400);
       expect(response.statusText).toBe("Password is too short");
       expect(response.headers.get("Set-Cookie")).toBe(null);
+      await cleanup();
     });
 
     it("Shows a password required error", async () => {
-      let newUser = await createUser("test@example.com", "vItEsT201!");
-
+      const user = await createUser("test2@example.com", "vItEsT201!");
       let body = new URLSearchParams({
-        email: "test@example.com",
+        email: user.email,
         redirectTo: "http://localhost:300/reviews",
       });
 
@@ -124,6 +124,7 @@ describe("Login", () => {
       expect(response.status).toEqual(400);
       expect(response.statusText).toBe("Password is required");
       expect(response.headers.get("Set-Cookie")).toBe(null);
+      await cleanup();
     });
   });
 });

@@ -42,6 +42,13 @@ export const generateCode = (length: number): string => {
   return result;
 };
 
+export type SavedRedisData = { redisId: string } & (
+  | BottleInfoFormData
+  | SettingInfoFormData
+  | NotesInfoFormData
+  | { imageUrl: string }
+);
+
 export interface CustomFormData {
   redisId: string;
   name: string;
@@ -115,3 +122,100 @@ export interface CustomFormData {
   overallRating?: number;
   value?: number;
 }
+
+export type BottleInfoFormData = Pick<
+  CustomFormData,
+  | "name"
+  | "type"
+  | "distiller"
+  | "producer"
+  | "bottler"
+  | "country"
+  | "region"
+  | "price"
+  | "age"
+  | "year"
+  | "batch"
+  | "alcoholPercent"
+  | "proof"
+  | "size"
+  | "color"
+  | "finishing"
+>;
+export type SettingInfoFormData = Pick<
+  CustomFormData,
+  | "date"
+  | "setting"
+  | "glassware"
+  | "restTime"
+  | "nose"
+  | "palate"
+  | "finish"
+  | "thoughts"
+>;
+
+export type NotesInfoFormData =
+  | FruitNotesFormData
+  | SpiceNotesFormData
+  | EarthNotesFormData
+  | GrainNotesFormData
+  | SweetNotesFormData
+  | RatingNotesFormData;
+
+export type FruitNotesFormData = Pick<
+  CustomFormData,
+  | "cherry"
+  | "strawberry"
+  | "raspberry"
+  | "blackberry"
+  | "blueberry"
+  | "apple"
+  | "banana"
+  | "grape"
+  | "stone"
+  | "citrus"
+  | "tropical"
+>;
+
+export type SpiceNotesFormData = Pick<
+  CustomFormData,
+  "pepper" | "bakingSpice" | "cinnamon" | "herbal" | "mint"
+>;
+
+export type EarthNotesFormData = Pick<
+  CustomFormData,
+  | "coffee"
+  | "tobacco"
+  | "leather"
+  | "oak"
+  | "toasted"
+  | "smokey"
+  | "peanut"
+  | "almond"
+  | "pecan"
+  | "walnut"
+  | "oily"
+  | "floral"
+>;
+
+export type GrainNotesFormData = Pick<
+  CustomFormData,
+  "corn" | "rye" | "wheat" | "dough" | "malt"
+>;
+
+export type SweetNotesFormData = Pick<
+  CustomFormData,
+  | "vanilla"
+  | "caramel"
+  | "molasses"
+  | "butterscotch"
+  | "honey"
+  | "chocolate"
+  | "toffee"
+  | "sugar"
+>;
+
+export type RatingNotesFormData = Pick<
+  CustomFormData,
+  "overallRating" | "value"
+>;
