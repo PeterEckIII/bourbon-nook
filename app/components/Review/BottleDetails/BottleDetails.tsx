@@ -1,7 +1,7 @@
-import type { Bottle } from "@prisma/client";
+import type { bottle } from "@prisma/client";
 
 type BottleDetailProps = {
-  bottle: Bottle;
+  bottle: bottle;
 };
 
 export default function BottleDetails({ bottle }: BottleDetailProps) {

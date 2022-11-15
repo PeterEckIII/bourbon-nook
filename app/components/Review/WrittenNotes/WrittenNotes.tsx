@@ -1,7 +1,7 @@
-import type { Review } from "@prisma/client";
+import type { review } from "@prisma/client";
 
 interface IWrittenNotesProps {
-  review: Review;
+  review: review;
 }
 
 export default function WrittenNotes({ review }: IWrittenNotesProps) {

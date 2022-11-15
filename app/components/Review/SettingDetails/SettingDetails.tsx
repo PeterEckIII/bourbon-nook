@@ -1,8 +1,8 @@
-import type { Bottle, Review } from "@prisma/client";
+import type { bottle, review } from "@prisma/client";
 
 type SettingDetailsProps = {
-  review: Review;
-  bottle: Bottle;
+  review: review;
+  bottle: bottle;
 };
 
 export default function SettingDetails({

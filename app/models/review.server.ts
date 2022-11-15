@@ -1,21 +1,29 @@
-import type { User, Review } from "@prisma/client";
+import type { user, review } from "@prisma/client";
 import { prisma } from "~/db.server";
 
-export type { Review } from "@prisma/client";
+export type { review } from "@prisma/client";
 
 export const getReview = async ({
   id,
   userId,
-}: Pick<Review, "id"> & {
-  userId: User["id"];
+}: Pick<review, "id"> & {
+  userId: user["id"];
 }) => {
   return prisma.review.findFirst({ where: { id, userId } });
 };
 
+export async function getReviewById(reviewId: review["id"]) {
+  return await prisma.review.findFirstOrThrow({
+    where: {
+      id: reviewId,
+    },
+  });
+}
+
 export const getReviewListItems = async ({
   userId,
 }: {
-  userId: User["id"];
+  userId: user["id"];
 }) => {
   const reviews = prisma.review.findMany({
     select: { id: true, bottle: true },
@@ -28,7 +36,7 @@ export const getReviewListItems = async ({
 export const getReviewsForTable = async ({
   userId,
 }: {
-  userId: User["id"];
+  userId: user["id"];
 }) => {
   const reviews = await prisma.review.findMany({
     where: {
@@ -113,7 +121,7 @@ export const createReview = async ({
   overallRating,
   value,
   userId,
-}: Review & { userId: User["id"] }) => {
+}: review & { userId: user["id"] }) => {
   return await prisma.review.create({
     data: {
       bottleId,
@@ -174,7 +182,7 @@ export const createReview = async ({
   });
 };
 
-export const editReview = async (review: Review, userId: User["id"]) => {
+export const editReview = async (review: review, userId: user["id"]) => {
   if (userId !== review.userId) {
     throw new Error(`You are not authorized to edit this review`);
   }
@@ -189,7 +197,7 @@ export const editReview = async (review: Review, userId: User["id"]) => {
 export const deleteReview = async ({
   id,
   userId,
-}: Pick<Review, "id"> & { userId: User["id"] }) => {
+}: Pick<review, "id"> & { userId: user["id"] }) => {
   return prisma.review.deleteMany({
     where: { id, userId },
   });

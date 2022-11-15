@@ -1,27 +1,47 @@
-import type { Bottle, Review } from "@prisma/client";
+import type { bottle, review, user } from "@prisma/client";
 import EditIcon from "~/components/Icons/EditIcon";
 import DeleteIcon from "~/components/Icons/DeleteIcon";
 import { Form } from "@remix-run/react";
-import ReviewImage from "../ReviewImage";
+import type { FetcherWithComponents } from "@remix-run/react";
 import NoteTabs from "../NoteTabs/NoteTabs";
 import BottleDetails from "../BottleDetails";
 import SettingDetails from "../SettingDetails";
 import WrittenNotes from "../WrittenNotes";
+import { useEffect, useRef } from "react";
+import FollowForm from "~/components/Form/FollowForm";
 
 interface ReviewPageProps {
-  bottle?: Bottle;
-  review?: Review;
+  bottle?: bottle;
+  review?: review;
   handleEditClick: () => void;
+  user: user;
+  author: user;
+  follow: FetcherWithComponents<{ ok: boolean }>;
+  following: any[];
 }
 
 export default function ReviewPage({
   bottle,
   review,
   handleEditClick,
+  user,
+  author,
+  follow,
+  following,
 }: ReviewPageProps) {
   if (!bottle || !review || !review.imageUrl || !handleEditClick) {
     throw new Error(`Error with props!`);
   }
+
+  const ref = useRef<HTMLFormElement | null>(null);
+
+  useEffect(() => {
+    if (follow.type === "done" && follow.data.ok) {
+      console.log(`DATA: ${JSON.stringify(follow.data)}`);
+      ref?.current?.reset();
+    }
+  }, [follow]);
+
   return (
     // CONTAINER
     <div className="my-2 flex flex-col">
@@ -34,6 +54,16 @@ export default function ReviewPage({
               : ""}{" "}
           </h1>
           <p className="mb-4 text-left">{review.date}</p>
+          <h6>Reviewed by: {author.email}</h6>{" "}
+          {user.id !== review.userId ? (
+            <FollowForm
+              CustomForm={follow.Form}
+              ref={ref}
+              author={author}
+              user={user}
+              following={following}
+            />
+          ) : null}
           <div className="mb-2">
             <div className="flex h-[400px] w-[300px]">
               <img src={review.imageUrl} alt={`Bottle of ${bottle.name}`} />
@@ -103,27 +133,29 @@ export default function ReviewPage({
           }}
         />
       </div>
-      <div className="flex justify-end">
-        <div className="m-1 inline text-right">
-          <button
-            id="edit-button"
-            onClick={handleEditClick}
-            className="my-4 rounded bg-blue-500 py-2 px-6 text-white hover:bg-blue-700 focus:bg-blue-400"
-          >
-            <EditIcon /> Edit
-          </button>
+      {user.id === review.userId ? (
+        <div className="flex justify-end">
+          <div className="m-1 inline text-right">
+            <button
+              id="edit-button"
+              onClick={handleEditClick}
+              className="my-4 rounded bg-blue-500 py-2 px-6 text-white hover:bg-blue-700 focus:bg-blue-400"
+            >
+              <EditIcon /> Edit
+            </button>
+          </div>
+          <Form method="post" className="m-1 inline text-right">
+            <input type="hidden" name="_deleted" value="_deleted" />
+            <button
+              id="delete-button"
+              type="submit"
+              className="my-4 rounded bg-red-500 py-2 px-4 text-white hover:bg-red-700 focus:bg-red-400"
+            >
+              <DeleteIcon /> Delete
+            </button>
+          </Form>
         </div>
-        <Form method="post" className="m-1 inline text-right">
-          <input type="hidden" name="_deleted" value="_deleted" />
-          <button
-            id="delete-button"
-            type="submit"
-            className="my-4 rounded bg-red-500 py-2 px-4 text-white hover:bg-red-700 focus:bg-red-400"
-          >
-            <DeleteIcon /> Delete
-          </button>
-        </Form>
-      </div>
+      ) : null}
     </div>
   );
 }
