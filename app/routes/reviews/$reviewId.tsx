@@ -1,9 +1,10 @@
-import type { Bottle } from "@prisma/client";
+import type { bottle, user, review } from "@prisma/client";
 import type { LoaderFunction, ActionFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import {
   useLoaderData,
   useCatch,
+  useFetcher,
   useNavigate,
   useParams,
   Links,
@@ -11,41 +12,48 @@ import {
   Scripts,
 } from "@remix-run/react";
 import { getBottle } from "~/models/bottle.server";
-import type { Review } from "~/models/review.server";
-import { deleteReview, getReview } from "~/models/review.server";
+import { deleteReview, getReviewById } from "~/models/review.server";
 import { requireUserId } from "~/session.server";
-import { transformImage } from "~/utils/cloudinary.server";
 import ReviewPage from "~/components/Review/ReviewPage/ReviewPage";
+import { getUserById } from "~/models/user.server";
+import { assertNonNullable } from "~/utils/helpers.server";
+import { getFollowing } from "~/models/follower.server";
 
 type LoaderData = {
-  review: Review;
-  bottle: Bottle;
+  review: review;
+  bottle: bottle;
   imageUrl?: string;
+  user: user;
+  author: user;
+  following: any;
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const userId = await requireUserId(request);
+  assertNonNullable(userId);
+  const user = await getUserById(userId);
+  assertNonNullable(user);
 
-  const review = await getReview({ userId, id: params.reviewId as string });
-  if (review === undefined || review === null) {
-    throw new Response("Not Found", { status: 404 });
-  }
-  if (review.bottleId === undefined || review.bottleId === null) {
-    throw new Error(`Error: Bottle ID is of type ${typeof review.bottleId}`);
-  }
+  const following = getFollowing(userId);
+
+  assertNonNullable(params.reviewId);
+  const review = await getReviewById(params.reviewId);
+  assertNonNullable(review);
+  assertNonNullable(review.bottleId);
+  const authorId = review.userId;
+  const author = await getUserById(authorId);
   const bottle = await getBottle(review.bottleId);
-  if (bottle === undefined || bottle === null) {
-    throw new Error(`Error: Bottle is null`);
-  }
-  if (review.imageUrl === null) {
-    throw new Error(`Error with image ID!`);
-  }
-
-  const publicId = `${userId}/${review.imageUrl}`;
-
-  const imageUrl = (await transformImage(publicId)) as string;
-
-  return json<LoaderData>({ review, bottle, imageUrl });
+  assertNonNullable(bottle);
+  assertNonNullable(review.imageUrl);
+  assertNonNullable(author);
+  return json<LoaderData>({
+    review,
+    bottle,
+    imageUrl: review.imageUrl,
+    user,
+    author,
+    following,
+  });
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -62,16 +70,17 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-interface Data {
-  review: Review;
-  bottle: Bottle;
-}
+type Data = {
+  review: review;
+  bottle: bottle;
+};
 
 export default function ReviewDetailsPage() {
   const data = useLoaderData();
   const { review, bottle }: Data = data;
   const navigate = useNavigate();
   const params = useParams();
+  const follow = useFetcher();
 
   const handleEditClick = () => {
     navigate(`/reviews/edit/${params.reviewId}`);
@@ -83,6 +92,10 @@ export default function ReviewDetailsPage() {
         bottle={bottle}
         review={review}
         handleEditClick={handleEditClick}
+        follow={follow}
+        user={data.user}
+        author={data.author}
+        following={data.following}
       />
     </div>
   );
