@@ -1,10 +1,10 @@
-import type { Bottle } from "@prisma/client";
+import type { bottle } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
-export type { Bottle };
+export type { bottle };
 
-export const getBottle = async (id: Bottle["id"]) => {
+export const getBottle = async (id: bottle["id"]) => {
   return prisma.bottle.findUnique({ where: { id } });
 };
 
@@ -34,7 +34,7 @@ export const createBottle = async ({
   size,
   color,
   finishing,
-}: Bottle) => {
+}: bottle) => {
   return await prisma.bottle.create({
     data: {
       name,
@@ -57,7 +57,7 @@ export const createBottle = async ({
   });
 };
 
-export const editBottle = async (bottle: Bottle) => {
+export const editBottle = async (bottle: bottle) => {
   return await prisma.bottle.update({
     where: {
       id: bottle.id,
@@ -68,7 +68,7 @@ export const editBottle = async (bottle: Bottle) => {
   });
 };
 
-export const deleteBottle = async ({ id }: Pick<Bottle, "id">) => {
+export const deleteBottle = async ({ id }: Pick<bottle, "id">) => {
   return prisma.bottle.deleteMany({
     where: { id },
   });

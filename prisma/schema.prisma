@@ -8,50 +8,51 @@ generator client {
   binaryTargets = ["native", "darwin"]
 }
 
-model Password {
+
+model password {
   hash String
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @unique
 }
 
-model User {
+model user {
   id       String    @id @default(cuid())
   email    String    @unique
-  password Password?
-
+  password password?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  reviews   Review[]
-  followers Follows[] @relation("follower")
-  following Follows[] @relation("following")
-  comments  Comment[]
+  
+  reviews   review[]
+  followers follows[] @relation("following")
+  following follows[] @relation("follower")
+  comments  comment[]
 }
 
-model Comment {
+model comment {
   id        String   @id @default(cuid())
   body      String
-  review    Review   @relation(fields: [reviewId], references: [id])
+  review    review   @relation(fields: [reviewId], references: [id])
   reviewId  String
   createdAt DateTime @default(now())
 
-  author   User   @relation(fields: [authorId], references: [id])
+  author   user   @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   authorId String
 }
 
-model Follows {
-  follower    User   @relation("follower", fields: [followerId], references: [id])
+model follows {
+  follower    user   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   followerId  String
-  following   User   @relation("following", fields: [followingId], references: [id])
+  following   user   @relation("following", fields: [followingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   followingId String
 
   @@id([followerId, followingId])
 }
 
-model Review {
+model review {
   id       String  @id @default(cuid())
-  bottle   Bottle? @relation(fields: [bottleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bottle   bottle? @relation(fields: [bottleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bottleId String?
   date     String?
   imageUrl String?
@@ -122,12 +123,12 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user     user      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId   String
-  comments Comment[]
+  comments comment[]
 }
 
-model Bottle {
+model bottle {
   id             String   @id @default(cuid())
   name           String
   type           String
@@ -145,5 +146,5 @@ model Bottle {
   size           String?
   color          String?
   finishing      String?
-  reviews        Review[]
+  reviews        review[]
 }

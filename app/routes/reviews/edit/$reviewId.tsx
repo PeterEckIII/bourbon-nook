@@ -1,4 +1,4 @@
-import type { Bottle, Review } from "@prisma/client";
+import type { bottle, review } from "@prisma/client";
 import { redirect, json } from "@remix-run/server-runtime";
 import type { LoaderFunction, ActionFunction } from "@remix-run/server-runtime";
 import { useActionData, useLoaderData, Form } from "@remix-run/react";
@@ -10,8 +10,8 @@ import { editBottle, getBottle } from "~/models/bottle.server";
 import invariant from "tiny-invariant";
 
 type LoaderData = {
-  review: Review;
-  bottle: Bottle;
+  review: review;
+  bottle: bottle;
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
