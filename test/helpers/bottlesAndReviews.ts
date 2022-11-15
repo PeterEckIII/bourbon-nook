@@ -1,6 +1,6 @@
-import type { Bottle, Review } from "@prisma/client";
+import type { bottle, review } from "@prisma/client";
 
-export const bottle1: Bottle = {
+export const bottle1: bottle = {
   id: "07395219-195d-4050-b68f-2baef911c2de",
   name: "Elijah Craig Barrel Proof",
   type: "Bourbon",
@@ -20,7 +20,7 @@ export const bottle1: Bottle = {
   finishing: "None",
 };
 
-export const bottle2: Bottle = {
+export const bottle2: bottle = {
   id: "89294c69-e9f6-4df4-9b93-a01f8e88523a",
   name: "Four Roses SiB BS OBSV",
   type: "Bourbon",
@@ -40,7 +40,7 @@ export const bottle2: Bottle = {
   finishing: "None",
 };
 
-export const bottle3: Bottle = {
+export const bottle3: bottle = {
   id: "8e6e7281-ca57-4e1e-84de-9a50f3bbeb09",
   name: "Kirkland Single Barrel",
   type: "Bourbon",
@@ -61,7 +61,7 @@ export const bottle3: Bottle = {
 };
 
 export const review1: Omit<
-  Review,
+  review,
   "bottleId" | "createdAt" | "updatedAt" | "userId"
 > = {
   id: "dbac11ca-2b24-4530-bd86-b3d047823180",
@@ -124,7 +124,7 @@ export const review1: Omit<
 };
 
 export const review2: Omit<
-  Review,
+  review,
   "bottleId" | "createdAt" | "updatedAt" | "userId"
 > = {
   id: "130ef50a-48e9-4067-af29-880fa630733a",
@@ -187,7 +187,7 @@ export const review2: Omit<
 };
 
 export const review3: Omit<
-  Review,
+  review,
   "bottleId" | "createdAt" | "updatedAt" | "userId"
 > = {
   id: "0ac45694-b00d-4232-a4e9-4382af4829bd",
