@@ -8,6 +8,7 @@ generator client {
   binaryTargets = ["native", "darwin"]
 }
 
+
 model password {
   hash String
 
@@ -19,10 +20,10 @@ model user {
   id       String    @id @default(cuid())
   email    String    @unique
   password password?
-
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  
   reviews   review[]
   followers follows[] @relation("following")
   following follows[] @relation("follower")
