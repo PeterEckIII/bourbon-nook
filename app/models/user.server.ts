@@ -1,19 +1,19 @@
 import bcrypt from "bcrypt";
-import type { Password, User } from "@prisma/client";
+import type { password, user } from "@prisma/client";
 
 import { prisma } from "../db.server";
 
-export type { User } from "@prisma/client";
+export type { user } from "@prisma/client";
 
-export async function getUserById(id: User["id"]) {
+export async function getUserById(id: user["id"]) {
   return prisma.user.findUnique({ where: { id } });
 }
 
-export async function getUserByEmail(email: User["email"]) {
+export async function getUserByEmail(email: user["email"]) {
   return prisma.user.findUnique({ where: { email } });
 }
 
-export async function createUser(email: User["email"], password: string) {
+export async function createUser(email: user["email"], password: string) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return prisma.user.create({
@@ -28,13 +28,13 @@ export async function createUser(email: User["email"], password: string) {
   });
 }
 
-export async function deleteUserByEmail(email: User["email"]) {
+export async function deleteUserByEmail(email: user["email"]) {
   return prisma.user.delete({ where: { email } });
 }
 
 export async function verifyLogin(
-  email: User["email"],
-  password: Password["hash"]
+  email: user["email"],
+  password: password["hash"]
 ) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
@@ -59,4 +59,41 @@ export async function verifyLogin(
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
+}
+
+export async function follow(
+  followerId: user["id"],
+  beingFollowedId: user["id"]
+) {
+  const follow = await prisma.follows.create({
+    data: {
+      followerId,
+      followingId: beingFollowedId,
+    },
+  });
+
+  return await prisma.user.update({
+    where: { id: followerId },
+    data: {
+      following: {
+        connect: {
+          followerId_followingId: follow,
+        },
+      },
+    },
+  });
+}
+
+export async function unfollow(
+  followerId: user["id"],
+  beingFollowedId: user["id"]
+) {
+  await prisma.follows.delete({
+    where: {
+      followerId_followingId: {
+        followerId,
+        followingId: beingFollowedId,
+      },
+    },
+  });
 }

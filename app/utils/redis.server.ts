@@ -1,5 +1,7 @@
+import * as dotenv from "dotenv";
 import * as redis from "redis";
 import type { CustomFormData, SavedRedisData } from "./helpers.server";
+dotenv.config();
 
 const client = redis.createClient({
   url: process.env.REDIS_URL,
