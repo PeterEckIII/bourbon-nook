@@ -1,8 +1,10 @@
-export default function AddIcon() {
+import { classNames } from "~/utils/cssHelper";
+
+export default function AddIcon(classes: string) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="inline h-6 w-6"
+      className={classNames("inline h-6 w-6", classes)}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
