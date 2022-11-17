@@ -10,6 +10,7 @@ import {
   Links,
   Meta,
   Scripts,
+  Outlet,
 } from "@remix-run/react";
 import { getBottle } from "~/models/bottle.server";
 import { deleteReview, getReviewById } from "~/models/review.server";
@@ -87,7 +88,7 @@ export default function ReviewDetailsPage() {
   };
 
   return (
-    <div className="align-center flex justify-center">
+    <div className="align-center flex w-full flex-col justify-center">
       <ReviewPage
         bottle={bottle}
         review={review}
@@ -97,6 +98,9 @@ export default function ReviewDetailsPage() {
         author={data.author}
         following={data.following}
       />
+      <div className="min-h-[200px] border-2 border-gray-300">
+        <Outlet />
+      </div>
     </div>
   );
 }

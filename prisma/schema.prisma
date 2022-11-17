@@ -23,8 +23,8 @@ model user {
   updatedAt DateTime @updatedAt
 
   reviews   review[]
-  followers follows[] @relation("following")
-  following follows[] @relation("follower")
+  followers follows[] @relation("follower")
+  following follows[] @relation("following")
   comments  comment[]
 }
 
@@ -39,9 +39,9 @@ model comment {
 }
 
 model follows {
-  follower    user   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  follower    user   @relation("following", fields: [followerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   followerId  String
-  following   user   @relation("following", fields: [followingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  following   user   @relation("follower", fields: [followingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   followingId String
 
   @@id([followerId, followingId])

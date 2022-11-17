@@ -31,3 +31,19 @@ export async function getCommentsForUser(userId: user["id"]) {
     where: { authorId: userId },
   });
 }
+
+export async function getComments(reviewId: review["id"]) {
+  return prisma.comment.findMany({
+    where: { reviewId },
+    select: {
+      id: true,
+      body: true,
+      createdAt: true,
+      author: {
+        select: {
+          email: true,
+        },
+      },
+    },
+  });
+}
