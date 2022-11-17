@@ -8,22 +8,8 @@ generator client {
   binaryTargets = ["native", "darwin"]
 }
 
-<<<<<<< HEAD
-model Password {
-  hash String
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
-}
-
-model User {
-  id       String    @id @default(cuid())
-  email    String    @unique
-  password Password?
-=======
 model password {
-  hash String
-
+  hash   String
   user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @unique
 }
@@ -32,34 +18,10 @@ model user {
   id       String    @id @default(cuid())
   email    String    @unique
   password password?
->>>>>>> c01b43057d4ceed374c53efc27cbf5013fa0f9ae
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-<<<<<<< HEAD
-  reviews   Review[]
-  followers Follows[] @relation("follower")
-  following Follows[] @relation("following")
-  comments  Comment[]
-}
-
-model Comment {
-  id        String   @id @default(cuid())
-  body      String
-  review    Review   @relation(fields: [reviewId], references: [id])
-  reviewId  String
-  createdAt DateTime @default(now())
-
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
-}
-
-model Follows {
-  follower    User   @relation("follower", fields: [followerId], references: [id])
-  followerId  String
-  following   User   @relation("following", fields: [followingId], references: [id])
-=======
   reviews   review[]
   followers follows[] @relation("following")
   following follows[] @relation("follower")
@@ -72,103 +34,86 @@ model comment {
   review    review   @relation(fields: [reviewId], references: [id])
   reviewId  String
   createdAt DateTime @default(now())
-
-  author   user   @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  authorId String
+  author    user     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId  String
 }
 
 model follows {
   follower    user   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   followerId  String
   following   user   @relation("following", fields: [followingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
->>>>>>> c01b43057d4ceed374c53efc27cbf5013fa0f9ae
   followingId String
 
   @@id([followerId, followingId])
 }
 
 model review {
-  id       String  @id @default(cuid())
-  bottle   bottle? @relation(fields: [bottleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  bottleId String?
-  date     String?
-  imageUrl String?
-
-  setting   String?
-  glassware String?
-  restTime  String?
-  nose      String?
-  palate    String?
-  finish    String?
-  thoughts  String?
-
+  id            String    @id @default(cuid())
+  bottle        bottle?   @relation(fields: [bottleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bottleId      String?
+  date          String?
+  imageUrl      String?
+  setting       String?
+  glassware     String?
+  restTime      String?
+  nose          String?
+  palate        String?
+  finish        String?
+  thoughts      String?
   //  SPICE:
-  pepper      Int?
-  bakingSpice Int?
-  cinnamon    Int?
-  herbal      Int?
-  mint        Int?
-
+  pepper        Int?
+  bakingSpice   Int?
+  cinnamon      Int?
+  herbal        Int?
+  mint          Int?
   // FRUIT
-  cherry     Int?
-  strawberry Int?
-  raspberry  Int?
-  blackberry Int?
-  blueberry  Int?
-  apple      Int?
-  banana     Int?
-  grape      Int?
-  stone      Int?
-  citrus     Int?
-  tropical   Int?
-
+  cherry        Int?
+  strawberry    Int?
+  raspberry     Int?
+  blackberry    Int?
+  blueberry     Int?
+  apple         Int?
+  banana        Int?
+  grape         Int?
+  stone         Int?
+  citrus        Int?
+  tropical      Int?
   // EARTHY
-  coffee  Int?
-  tobacco Int?
-  leather Int?
-  oak     Int?
-  toasted Int?
-  smokey  Int?
-  peanut  Int?
-  almond  Int?
-  pecan   Int?
-  walnut  Int?
-  oily    Int?
-  floral  Int?
-
+  coffee        Int?
+  tobacco       Int?
+  leather       Int?
+  oak           Int?
+  toasted       Int?
+  smokey        Int?
+  peanut        Int?
+  almond        Int?
+  pecan         Int?
+  walnut        Int?
+  oily          Int?
+  floral        Int?
   // GRAIN
-  corn  Int?
-  rye   Int?
-  wheat Int?
-  malt  Int?
-  dough Int?
-
+  corn          Int?
+  rye           Int?
+  wheat         Int?
+  malt          Int?
+  dough         Int?
   // SWEET
-  vanilla      Int?
-  caramel      Int?
-  molasses     Int?
-  butterscotch Int?
-  honey        Int?
-  chocolate    Int?
-  toffee       Int?
-  sugar        Int?
-
+  vanilla       Int?
+  caramel       Int?
+  molasses      Int?
+  butterscotch  Int?
+  honey         Int?
+  chocolate     Int?
+  toffee        Int?
+  sugar         Int?
   // RATING
   value         Float?
   overallRating Float?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-<<<<<<< HEAD
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId   String
-  comments Comment[]
-=======
-  user     user      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId   String
-  comments comment[]
->>>>>>> c01b43057d4ceed374c53efc27cbf5013fa0f9ae
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          user      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        String
+  comments      comment[]
 }
 
 model bottle {
