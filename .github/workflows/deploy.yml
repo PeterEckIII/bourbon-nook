@@ -127,8 +127,6 @@ jobs:
           --health-retries 5
     strategy:
       fail-fast: false
-      matrix:
-        containers: [1, 2, 3]
     steps:
       - name: 🛑 Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.11.0

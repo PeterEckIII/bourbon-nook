@@ -53,7 +53,7 @@ export default function ReviewsPage() {
   const [opened, setOpened] = useState<boolean>(false);
 
   return (
-    <div className="flex h-full min-h-screen flex-col">
+    <div className="flex h-full min-h-screen w-full flex-col">
       <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
         <h1 className="text-3xl font-bold">
           <Link to="/" className="flex items-center text-white">

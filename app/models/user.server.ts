@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import type { password, user } from "@prisma/client";
+import type { password, user, review } from "@prisma/client";
 
 import { prisma } from "../db.server";
 
@@ -11,6 +11,23 @@ export async function getUserById(id: user["id"]) {
 
 export async function getUserByEmail(email: user["email"]) {
   return prisma.user.findUnique({ where: { email } });
+}
+
+export async function getUserByReviewId(reviewId: review["id"]) {
+  const userId = await prisma.review.findFirst({
+    where: { id: reviewId },
+    select: {
+      userId: true,
+    },
+  });
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId?.userId,
+    },
+  });
+
+  return user;
 }
 
 export async function createUser(email: user["email"], password: string) {
