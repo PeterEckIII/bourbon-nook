@@ -47,7 +47,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
+      <body>
         <div id="root">
           <Outlet />
           <LiveReload />
