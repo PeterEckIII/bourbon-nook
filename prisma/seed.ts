@@ -2,7 +2,11 @@ import { prisma } from "~/db.server";
 import bcrypt from "bcryptjs";
 
 async function seed() {
+  await prisma.review.deleteMany();
+  await prisma.user.deleteMany();
+
   const email = "rachel@remix.run";
+  const email2 = "peter@remix.run";
 
   // cleanup the existing database
   await prisma.user.delete({ where: { email } }).catch(() => {
@@ -11,12 +15,25 @@ async function seed() {
 
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
+  const hashedPassword2 = await bcrypt.hash("peteriscool", 10);
+
   const user = await prisma.user.create({
     data: {
       email,
       password: {
         create: {
           hash: hashedPassword,
+        },
+      },
+    },
+  });
+
+  const user2 = await prisma.user.create({
+    data: {
+      email: email2,
+      password: {
+        create: {
+          hash: hashedPassword2,
         },
       },
     },
@@ -64,7 +81,7 @@ async function seed() {
     },
   });
 
-  await prisma.review.create({
+  const review1 = await prisma.review.create({
     data: {
       bottleId: eagleRare.id,
       date: "2022-03-30T19:47:18+00:00",
@@ -126,7 +143,7 @@ async function seed() {
     },
   });
 
-  await prisma.review.create({
+  const review2 = await prisma.review.create({
     data: {
       bottleId: staggJr16.id,
       date: "2022-03-30T19:47:18+00:00",
@@ -185,6 +202,31 @@ async function seed() {
       value: 10.0,
       userId: user.id,
       imageUrl: "",
+    },
+  });
+
+  const comment1 = await prisma.comment.create({
+    data: {
+      body: "Root comment",
+      reviewId: review1.id,
+      userId: user.id,
+    },
+  });
+
+  const comment2 = await prisma.comment.create({
+    data: {
+      parentId: comment1.id,
+      body: "Child comment",
+      reviewId: review1.id,
+      userId: user2.id,
+    },
+  });
+
+  const comment3 = await prisma.comment.create({
+    data: {
+      body: "Awesome!",
+      reviewId: review2.id,
+      userId: user2.id,
     },
   });
 

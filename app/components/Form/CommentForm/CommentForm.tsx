@@ -31,7 +31,7 @@ const CommentForm: FC<CommentFormProps> = ({ Form, state, type, data }) => {
             className="block w-full min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
-        <Button callToAction="Submit" type="submit" />
+        <Button callToAction="Add comment" type="submit" />
       </Form>
     </div>
   );

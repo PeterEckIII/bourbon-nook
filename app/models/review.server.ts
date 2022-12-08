@@ -1,3 +1,4 @@
+import { assertNonNullable } from "~/utils/helpers.server";
 import type { user, review } from "@prisma/client";
 import { prisma } from "~/db.server";
 
@@ -26,8 +27,8 @@ export const getReviewListItems = async ({
   userId: user["id"];
 }) => {
   const reviews = prisma.review.findMany({
-    select: { id: true, bottle: true },
     where: { userId },
+    select: { id: true, bottle: true },
     orderBy: { createdAt: "desc" },
   });
   return reviews;
@@ -38,6 +39,7 @@ export const getReviewsForTable = async ({
 }: {
   userId: user["id"];
 }) => {
+  assertNonNullable(userId);
   const reviews = await prisma.review.findMany({
     where: {
       userId,
@@ -122,7 +124,7 @@ export const createReview = async ({
   value,
   userId,
 }: review & { userId: user["id"] }) => {
-  return await prisma.review.create({
+  return prisma.review.create({
     data: {
       bottleId,
       date,
@@ -186,7 +188,7 @@ export const editReview = async (review: review, userId: user["id"]) => {
   if (userId !== review.userId) {
     throw new Error(`You are not authorized to edit this review`);
   }
-  return await prisma.review.update({
+  return prisma.review.update({
     where: { id: review.id },
     data: {
       ...review,
