@@ -25,7 +25,7 @@ type LoaderData = {
   bottle: bottle;
   imageUrl?: string;
   user: user;
-  author: user;
+  reviewAuthor: user;
   following: any;
 };
 
@@ -41,18 +41,18 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const review = await getReviewById(params.reviewId);
   assertNonNullable(review);
   assertNonNullable(review.bottleId);
-  const authorId = review.userId;
-  const author = await getUserById(authorId);
+  const reviewAuthorId = review.userId;
+  const reviewAuthor = await getUserById(reviewAuthorId);
+  assertNonNullable(reviewAuthor);
   const bottle = await getBottle(review.bottleId);
   assertNonNullable(bottle);
   assertNonNullable(review.imageUrl);
-  assertNonNullable(author);
   return json<LoaderData>({
     review,
     bottle,
     imageUrl: review.imageUrl,
     user,
-    author,
+    reviewAuthor,
     following,
   });
 };
@@ -95,10 +95,10 @@ export default function ReviewDetailsPage() {
         handleEditClick={handleEditClick}
         follow={follow}
         user={data.user}
-        author={data.author}
+        author={data.reviewAuthor}
         following={data.following}
       />
-      <div className="min-h-[200px] border-2 border-gray-300">
+      <div className="min-h-[200px]">
         <Outlet />
       </div>
     </div>

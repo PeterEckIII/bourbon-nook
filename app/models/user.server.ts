@@ -6,7 +6,8 @@ import { prisma } from "../db.server";
 export type { user } from "@prisma/client";
 
 export async function getUserById(id: user["id"]) {
-  return prisma.user.findUnique({ where: { id } });
+  const user = await prisma.user.findUnique({ where: { id: id } });
+  return user;
 }
 
 export async function getUserByEmail(email: user["email"]) {
@@ -14,7 +15,7 @@ export async function getUserByEmail(email: user["email"]) {
 }
 
 export async function getUserByReviewId(reviewId: review["id"]) {
-  const userId = await prisma.review.findFirst({
+  const userObject = await prisma.review.findFirst({
     where: { id: reviewId },
     select: {
       userId: true,
@@ -23,7 +24,7 @@ export async function getUserByReviewId(reviewId: review["id"]) {
 
   const user = await prisma.user.findFirst({
     where: {
-      id: userId?.userId,
+      id: userObject?.userId,
     },
   });
 
@@ -82,30 +83,29 @@ export async function follow(
   followerId: user["id"],
   beingFollowedId: user["id"]
 ) {
-  const follow = await prisma.follows.create({
-    data: {
-      followerId,
-      followingId: beingFollowedId,
-    },
-  });
-
-  return await prisma.user.update({
+  // const follow = await prisma.follows.create({
+  //   data: {
+  //     followerId,
+  //     followingId: beingFollowedId,
+  //   },
+  // });
+  return prisma.user.update({
     where: { id: followerId },
     data: {
       following: {
         connect: {
-          followerId_followingId: follow,
+          followerId_followingId: {
+            followerId,
+            followingId: beingFollowedId,
+          },
         },
       },
     },
   });
 }
 
-export async function unfollow(
-  followerId: user["id"],
-  beingFollowedId: user["id"]
-) {
-  await prisma.follows.delete({
+export function unfollow(followerId: user["id"], beingFollowedId: user["id"]) {
+  return prisma.follows.delete({
     where: {
       followerId_followingId: {
         followerId,

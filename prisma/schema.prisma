@@ -9,9 +9,14 @@ generator client {
 }
 
 model password {
-  hash String
-
+  hash   String
   user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+}
+
+model profile {
+  id     String @id @default(cuid())
+  user   user   @relation("userHasProfile", fields: [userId], references: [id])
   userId String @unique
 }
 
@@ -20,24 +25,48 @@ model user {
   email    String    @unique
   password password?
 
+  profile profile? @relation("userHasProfile")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  reviews   review[]
+  // FOLLOWERS
   followers follows[] @relation("follower")
   following follows[] @relation("following")
-  comments  comment[]
+
+  // REVIEWS
+  reviews review[] @relation("userReviews")
+
+  // COMMENTS
+  comments comment[] @relation("UserComments")
+  likes    like[]
+}
+
+model like {
+  user      user    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  comment   comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+
+  @@id([userId, commentId])
 }
 
 model comment {
   id        String   @id @default(cuid())
   body      String
-  review    review   @relation(fields: [reviewId], references: [id])
-  reviewId  String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  author   user   @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  authorId String
+  user   user   @relation("UserComments", fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  review   review @relation("ReviewComments", fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId String
+
+  parent   comment?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String?
+  children comment[] @relation("ParentChild")
+  likes    like[]
 }
 
 model follows {
@@ -53,78 +82,74 @@ model review {
   id       String  @id @default(cuid())
   bottle   bottle? @relation(fields: [bottleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bottleId String?
-  date     String?
-  imageUrl String?
 
-  setting   String?
-  glassware String?
-  restTime  String?
-  nose      String?
-  palate    String?
-  finish    String?
-  thoughts  String?
+  user   user   @relation("userReviews", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
 
-  //  SPICE:
-  pepper      Int?
-  bakingSpice Int?
-  cinnamon    Int?
-  herbal      Int?
-  mint        Int?
-
-  // FRUIT
-  cherry     Int?
-  strawberry Int?
-  raspberry  Int?
-  blackberry Int?
-  blueberry  Int?
-  apple      Int?
-  banana     Int?
-  grape      Int?
-  stone      Int?
-  citrus     Int?
-  tropical   Int?
-
-  // EARTHY
-  coffee  Int?
-  tobacco Int?
-  leather Int?
-  oak     Int?
-  toasted Int?
-  smokey  Int?
-  peanut  Int?
-  almond  Int?
-  pecan   Int?
-  walnut  Int?
-  oily    Int?
-  floral  Int?
-
-  // GRAIN
-  corn  Int?
-  rye   Int?
-  wheat Int?
-  malt  Int?
-  dough Int?
-
-  // SWEET
-  vanilla      Int?
-  caramel      Int?
-  molasses     Int?
-  butterscotch Int?
-  honey        Int?
-  chocolate    Int?
-  toffee       Int?
-  sugar        Int?
-
-  // RATING
-  value         Float?
-  overallRating Float?
+  comments comment[] @relation("ReviewComments")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user     user      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId   String
-  comments comment[]
+  // SETTING:
+  date          String?
+  imageUrl      String?
+  setting       String?
+  glassware     String?
+  restTime      String?
+  nose          String?
+  palate        String?
+  finish        String?
+  thoughts      String?
+  //  SPICE:
+  pepper        Int?
+  bakingSpice   Int?
+  cinnamon      Int?
+  herbal        Int?
+  mint          Int?
+  // FRUIT
+  cherry        Int?
+  strawberry    Int?
+  raspberry     Int?
+  blackberry    Int?
+  blueberry     Int?
+  apple         Int?
+  banana        Int?
+  grape         Int?
+  stone         Int?
+  citrus        Int?
+  tropical      Int?
+  // EARTHY
+  coffee        Int?
+  tobacco       Int?
+  leather       Int?
+  oak           Int?
+  toasted       Int?
+  smokey        Int?
+  peanut        Int?
+  almond        Int?
+  pecan         Int?
+  walnut        Int?
+  oily          Int?
+  floral        Int?
+  // GRAIN
+  corn          Int?
+  rye           Int?
+  wheat         Int?
+  malt          Int?
+  dough         Int?
+  // SWEET
+  vanilla       Int?
+  caramel       Int?
+  molasses      Int?
+  butterscotch  Int?
+  honey         Int?
+  chocolate     Int?
+  toffee        Int?
+  sugar         Int?
+  // RATING
+  value         Float?
+  overallRating Float?
 }
 
 model bottle {

@@ -5,7 +5,7 @@ export async function createFollow(
   followerId: user["id"],
   beingFollowedId: user["id"]
 ) {
-  return await prisma.follows.create({
+  return prisma.follows.create({
     data: {
       followerId,
       followingId: beingFollowedId,
@@ -28,10 +28,19 @@ export async function unfollow(
 }
 
 export async function getFollowing(userId: user["id"]) {
-  return await prisma.user.findFirstOrThrow({
+  return prisma.user.findFirstOrThrow({
     where: { id: userId },
     select: {
       following: true,
+    },
+  });
+}
+
+export async function getFollowers(userId: user["id"]) {
+  return prisma.user.findFirstOrThrow({
+    where: { id: userId },
+    select: {
+      followers: true,
     },
   });
 }
