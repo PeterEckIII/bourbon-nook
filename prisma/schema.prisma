@@ -14,28 +14,59 @@ model password {
   userId String @unique
 }
 
+model profile {
+  id     String @id @default(cuid())
+  user   user   @relation("userHasProfile", fields: [userId], references: [id])
+  userId String @unique
+}
+
 model user {
   id       String    @id @default(cuid())
   email    String    @unique
   password password?
 
+  profile profile? @relation("userHasProfile")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  reviews   review[]
+  // FOLLOWERS
   followers follows[] @relation("follower")
   following follows[] @relation("following")
-  comments  comment[]
+
+  // REVIEWS
+  reviews review[] @relation("userReviews")
+
+  // COMMENTS
+  comments comment[] @relation("UserComments")
+  likes    like[]
+}
+
+model like {
+  user      user    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  comment   comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+
+  @@id([userId, commentId])
 }
 
 model comment {
   id        String   @id @default(cuid())
   body      String
-  review    review   @relation(fields: [reviewId], references: [id])
-  reviewId  String
   createdAt DateTime @default(now())
-  author    user     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  authorId  String
+  updatedAt DateTime @updatedAt
+
+  user   user   @relation("UserComments", fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  review   review @relation("ReviewComments", fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId String
+
+  parent   comment?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String?
+  children comment[] @relation("ParentChild")
+  likes    like[]
 }
 
 model follows {
@@ -48,9 +79,19 @@ model follows {
 }
 
 model review {
-  id            String    @id @default(cuid())
-  bottle        bottle?   @relation(fields: [bottleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  bottleId      String?
+  id       String  @id @default(cuid())
+  bottle   bottle? @relation(fields: [bottleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bottleId String?
+
+  user   user   @relation("userReviews", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  comments comment[] @relation("ReviewComments")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // SETTING:
   date          String?
   imageUrl      String?
   setting       String?
@@ -109,11 +150,6 @@ model review {
   // RATING
   value         Float?
   overallRating Float?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  user          user      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId        String
-  comments      comment[]
 }
 
 model bottle {
