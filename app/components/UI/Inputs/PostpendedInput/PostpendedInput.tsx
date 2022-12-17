@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { useBeforeUnload } from "@remix-run/react";
+import ValidationMessage from "../../ValidationMessage";
 
 interface IPostpendedInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -11,6 +12,7 @@ interface IPostpendedInputProps
   postpendedCharacter: string;
   emoji?: string;
   changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isSubmitting: boolean;
 }
 
 export default function PostpendedInput({
@@ -21,6 +23,8 @@ export default function PostpendedInput({
   postpendedCharacter,
   emoji,
   changeHandler,
+  isSubmitting,
+  error,
 }: IPostpendedInputProps) {
   useBeforeUnload(
     useCallback(() => {
@@ -60,12 +64,13 @@ export default function PostpendedInput({
           className={
             "block w-full min-w-0 flex-1 rounded-none rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
           }
+          aria-invalid={Boolean(error) || undefined}
         />
         <span className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900">
           {postpendedCharacter}
         </span>
       </div>
-      {/* {error && <span className="text-red-600">{error}</span>} */}
+      {error && <ValidationMessage isSubmitting={isSubmitting} error={error} />}
     </div>
   );
 }
