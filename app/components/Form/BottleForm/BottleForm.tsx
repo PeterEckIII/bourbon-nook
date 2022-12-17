@@ -7,11 +7,32 @@ import React from "react";
 import { Form } from "@remix-run/react";
 import type { CustomFormData } from "~/utils/helpers.server";
 
+type Errors = {
+  name?: string;
+  type?: string;
+  distiller?: string;
+  bottler?: string;
+  producer?: string;
+  country?: string;
+  region?: string;
+  price?: string;
+  age?: string;
+  year?: string;
+  batch?: string;
+  alcoholPercent?: string;
+  proof?: string;
+  size?: string;
+  color?: string;
+  finishing?: string;
+  general?: string;
+};
 interface IBottleFormProps {
   state: FormState;
   changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formData: CustomFormData | null;
   formState: string;
+  errors: Errors;
+  isSubmitting: boolean;
 }
 
 export default function BottleForm({
@@ -19,6 +40,8 @@ export default function BottleForm({
   changeHandler,
   formData,
   formState,
+  errors,
+  isSubmitting,
 }: IBottleFormProps) {
   return (
     <Form method="post" className="flex w-full flex-col">
@@ -34,6 +57,8 @@ export default function BottleForm({
             defaultValue={formData?.name}
             changeHandler={(e) => changeHandler(e)}
             emoji="📛"
+            isSubmitting={isSubmitting}
+            error={errors?.name ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -45,6 +70,8 @@ export default function BottleForm({
             defaultValue={formData?.distiller}
             changeHandler={(e) => changeHandler(e)}
             emoji="🌱"
+            isSubmitting={isSubmitting}
+            error={errors?.distiller ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -56,6 +83,8 @@ export default function BottleForm({
             defaultValue={formData?.bottler}
             changeHandler={(e) => changeHandler(e)}
             emoji="🍾"
+            isSubmitting={isSubmitting}
+            error={errors?.bottler ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -67,6 +96,8 @@ export default function BottleForm({
             defaultValue={formData?.producer}
             changeHandler={(e) => changeHandler(e)}
             emoji="🏗️"
+            isSubmitting={isSubmitting}
+            error={errors?.producer ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -78,6 +109,8 @@ export default function BottleForm({
             defaultValue={formData?.type}
             changeHandler={(e) => changeHandler(e)}
             emoji="©️"
+            isSubmitting={isSubmitting}
+            error={errors?.type ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -89,6 +122,8 @@ export default function BottleForm({
             defaultValue={formData?.country}
             changeHandler={(e) => changeHandler(e)}
             emoji="🌎"
+            isSubmitting={isSubmitting}
+            error={errors?.country ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -100,6 +135,8 @@ export default function BottleForm({
             defaultValue={formData?.region}
             changeHandler={(e) => changeHandler(e)}
             emoji="🏔️"
+            isSubmitting={isSubmitting}
+            error={errors?.region ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -112,6 +149,8 @@ export default function BottleForm({
             defaultValue={formData?.price}
             changeHandler={(e) => changeHandler(e)}
             emoji="💲"
+            isSubmitting={isSubmitting}
+            error={errors?.price ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -123,6 +162,8 @@ export default function BottleForm({
             defaultValue={formData?.age}
             changeHandler={(e) => changeHandler(e)}
             emoji="👴"
+            isSubmitting={isSubmitting}
+            error={errors?.age ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -134,6 +175,8 @@ export default function BottleForm({
             defaultValue={formData?.color}
             changeHandler={(e) => changeHandler(e)}
             emoji="🌈"
+            isSubmitting={isSubmitting}
+            error={errors?.color ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -145,6 +188,8 @@ export default function BottleForm({
             defaultValue={formData?.year}
             changeHandler={(e) => changeHandler(e)}
             emoji="📆"
+            isSubmitting={isSubmitting}
+            error={errors?.year ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -156,6 +201,8 @@ export default function BottleForm({
             defaultValue={formData?.batch}
             changeHandler={(e) => changeHandler(e)}
             emoji="2️⃣"
+            isSubmitting={isSubmitting}
+            error={errors?.batch ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -167,6 +214,8 @@ export default function BottleForm({
             defaultValue={formData?.size}
             changeHandler={(e) => changeHandler(e)}
             emoji="🍆"
+            isSubmitting={isSubmitting}
+            error={errors?.size ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -179,6 +228,8 @@ export default function BottleForm({
             defaultValue={formData?.alcoholPercent}
             changeHandler={(e) => changeHandler(e)}
             emoji="💫"
+            isSubmitting={isSubmitting}
+            error={errors?.alcoholPercent ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -191,6 +242,8 @@ export default function BottleForm({
             defaultValue={formData?.proof}
             changeHandler={(e) => changeHandler(e)}
             emoji="🔥"
+            isSubmitting={isSubmitting}
+            error={errors?.proof ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -202,13 +255,15 @@ export default function BottleForm({
             defaultValue={formData?.finishing}
             changeHandler={(e) => changeHandler(e)}
             emoji="🍷"
+            isSubmitting={isSubmitting}
+            error={errors?.finishing ?? ""}
           />
         </div>
       </div>
-      <Button type="button" callToAction="Cancel" />
       <Button
         callToAction={formState === "submitting" ? "Loading..." : "Next"}
         primary
+        disabled={isSubmitting}
         type="submit"
       />
     </Form>

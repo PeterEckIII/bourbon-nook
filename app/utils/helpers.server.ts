@@ -150,6 +150,7 @@ export type BottleInfoFormData = Pick<
   | "color"
   | "finishing"
 >;
+
 export type SettingInfoFormData = Pick<
   CustomFormData,
   | "date"

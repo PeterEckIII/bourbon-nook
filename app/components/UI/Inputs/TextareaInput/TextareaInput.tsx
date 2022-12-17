@@ -1,5 +1,6 @@
 import { useBeforeUnload } from "@remix-run/react";
 import React from "react";
+import ValidationMessage from "../../ValidationMessage";
 
 interface ITextareaInputProps
   extends React.InputHTMLAttributes<HTMLTextAreaElement> {
@@ -9,6 +10,7 @@ interface ITextareaInputProps
   value: string;
   emoji: string;
   changeHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  isSubmitting: boolean;
 }
 
 export default function TextareaInput({
@@ -17,6 +19,8 @@ export default function TextareaInput({
   value,
   emoji,
   changeHandler,
+  error,
+  isSubmitting,
 }: ITextareaInputProps) {
   useBeforeUnload(
     React.useCallback(() => {
@@ -50,9 +54,10 @@ export default function TextareaInput({
           className={
             "block w-full min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
           }
+          aria-invalid={Boolean(error) || undefined}
         />
       </div>
-      {/* {error && <span className="text-red-600">{error}</span>} */}
+      {error && <ValidationMessage error={error} isSubmitting={isSubmitting} />}
     </div>
   );
 }
