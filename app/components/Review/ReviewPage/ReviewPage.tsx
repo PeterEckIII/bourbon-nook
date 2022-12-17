@@ -29,7 +29,7 @@ export default function ReviewPage({
   follow,
   following,
 }: ReviewPageProps) {
-  if (!bottle || !review || !review.imageUrl || !handleEditClick) {
+  if (!bottle || !review || !handleEditClick) {
     throw new Error(`Error with props!`);
   }
 
@@ -64,11 +64,13 @@ export default function ReviewPage({
               following={following}
             />
           ) : null}
-          <div className="mb-2">
-            <div className="flex h-[400px] w-[300px]">
-              <img src={review.imageUrl} alt={`Bottle of ${bottle.name}`} />
+          {review.imageUrl && (
+            <div className="mb-2">
+              <div className="flex h-[400px] w-[300px]">
+                <img src={review.imageUrl} alt={`Bottle of ${bottle.name}`} />
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <BottleDetails bottle={bottle} />
         <SettingDetails bottle={bottle} review={review} />

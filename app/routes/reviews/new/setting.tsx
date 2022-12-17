@@ -17,7 +17,15 @@ import {
 import type { CustomFormData } from "~/utils/helpers.server";
 
 interface ActionData {
-  error?: string;
+  date?: string;
+  setting?: string;
+  glassware?: string;
+  restTime?: string;
+  nose?: string;
+  palate?: string;
+  finish?: string;
+  thoughts?: string;
+  general?: string;
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -45,15 +53,36 @@ export const action: ActionFunction = async ({ request }) => {
     typeof thoughts !== "string"
   ) {
     return json<ActionData>({
-      error: "Input was not a string",
+      general: "Input was not a string",
     });
+  }
+
+  const errors = {
+    date: date ? undefined : "Date is required",
+    glassware: glassware ? undefined : "Glassware is required",
+    restTime: restTime ? undefined : "Rest Time is required",
+    setting: setting
+      ? undefined
+      : "Setting is required. Write a brief summary of what you're doing",
+    nose: nose ? undefined : "Nose is required",
+    palate: palate ? undefined : "Palate is required",
+    finish: finish ? undefined : "Finish is required",
+    thoughts: thoughts
+      ? undefined
+      : "Thoughts is required. Write a brief summary of the notes and your opinion",
+  };
+
+  const hasErrors = Object.values(errors).some((errorMessage) => errorMessage);
+
+  if (hasErrors) {
+    return json<ActionData>(errors);
   }
 
   const customFormData = await getDataFromRedis(redisId);
 
   if (!customFormData) {
     return json<ActionData>({
-      error: "You must enable JavaScript for this form to work",
+      general: "You must enable JavaScript for this form to work",
     });
   }
 
@@ -83,13 +112,15 @@ export default function NewSettingRoute() {
   const transition = useTransition();
   let formState: "idle" | "error" | "submitting" = transition.submission
     ? "submitting"
-    : actionData?.error
+    : actionData
     ? "error"
     : "idle";
 
   if (state === undefined || !stateSetter) {
     throw new Error(`Error with the Outlet Context`);
   }
+
+  const errors = actionData || {};
 
   return (
     <>
@@ -98,6 +129,8 @@ export default function NewSettingRoute() {
         state={state}
         changeHandler={stateSetter}
         formState={formState}
+        errors={errors}
+        isSubmitting={transition.state === "submitting"}
       />
     </>
   );

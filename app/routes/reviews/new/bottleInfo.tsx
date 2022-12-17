@@ -13,7 +13,23 @@ import { generateCode } from "~/utils/helpers.server";
 import type { CustomFormData } from "~/utils/helpers.server";
 
 interface ActionData {
-  error?: string;
+  name?: string;
+  type?: string;
+  distiller?: string;
+  bottler?: string;
+  producer?: string;
+  country?: string;
+  region?: string;
+  price?: string;
+  age?: string;
+  year?: string;
+  batch?: string;
+  alcoholPercent?: string;
+  proof?: string;
+  size?: string;
+  color?: string;
+  finishing?: string;
+  general?: string;
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -36,6 +52,33 @@ export const action: ActionFunction = async ({ request }) => {
   const color = formData.get("color")?.toString();
   const finishing = formData.get("finishing")?.toString();
 
+  const errors = {
+    name: name ? undefined : "Name is required",
+    type: type ? undefined : "Type is required",
+    distiller: distiller ? undefined : "Distiller is required",
+    producer: producer ? undefined : "Producer is required",
+    country: country ? undefined : "Country is required",
+    region: region ? undefined : "Region is required",
+    price: price ? undefined : "Price is required",
+    age: age ? undefined : "Age is required",
+    year: year ? undefined : "Year is required",
+    batch: batch
+      ? undefined
+      : "Batch is required. Please put 'N/A' if no batch",
+    alcoholPercent: alcoholPercent ? undefined : "Alcohol Percent is required",
+    proof: proof ? undefined : "Proof is required",
+    size: size ? undefined : "Size is required",
+    color: color ? undefined : "Color is required",
+    finishing: finishing
+      ? undefined
+      : "Finishing is required. Please put 'None' if no finish",
+  };
+  const hasErrors = Object.values(errors).some((errorMessage) => errorMessage);
+
+  if (hasErrors) {
+    return json<ActionData>(errors);
+  }
+
   if (
     typeof name !== "string" ||
     typeof type !== "string" ||
@@ -54,9 +97,9 @@ export const action: ActionFunction = async ({ request }) => {
     typeof color !== "string" ||
     typeof finishing !== "string"
   ) {
-    return json<ActionData>({
-      error: "Type of input was not a string",
-    });
+    throw new Error(
+      `Invalid input. Please only use letters, numbers, and symbols`
+    );
   }
 
   const formId = formData.get("id");
@@ -69,7 +112,7 @@ export const action: ActionFunction = async ({ request }) => {
     const formDataObject = await getDataFromRedis(id);
     if (!formDataObject) {
       return json<ActionData>({
-        error: "You must enable JavaScript for this form to work",
+        general: "You must enable JavaScript for this form to work",
       });
     }
 
@@ -139,7 +182,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function NewBottleInfoRoute() {
   const data = useLoaderData<CustomFormData | null>();
   const { state, stateSetter } = useOutletContext<ContextType>();
-  const actionData = useActionData<ActionData>();
+  const actionData = useActionData<typeof action>();
   const transition = useTransition();
   let formState: "idle" | "error" | "submitting" = transition.submission
     ? "submitting"
@@ -151,6 +194,8 @@ export default function NewBottleInfoRoute() {
     throw new Error(`Error with the Outlet Context`);
   }
 
+  const errors = actionData || {};
+
   return (
     <div>
       <BottleForm
@@ -158,6 +203,8 @@ export default function NewBottleInfoRoute() {
         state={state}
         changeHandler={stateSetter}
         formState={formState}
+        errors={errors}
+        isSubmitting={transition.state === "submitting"}
       />
     </div>
   );

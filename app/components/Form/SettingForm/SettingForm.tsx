@@ -6,6 +6,16 @@ import Button from "../../UI/Button";
 import TextareaInput from "~/components/UI/Inputs/TextareaInput/TextareaInput";
 import TextInput from "~/components/UI/Inputs/TextInput/TextInput";
 
+type Errors = {
+  date?: string;
+  restTime?: string;
+  glassware?: string;
+  setting?: string;
+  nose?: string;
+  palate?: string;
+  finish?: string;
+  thoughts?: string;
+};
 interface ISettingFormProps {
   state: FormState;
   changeHandler: (
@@ -13,6 +23,8 @@ interface ISettingFormProps {
   ) => void;
   formData: CustomFormData;
   formState: string;
+  errors: Errors;
+  isSubmitting: boolean;
 }
 
 export default function SettingForm({
@@ -20,6 +32,8 @@ export default function SettingForm({
   changeHandler,
   formData,
   formState,
+  errors,
+  isSubmitting,
 }: ISettingFormProps) {
   return (
     <Form method="post" className="flex w-full flex-col">
@@ -35,6 +49,8 @@ export default function SettingForm({
             defaultValue={formData?.date}
             changeHandler={(e) => changeHandler(e)}
             emoji="📅"
+            isSubmitting={isSubmitting}
+            error={errors?.date ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -46,6 +62,8 @@ export default function SettingForm({
             defaultValue={formData?.restTime}
             changeHandler={(e) => changeHandler(e)}
             emoji="🛏️"
+            isSubmitting={isSubmitting}
+            error={errors?.restTime ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -57,6 +75,8 @@ export default function SettingForm({
             defaultValue={formData?.glassware}
             changeHandler={(e) => changeHandler(e)}
             emoji="🥃"
+            isSubmitting={isSubmitting}
+            error={errors?.glassware ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0">
@@ -68,6 +88,8 @@ export default function SettingForm({
             defaultValue={formData?.setting}
             changeHandler={(e) => changeHandler(e)}
             emoji="🌆"
+            isSubmitting={isSubmitting}
+            error={errors?.setting ?? ""}
           />
         </div>
         <TextareaInput
@@ -77,6 +99,8 @@ export default function SettingForm({
           defaultValue={formData?.nose}
           changeHandler={(e) => changeHandler(e)}
           emoji="👃"
+          isSubmitting={isSubmitting}
+          error={errors?.nose ?? ""}
         />
         <TextareaInput
           name="palate"
@@ -85,6 +109,8 @@ export default function SettingForm({
           defaultValue={formData?.palate}
           changeHandler={(e) => changeHandler(e)}
           emoji="👅"
+          isSubmitting={isSubmitting}
+          error={errors?.palate ?? ""}
         />
         <TextareaInput
           name="finish"
@@ -93,6 +119,8 @@ export default function SettingForm({
           defaultValue={formData?.finish}
           changeHandler={(e) => changeHandler(e)}
           emoji="😳"
+          isSubmitting={isSubmitting}
+          error={errors?.finish ?? ""}
         />
         <TextareaInput
           name="thoughts"
@@ -101,6 +129,8 @@ export default function SettingForm({
           defaultValue={formData?.thoughts}
           changeHandler={(e) => changeHandler(e)}
           emoji="💭"
+          isSubmitting={isSubmitting}
+          error={errors?.thoughts ?? ""}
         />
       </div>
       <Button type="button" callToAction="Cancel" />
@@ -108,6 +138,7 @@ export default function SettingForm({
         type="submit"
         primary
         callToAction={formState === "submitting" ? "Loading..." : "Next"}
+        disabled={isSubmitting}
       />
     </Form>
   );
