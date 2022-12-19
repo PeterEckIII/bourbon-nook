@@ -40,7 +40,6 @@ export default function ConfirmForm({
               <div className="border py-1 text-center">Year</div>
               <div className="border py-1 text-center">Batch</div>
               <div className="border py-1 text-center">Distiller</div>
-              <div className="border py-1 text-center">Bottler</div>
               <div className="border py-1 text-center">Producer</div>
               <div className="border py-1 text-center">Country</div>
               <div className="border py-1 text-center">Region</div>
@@ -58,7 +57,6 @@ export default function ConfirmForm({
               <div className="border py-1 text-center">
                 {formData.distiller}
               </div>
-              <div className="border py-1 text-center">{formData.bottler}</div>
               <div className="border py-1 text-center">{formData.producer}</div>
               <div className="border py-1 text-center">{formData.country}</div>
               <div className="border py-1 text-center">{formData.region}</div>

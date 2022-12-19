@@ -11,12 +11,12 @@ import BottleForm from "~/components/Form/BottleForm/BottleForm";
 import { getDataFromRedis, saveToRedis } from "~/utils/redis.server";
 import { generateCode } from "~/utils/helpers.server";
 import type { CustomFormData } from "~/utils/helpers.server";
+import { requireUserId } from "~/session.server";
 
 interface ActionData {
   name?: string;
   type?: string;
   distiller?: string;
-  bottler?: string;
   producer?: string;
   country?: string;
   region?: string;
@@ -33,12 +33,12 @@ interface ActionData {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+  const userId = await requireUserId(request);
   const formData = await request.formData();
 
   const name = formData.get("name")?.toString();
   const type = formData.get("type")?.toString();
   const distiller = formData.get("distiller")?.toString();
-  const bottler = formData.get("bottler")?.toString();
   const producer = formData.get("producer")?.toString();
   const country = formData.get("country")?.toString();
   const region = formData.get("region")?.toString();
@@ -84,7 +84,6 @@ export const action: ActionFunction = async ({ request }) => {
     typeof type !== "string" ||
     typeof distiller !== "string" ||
     typeof producer !== "string" ||
-    typeof bottler !== "string" ||
     typeof country !== "string" ||
     typeof region !== "string" ||
     typeof price !== "string" ||
@@ -120,7 +119,6 @@ export const action: ActionFunction = async ({ request }) => {
     formDataObject.type = type;
     formDataObject.distiller = distiller;
     formDataObject.producer = producer;
-    formDataObject.bottler = bottler;
     formDataObject.country = country;
     formDataObject.region = region;
     formDataObject.price = price;
@@ -138,12 +136,13 @@ export const action: ActionFunction = async ({ request }) => {
     id = generateCode(6);
 
     const formDataObject: CustomFormData = {
+      userId,
+      status: "OPENED",
       redisId: id,
       name,
       type,
       distiller,
       producer,
-      bottler,
       country,
       region,
       price,
