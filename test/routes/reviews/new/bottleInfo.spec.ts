@@ -62,7 +62,6 @@ describe("Bottle Info", () => {
         type = "Bourbon",
         distiller = "Buffalo Trace",
         producer = "Sazerac",
-        bottler = "Buffalo Trace",
         country = "USA",
         region = "KY",
         price = "34.99",
@@ -81,7 +80,6 @@ describe("Bottle Info", () => {
         name,
         distiller,
         producer,
-        bottler,
         country,
         region,
         price,
@@ -103,7 +101,6 @@ describe("Bottle Info", () => {
       formData.append("type", type);
       formData.append("distiller", distiller);
       formData.append("producer", producer);
-      formData.append("bottler", bottler);
       formData.append("country", country);
       formData.append("region", region);
       formData.append("price", price);

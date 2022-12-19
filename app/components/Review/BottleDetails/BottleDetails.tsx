@@ -69,14 +69,6 @@ export default function BottleDetails({ bottle }: BottleDetailProps) {
         </tr>
         <tr>
           <th className="border border-[#ccc] py-2 px-8 text-center">
-            Bottler
-          </th>
-          <td className="border border-[#ccc] py-2 px-8 text-center">
-            {bottle.bottler}
-          </td>
-        </tr>
-        <tr>
-          <th className="border border-[#ccc] py-2 px-8 text-center">
             Country
           </th>
           <td className="border border-[#ccc] py-2 px-8 text-center">

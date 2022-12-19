@@ -11,7 +11,6 @@ type Errors = {
   name?: string;
   type?: string;
   distiller?: string;
-  bottler?: string;
   producer?: string;
   country?: string;
   region?: string;
@@ -72,19 +71,6 @@ export default function BottleForm({
             emoji="🌱"
             isSubmitting={isSubmitting}
             error={errors?.distiller ?? ""}
-          />
-        </div>
-        <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <TextInput
-            type="text"
-            labelName="Bottler"
-            name="bottler"
-            value={state.bottler}
-            defaultValue={formData?.bottler}
-            changeHandler={(e) => changeHandler(e)}
-            emoji="🍾"
-            isSubmitting={isSubmitting}
-            error={errors?.bottler ?? ""}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">

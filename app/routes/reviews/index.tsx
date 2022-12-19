@@ -7,6 +7,7 @@ import { getReviewsForTable } from "~/models/review.server";
 import GridStyles from "ag-grid-community/styles/ag-grid.css";
 import AlpineTheme from "ag-grid-community/styles/ag-theme-alpine.css";
 import StatusBarStyles from "~/styles/statusBar.css";
+import DataGrid from "~/components/Review/Grid/DataGrid";
 
 export const links: LinksFunction = () => {
   return [
@@ -108,7 +109,9 @@ export default function ReviewIndexPage() {
         </p>
       )}
       {reviewListItems.length > 0 ? (
-        <>{/* <DataGrid initialData={reviewList} /> */}</>
+        <>
+          <DataGrid initialData={reviewList} />
+        </>
       ) : null}
       <div className="flex min-h-full flex-col justify-center">
         <Outlet />

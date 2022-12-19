@@ -40,7 +40,6 @@ export const action: ActionFunction = async ({ request, params }) => {
   const name = formData.get("name")?.toString();
   const type = formData.get("type")?.toString();
   const distiller = formData.get("distiller")?.toString();
-  const bottler = formData.get("bottler")?.toString();
   const producer = formData.get("producer")?.toString();
   const country = formData.get("country")?.toString();
   const region = formData.get("region")?.toString();
@@ -121,7 +120,6 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(name, `Name is required`);
   invariant(type, `Type is required`);
   invariant(distiller, `Distiller is required`);
-  invariant(bottler, `Bottler is required`);
   invariant(producer, `Producer is required`);
   invariant(country, `Country is required`);
   invariant(region, `Region is required`);
@@ -266,10 +264,11 @@ export const action: ActionFunction = async ({ request, params }) => {
   );
   const newBottle = await editBottle({
     id: bottleId,
+    status: "OPENED",
+    userId,
     name,
     type,
     distiller,
-    bottler,
     producer,
     country,
     region,
@@ -286,7 +285,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (!newBottle || !newReview) {
     return new Error(`ERROR UPDATING REVIEW`);
   }
-  return redirect(`/reviews/${newReview.id}`);
+  return redirect(`/reviews/${newReview.id}/comments`);
 };
 
 export default function EditReviewRoute() {
@@ -324,12 +323,6 @@ export default function EditReviewRoute() {
         />
         <EditInput
           type="text"
-          labelName="Bottler"
-          name="bottler"
-          defaultValue={data ? data?.bottle.bottler : ""}
-        />
-        <EditInput
-          type="text"
           labelName="Producer"
           name="producer"
           defaultValue={data ? data?.bottle.producer : ""}
@@ -339,12 +332,6 @@ export default function EditReviewRoute() {
           labelName="Country of Origin"
           name="country"
           defaultValue={data ? data?.bottle.country : ""}
-        />
-        <EditInput
-          type="text"
-          labelName="Region"
-          name="region"
-          defaultValue={data ? data?.bottle.bottler : ""}
         />
         <EditInput
           type="text"
