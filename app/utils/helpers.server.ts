@@ -59,10 +59,11 @@ export type SavedRedisData = { redisId: string } & (
 
 export interface CustomFormData {
   redisId: string;
+  status: string;
+  userId: string;
   name: string;
   type: string;
   distiller: string;
-  bottler: string;
   producer: string;
   country: string;
   region: string;
@@ -133,11 +134,12 @@ export interface CustomFormData {
 
 export type BottleInfoFormData = Pick<
   CustomFormData,
+  | "userId"
+  | "status"
   | "name"
   | "type"
   | "distiller"
   | "producer"
-  | "bottler"
   | "country"
   | "region"
   | "price"

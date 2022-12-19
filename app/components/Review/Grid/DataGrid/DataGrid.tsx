@@ -8,7 +8,6 @@ import type {
   FirstDataRenderedEvent,
   GridReadyEvent,
   GridSizeChangedEvent,
-  StatusPanelDef,
   ValueGetterParams,
 } from "ag-grid-community";
 import ImageRenderer from "../ImageRenderer/ImageRenderer";
@@ -17,7 +16,7 @@ import LinkRenderer from "../LinkRenderer/LinkRenderer";
 import NoRowsOverlay from "../NoRowsOverlay/NoRowsOverlay";
 import NameTooltip from "../NameTooltip/NameTooltip";
 import PriceRenderer from "../PriceRenderer/PriceRenderer";
-import ABVRenderer from "~/components/DataGrid/ABVRenderer/ABVRenderer";
+import ABVRenderer from "~/components/Review/Grid/ABVRenderer/ABVRenderer";
 import ProofRenderer from "../ProofRenderer/ProofRenderer";
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
 

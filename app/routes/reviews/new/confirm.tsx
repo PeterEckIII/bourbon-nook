@@ -13,7 +13,7 @@ import type {
 import { redirect, json } from "@remix-run/server-runtime";
 import { createReview } from "~/models/review.server";
 import { createBottle } from "~/models/bottle.server";
-import { getUser } from "~/session.server";
+import { getUser, requireUserId } from "~/session.server";
 import type { ContextType } from "../new";
 import {
   deleteFormData,
@@ -42,8 +42,8 @@ interface ActionData {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  const user = await getUser(request);
-  if (user === null || typeof user.id !== "string") {
+  const userId = await requireUserId(request);
+  if (userId === null) {
     return json<ActionData>({
       error: "You must be signed in to submit a review",
     });
@@ -70,11 +70,12 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const newBottle = await createBottle({
+    userId,
+    status: "OPENED",
     id: bottleId,
     name: customFormData.name,
     type: customFormData.type,
     distiller: customFormData.distiller,
-    bottler: customFormData.bottler,
     producer: customFormData.producer,
     country: customFormData.country,
     region: customFormData.region,
@@ -101,7 +102,7 @@ export const action: ActionFunction = async ({ request }) => {
   const newReview = await createReview({
     id: reviewId,
     bottleId: newBottle.id,
-    userId: user.id,
+    userId,
     createdAt: today,
     updatedAt: today,
     date: customFormData.date as string,
@@ -165,7 +166,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   await deleteFormData(redisId);
-  return redirect(`/reviews/${newReview.id}`);
+  return redirect(`/reviews/${newReview.id}/comments`);
 };
 
 export const loader: LoaderFunction = async ({ request }) => {

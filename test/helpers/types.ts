@@ -66,7 +66,6 @@ export interface Bottle {
   id: string;
   name: string;
   type: string;
-  bottler: string;
   distiller: string;
   producer: string;
   country: string;
