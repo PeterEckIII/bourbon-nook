@@ -41,10 +41,11 @@ async function seed() {
 
   const eagleRare = await prisma.bottle.create({
     data: {
+      userId: user.id,
+      status: "OPENED",
       name: "Eagle Rare",
       type: "Bourbon",
       distiller: "Buffalo Trace",
-      bottler: "Buffalo Trace",
       producer: "Sazerac",
       year: "2022",
       batch: "N/A",
@@ -62,10 +63,11 @@ async function seed() {
 
   const staggJr16 = await prisma.bottle.create({
     data: {
+      userId: user.id,
+      status: "OPENED",
       name: "Stagg Jr.",
       type: "Bourbon",
       distiller: "Buffalo Trace",
-      bottler: "Buffalo Trace",
       producer: "Sazerac",
       year: "2021",
       batch: "16",

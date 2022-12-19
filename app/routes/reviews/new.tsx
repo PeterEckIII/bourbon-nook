@@ -6,7 +6,6 @@ export type FormState = {
   name: string;
   type: string;
   distiller: string;
-  bottler: string;
   producer: string;
   country: string;
   region: string;
@@ -86,7 +85,6 @@ const initialState: FormState = {
   name: "",
   type: "",
   distiller: "",
-  bottler: "",
   producer: "",
   country: "",
   region: "",

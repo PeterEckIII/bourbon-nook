@@ -1,4 +1,4 @@
-import type { bottle } from "@prisma/client";
+import type { bottle, user } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
@@ -17,11 +17,41 @@ export const getBottleListItems = async () => {
   });
 };
 
+export const getBottlesForUser = async (userId: user["id"]) => {
+  return prisma.bottle.findMany({
+    where: { userId },
+    select: {
+      status: true,
+      name: true,
+      type: true,
+      distiller: true,
+      producer: true,
+      country: true,
+      region: true,
+      price: true,
+      age: true,
+      year: true,
+      batch: true,
+      alcoholPercent: true,
+      proof: true,
+      size: true,
+      color: true,
+      finishing: true,
+      reviews: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+};
+
 export const createBottle = async ({
+  userId,
+  status,
   name,
   type,
   distiller,
-  bottler,
   producer,
   country,
   region,
@@ -35,12 +65,13 @@ export const createBottle = async ({
   color,
   finishing,
 }: bottle) => {
-  return await prisma.bottle.create({
+  return prisma.bottle.create({
     data: {
+      userId,
+      status,
       name,
       type,
       distiller,
-      bottler,
       producer,
       country,
       region,
@@ -58,7 +89,7 @@ export const createBottle = async ({
 };
 
 export const editBottle = async (bottle: bottle) => {
-  return await prisma.bottle.update({
+  return prisma.bottle.update({
     where: {
       id: bottle.id,
     },
