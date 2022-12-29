@@ -6,10 +6,12 @@ import PostpendedInput from "~/components/UI/Inputs/PostpendedInput/PostpendedIn
 import React from "react";
 import { Form } from "@remix-run/react";
 import type { CustomFormData } from "~/utils/helpers.server";
+import StatusInput from "~/components/UI/Inputs/StatusInput";
 
 type Errors = {
   name?: string;
   type?: string;
+  status?: string;
   distiller?: string;
   producer?: string;
   country?: string;
@@ -25,13 +27,14 @@ type Errors = {
   finishing?: string;
   general?: string;
 };
-interface IBottleFormProps {
+interface BottleFormProps {
   state: FormState;
   changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formData: CustomFormData | null;
   formState: string;
   errors: Errors;
   isSubmitting: boolean;
+  setFormState: React.Dispatch<React.SetStateAction<FormState>> | undefined;
 }
 
 export default function BottleForm({
@@ -41,7 +44,8 @@ export default function BottleForm({
   formState,
   errors,
   isSubmitting,
-}: IBottleFormProps) {
+  setFormState,
+}: BottleFormProps) {
   return (
     <Form method="post" className="flex w-full flex-col">
       <h2>Bottle Information</h2>
@@ -58,6 +62,14 @@ export default function BottleForm({
             emoji="📛"
             isSubmitting={isSubmitting}
             error={errors?.name ?? ""}
+          />
+        </div>
+        <div className="mb-2 flex w-full px-3 md:mb-0">
+          <span className="mr-8 inline-flex items-center">Bottle Status</span>
+          <StatusInput
+            state={state}
+            loadedStatus={formData?.status ?? "CLOSED"}
+            setFormState={setFormState}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">

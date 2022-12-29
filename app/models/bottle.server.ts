@@ -37,6 +37,7 @@ export const getBottlesForUser = async (userId: user["id"]) => {
       size: true,
       color: true,
       finishing: true,
+      imageUrl: true,
       reviews: {
         select: {
           id: true,
@@ -64,6 +65,7 @@ export const createBottle = async ({
   size,
   color,
   finishing,
+  imageUrl,
 }: bottle) => {
   return prisma.bottle.create({
     data: {
@@ -84,6 +86,7 @@ export const createBottle = async ({
       size,
       color,
       finishing,
+      imageUrl,
     },
   });
 };

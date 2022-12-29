@@ -94,7 +94,6 @@ model review {
 
   // SETTING:
   date          String?
-  imageUrl      String?
   setting       String?
   glassware     String?
   restTime      String?
@@ -169,6 +168,7 @@ model bottle {
   status  BottleStatus @default(CLOSED)
   reviews review[]
 
+  imageUrl       String?
   name           String
   type           String
   distiller      String?

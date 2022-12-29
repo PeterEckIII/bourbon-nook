@@ -1,48 +1,52 @@
-import React, { useEffect } from "react";
-import type { ChangeEvent } from "react";
 import { Link, useFetcher, useTransition } from "@remix-run/react";
-import CheckIcon from "~/components/Icons/CheckIcon";
-import Spinner from "~/components/Icons/Spinner";
-import type { FormState } from "~/routes/reviews/new";
+import React, { useEffect } from "react";
 import type {
-  CustomFormData,
-  SavedRedisData,
-  CustomBottleFormData,
+  BottleFormValues,
+  ReviewFormValues,
 } from "~/utils/helpers.server";
+import CheckIcon from "../Icons/CheckIcon";
+import Spinner from "../Icons/Spinner";
 
-interface ImageFormProps {
+type FormData<T> = T extends ReviewFormValues
+  ? ReviewFormValues
+  : BottleFormValues;
+
+interface ImageFormProps<T> {
   actionData: {
-    errorMessage?: string;
+    error?: string;
     imageSrc?: string;
     publicId?: string;
   };
-  formData: CustomFormData;
+  formData: FormData<T>;
   previewUrl: string;
   confirmed: boolean;
   setConfirmed: (confirmed: boolean) => void;
-  isUploading: boolean;
-  state: FormState;
-  setFormState: React.Dispatch<React.SetStateAction<FormState>>;
-  handlePreviewChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  state: Omit<T, "redisId" | "userId">;
+  setFormState: React.Dispatch<
+    React.SetStateAction<Omit<T, "redisId" | "userId">>
+  >;
+  handlePreviewChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   redirectString: string;
 }
 
-export default function ImageForm({
+type Values = BottleFormValues | ReviewFormValues;
+
+const GenericImageForm = <T extends Values>({
   actionData,
   formData,
-  handlePreviewChange,
   previewUrl,
   confirmed,
   setConfirmed,
   state,
   setFormState,
+  handlePreviewChange,
   redirectString,
-}: ImageFormProps) {
+}: ImageFormProps<T>) => {
   const image = useFetcher();
   const transition = useTransition();
   let formState: "idle" | "error" | "submitting" = transition.submission
     ? "submitting"
-    : actionData?.errorMessage
+    : actionData?.error
     ? "error"
     : "idle";
   let isUploading = image.state === "submitting";
@@ -72,7 +76,7 @@ export default function ImageForm({
       >
         <input type="hidden" name="id" value={formData.redisId} />
         <div className="flex w-full items-center justify-center">
-          <label htmlFor="img">Upload an Image</label>
+          <label htmlFor="img">Upload an image</label>
           <input
             type="file"
             name="img"
@@ -101,29 +105,36 @@ export default function ImageForm({
         </div>
       </image.Form>
       {image.type === "done" && (
-        <div
-          id="uploadConfirmation"
-          className="border-black-100 m-4 flex items-center justify-center rounded-md p-4 text-green-700"
-        >
-          <CheckIcon />
-          <span>&nbsp;</span>Successfully uploaded!
-        </div>
+        <>
+          <div className="border-black-100 m-4 flex items-center justify-center rounded-md p-4 text-green-700">
+            <CheckIcon />
+            <span>&nbsp;</span>Successfully uploaded!
+          </div>
+          <div className="my-8 text-right">
+            <Link
+              to={redirectString}
+              className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+              id="next-button"
+              onClick={() => {
+                setFormState({
+                  ...state,
+                  imageUrl: formData.imageUrl ?? "",
+                });
+              }}
+            >
+              {formState === "submitting" ? "Loading" : "Next"}
+            </Link>
+          </div>
+        </>
       )}
-      <div className="my-8 text-right">
-        <Link
-          id="next-button"
-          className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          to={redirectString}
-          onClick={() =>
-            setFormState({
-              ...state,
-              imageUrl: formData.imageUrl ?? "",
-            })
-          }
-        >
-          {formState === "submitting" ? "Loading" : "Next"}
-        </Link>
-      </div>
+      <Link
+        to={redirectString}
+        className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+      >
+        Skip
+      </Link>
     </>
   );
-}
+};
+
+export default GenericImageForm;

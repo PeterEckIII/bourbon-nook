@@ -255,7 +255,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       value,
       userId,
       bottleId,
-      imageUrl,
       id: reviewId,
       createdAt: createdDate,
       updatedAt: today,
@@ -281,6 +280,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     size,
     color,
     finishing,
+    imageUrl,
   });
   if (!newBottle || !newReview) {
     return new Error(`ERROR UPDATING REVIEW`);
@@ -291,7 +291,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 export default function EditReviewRoute() {
   const actionData = useActionData();
   if (!actionData) console.log(`ERROR: NO ACTION DATA!`);
-  console.log(`Action Data: ${JSON.stringify(actionData, null, 2)}`);
   const data = useLoaderData<LoaderData>();
   if (!data || data === undefined) {
     throw new Error(`Error! No data for this review ID`);
@@ -427,7 +426,7 @@ export default function EditReviewRoute() {
           type="hidden"
           labelName=""
           name="imageUrl"
-          defaultValue={data ? data?.review.imageUrl : ""}
+          defaultValue={data ? data?.bottle.imageUrl : ""}
         />
         <EditInput
           labelName="Date"

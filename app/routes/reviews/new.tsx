@@ -2,8 +2,11 @@ import * as React from "react";
 import { Outlet, useCatch } from "@remix-run/react";
 import type { ErrorBoundaryComponent } from "@remix-run/server-runtime";
 
+export type Status = "CLOSED" | "OPENED" | "FINISHED";
+
 export type FormState = {
   name: string;
+  status: Status;
   type: string;
   distiller: string;
   producer: string;
@@ -73,7 +76,7 @@ export type FormState = {
   value: number;
 };
 
-export type ContextType = {
+export type ReviewContextType = {
   state: FormState;
   stateSetter?: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -83,6 +86,7 @@ export type ContextType = {
 
 const initialState: FormState = {
   name: "",
+  status: "CLOSED",
   type: "",
   distiller: "",
   producer: "",
@@ -166,7 +170,7 @@ export default function NewReviewPage() {
     });
   };
 
-  const context: ContextType = {
+  const context: ReviewContextType = {
     state: formState,
     stateSetter: handleValueChange,
     setFormState: setFormState,

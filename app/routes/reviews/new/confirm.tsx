@@ -14,7 +14,7 @@ import { redirect, json } from "@remix-run/server-runtime";
 import { createReview } from "~/models/review.server";
 import { createBottle } from "~/models/bottle.server";
 import { getUser, requireUserId } from "~/session.server";
-import type { ContextType } from "../new";
+import type { ReviewContextType } from "../new";
 import {
   deleteFormData,
   getDataFromRedis,
@@ -88,6 +88,7 @@ export const action: ActionFunction = async ({ request }) => {
     size: customFormData.size,
     color: customFormData.color,
     finishing: customFormData.finishing,
+    imageUrl: customFormData.imageUrl ?? "",
   });
   if (!newBottle) {
     return json(
@@ -106,7 +107,6 @@ export const action: ActionFunction = async ({ request }) => {
     createdAt: today,
     updatedAt: today,
     date: customFormData.date as string,
-    imageUrl: imageUrl,
     setting: customFormData.setting as string,
     glassware: customFormData.glassware as string,
     restTime: customFormData.restTime as string,
@@ -183,7 +183,7 @@ interface LoaderData {
 
 export default function NewConfirmationRoute() {
   const { formData } = useLoaderData<LoaderData>();
-  const { state } = useOutletContext<ContextType>();
+  const { state } = useOutletContext<ReviewContextType>();
   const actionData = useActionData<ActionData>();
   const transition = useTransition();
   let formState: "idle" | "error" | "submitting" = transition.submission

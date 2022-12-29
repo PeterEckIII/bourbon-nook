@@ -52,7 +52,7 @@ export default function BottleIndexPage() {
           No bottle selected. Select a bottle from your collection, or{" "}
           <Link
             prefetch="intent"
-            to="/bottles/new"
+            to="/bottles/new/image"
             className="text-blue-500 underline"
             id="create-new-bottle-link"
           >
@@ -63,7 +63,7 @@ export default function BottleIndexPage() {
         <p>
           You have no bottles in your collection. Add your first bottle{" "}
           <Link
-            to="/bottles/new"
+            to="/bottles/new/image"
             prefetch="intent"
             className="text-blue-500 underline"
             id="create-new-bottle-link"
