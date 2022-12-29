@@ -46,11 +46,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   assertNonNullable(reviewAuthor);
   const bottle = await getBottle(review.bottleId);
   assertNonNullable(bottle);
-  assertNonNullable(review.imageUrl);
+  assertNonNullable(bottle.imageUrl);
   return json<LoaderData>({
     review,
     bottle,
-    imageUrl: review.imageUrl,
+    imageUrl: bottle.imageUrl,
     user,
     reviewAuthor,
     following,

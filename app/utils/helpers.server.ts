@@ -1,6 +1,9 @@
+import * as React from "react";
 import "dotenv/config";
 import cloudinary from "cloudinary";
 import { writeAsyncIterableToWritable } from "@remix-run/node";
+import type { Status } from "~/routes/reviews/new";
+import { T } from "vitest/dist/global-e98f203b";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -54,12 +57,12 @@ export type SavedRedisData = { redisId: string } & (
   | BottleInfoFormData
   | SettingInfoFormData
   | NotesInfoFormData
-  | { imageUrl: string }
+  | { imageUrl?: string }
 );
 
 export interface CustomFormData {
   redisId: string;
-  status: string;
+  status: Status;
   userId: string;
   name: string;
   type: string;
@@ -230,3 +233,102 @@ export type RatingNotesFormData = Pick<
   CustomFormData,
   "overallRating" | "value"
 >;
+
+export type CustomBottleFormData = {
+  redisId: string;
+  status: Status;
+  userId: string;
+  name: string;
+  type: string;
+  distiller: string;
+  producer: string;
+  country: string;
+  region: string;
+  price: string;
+  age: string;
+  year: string;
+  batch: string;
+  alcoholPercent: string;
+  proof: string;
+  size: string;
+  color: string;
+  finishing: string;
+  imageUrl?: string;
+};
+
+export interface BottleFormValues {
+  redisId: string;
+  status: Status;
+  userId: string;
+  name: string;
+  type: string;
+  distiller: string;
+  producer: string;
+  country: string;
+  region: string;
+  price: string;
+  age: string;
+  year: string;
+  batch: string;
+  alcoholPercent: string;
+  proof: string;
+  size: string;
+  color: string;
+  finishing: string;
+  imageUrl?: string;
+}
+
+export interface ReviewFormValues extends BottleFormValues {
+  date?: string;
+  setting?: string;
+  glassware?: string;
+  restTime?: string;
+  nose?: string;
+  palate?: string;
+  finish?: string;
+  thoughts?: string;
+
+  cherry?: number;
+  strawberry?: number;
+  raspberry?: number;
+  blackberry?: number;
+  blueberry?: number;
+  apple?: number;
+  banana?: number;
+  grape?: number;
+  stone?: number;
+  citrus?: number;
+  tropical?: number;
+  pepper?: number;
+  bakingSpice?: number;
+  cinnamon?: number;
+  herbal?: number;
+  mint?: number;
+  coffee?: number;
+  tobacco?: number;
+  leather?: number;
+  oak?: number;
+  toasted?: number;
+  smokey?: number;
+  peanut?: number;
+  almond?: number;
+  pecan?: number;
+  walnut?: number;
+  oily?: number;
+  floral?: number;
+  corn?: number;
+  rye?: number;
+  wheat?: number;
+  malt?: number;
+  dough?: number;
+  vanilla?: number;
+  caramel?: number;
+  molasses?: number;
+  butterscotch?: number;
+  honey?: number;
+  chocolate?: number;
+  toffee?: number;
+  sugar?: number;
+  overallRating?: number;
+  value?: number;
+}

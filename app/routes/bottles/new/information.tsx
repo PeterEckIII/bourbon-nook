@@ -1,21 +1,29 @@
-import { json, redirect } from "@remix-run/server-runtime";
-import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import {
   useActionData,
   useLoaderData,
   useOutletContext,
   useTransition,
 } from "@remix-run/react";
-import type { ReviewContextType, Status } from "~/routes/reviews/new";
-import BottleForm from "~/components/Form/BottleForm/BottleForm";
-import { getDataFromRedis, saveToRedis } from "~/utils/redis.server";
-import { generateCode } from "~/utils/helpers.server";
-import type { CustomFormData } from "~/utils/helpers.server";
+import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import { redirect } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
+import { v4 as uuid } from "uuid";
+import { createBottle } from "~/models/bottle.server";
+import type { Status } from "~/routes/reviews/new";
 import { requireUserId } from "~/session.server";
+import type { BottleContextType } from "../new";
+import {
+  getDataFromRedis,
+  requireFormData,
+  saveToRedis,
+} from "~/utils/redis.server";
+import StandaloneBottleForm from "~/components/Form/StandaloneBottleForm";
+import { CustomBottleFormData, generateCode } from "~/utils/helpers.server";
 
 interface ActionData {
   name?: string;
   type?: string;
+  status?: string;
   distiller?: string;
   producer?: string;
   country?: string;
@@ -32,7 +40,7 @@ interface ActionData {
   general?: string;
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const userId = await requireUserId(request);
   const formData = await request.formData();
 
@@ -107,11 +115,12 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const formId = formData.get("id");
+  const bottleId = uuid();
+
+  const formId = formData.get("redisId");
   let id = "";
 
   if (typeof formId === "string" && formId !== "") {
-    console.log(formId);
     id = formId;
 
     const formDataObject = await getDataFromRedis(id);
@@ -120,55 +129,64 @@ export const action: ActionFunction = async ({ request }) => {
         general: "You must enable JavaScript for this form to work",
       });
     }
-
-    formDataObject.name = name;
-    formDataObject.status = status as Status;
-    formDataObject.type = type;
-    formDataObject.distiller = distiller;
-    formDataObject.producer = producer;
-    formDataObject.country = country;
-    formDataObject.region = region;
-    formDataObject.price = price;
-    formDataObject.age = age;
-    formDataObject.year = year;
-    formDataObject.batch = batch;
-    formDataObject.alcoholPercent = alcoholPercent;
-    formDataObject.proof = proof;
-    formDataObject.size = size;
-    formDataObject.color = color;
-    formDataObject.finishing = finishing;
-
-    await saveToRedis(formDataObject);
+    const imageUrl = formDataObject.imageUrl ?? "";
+    try {
+      await createBottle({
+        id: bottleId,
+        imageUrl,
+        userId,
+        status: status as Status,
+        name,
+        type,
+        distiller,
+        producer,
+        country,
+        region,
+        price,
+        age,
+        year,
+        batch,
+        alcoholPercent,
+        proof,
+        size,
+        color,
+        finishing,
+      });
+      return redirect(`/bottles/`);
+    } catch (error) {
+      throw new Error(`Could not save the bottle: ${error}`);
+    }
   } else {
-    id = generateCode(6);
-
-    const formDataObject: CustomFormData = {
-      userId,
-      status: status as Status,
-      redisId: id,
-      name,
-      type,
-      distiller,
-      producer,
-      country,
-      region,
-      price,
-      age,
-      year,
-      batch,
-      alcoholPercent,
-      proof,
-      size,
-      color,
-      finishing,
-    };
-
-    await saveToRedis(formDataObject);
+    try {
+      await createBottle({
+        id: bottleId,
+        imageUrl: "",
+        userId,
+        status: status as Status,
+        name,
+        type,
+        distiller,
+        producer,
+        country,
+        region,
+        price,
+        age,
+        year,
+        batch,
+        alcoholPercent,
+        proof,
+        size,
+        color,
+        finishing,
+      });
+      return redirect(`/bottles/`);
+    } catch (error) {
+      throw new Error(`Could not save the bottle: ${error}`);
+    }
   }
-  return redirect(`/reviews/new/addImage?id=${id}`);
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
 
@@ -181,39 +199,38 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!formData) {
     return null;
   }
-
   return formData;
 };
 
 export default function NewBottleInfoRoute() {
-  const data = useLoaderData<CustomFormData | null>();
-  const { state, stateSetter, setFormState } =
-    useOutletContext<ReviewContextType>();
+  const loaderData = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+  const { state, stateSetter, setFormState } =
+    useOutletContext<BottleContextType>();
+
   const transition = useTransition();
+
   let formState: "idle" | "error" | "submitting" = transition.submission
     ? "submitting"
-    : actionData?.error
+    : actionData
     ? "error"
     : "idle";
 
   if (state === undefined || !stateSetter) {
-    throw new Error(`Error with the Outlet Context`);
+    throw new Error(`Error with Outlet Context`);
   }
 
   const errors = actionData || {};
 
   return (
-    <div>
-      <BottleForm
-        formData={data}
-        state={state}
-        changeHandler={stateSetter}
-        formState={formState}
-        errors={errors}
-        isSubmitting={transition.state === "submitting"}
-        setFormState={setFormState}
-      />
-    </div>
+    <StandaloneBottleForm
+      formData={loaderData}
+      state={state}
+      changeHandler={stateSetter}
+      formState={formState}
+      errors={errors}
+      isSubmitting={transition.state === "submitting"}
+      setFormState={setFormState}
+    />
   );
 }
