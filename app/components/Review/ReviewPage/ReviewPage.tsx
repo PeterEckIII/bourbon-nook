@@ -64,10 +64,10 @@ export default function ReviewPage({
               following={following}
             />
           ) : null}
-          {review.imageUrl && (
+          {bottle.imageUrl && (
             <div className="mb-2">
               <div className="flex h-[400px] w-[300px]">
-                <img src={review.imageUrl} alt={`Bottle of ${bottle.name}`} />
+                <img src={bottle.imageUrl} alt={`Bottle of ${bottle.name}`} />
               </div>
             </div>
           )}

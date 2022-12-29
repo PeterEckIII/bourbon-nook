@@ -1,11 +1,29 @@
 import * as React from "react";
 import { Outlet, useCatch } from "@remix-run/react";
-import type { BottleInfoFormData } from "~/utils/helpers.server";
 import type { ErrorBoundaryComponent } from "@remix-run/server-runtime";
+import type { Status } from "../reviews/new";
 
-type FormState = BottleInfoFormData;
+export type FormState = {
+  name: string;
+  status: Status;
+  type: string;
+  distiller: string;
+  producer: string;
+  country: string;
+  region: string;
+  price: string;
+  age: string;
+  year: string;
+  batch: string;
+  alcoholPercent: string;
+  proof: string;
+  size: string;
+  color: string;
+  finishing: string;
+  imageUrl?: string;
+};
 
-export type ContextType = {
+export type BottleContextType = {
   state: FormState;
   stateSetter?: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -15,6 +33,7 @@ export type ContextType = {
 
 const initialState: FormState = {
   name: "",
+  status: "CLOSED",
   type: "",
   distiller: "",
   producer: "",
@@ -29,8 +48,6 @@ const initialState: FormState = {
   size: "",
   color: "",
   finishing: "",
-  userId: "",
-  status: "CLOSED",
 };
 
 export default function NewBottleRoute() {
@@ -48,7 +65,7 @@ export default function NewBottleRoute() {
     });
   };
 
-  const context: ContextType = {
+  const context: BottleContextType = {
     state: formState,
     stateSetter: handleValueChange,
     setFormState: setFormState,

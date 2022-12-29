@@ -47,7 +47,6 @@ export const getReviewsForTable = async ({
     select: {
       date: true,
       id: true,
-      imageUrl: true,
       overallRating: true,
       value: true,
       bottle: {
@@ -60,6 +59,7 @@ export const getReviewsForTable = async ({
           alcoholPercent: true,
           age: true,
           price: true,
+          imageUrl: true,
         },
       },
     },
@@ -71,7 +71,6 @@ export const getReviewsForTable = async ({
 export const createReview = async ({
   bottleId,
   date,
-  imageUrl,
   setting,
   glassware,
   restTime,
@@ -128,7 +127,6 @@ export const createReview = async ({
     data: {
       bottleId,
       date,
-      imageUrl,
       setting,
       glassware,
       restTime,

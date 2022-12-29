@@ -1,5 +1,5 @@
 import { Form, useOutletContext } from "@remix-run/react";
-import type { ContextType } from "~/routes/reviews/new";
+import type { ReviewContextType } from "~/routes/reviews/new";
 import EarthNotes from "~/components/Notes/EarthNotes/EarthNotes";
 import FruitNotes from "~/components/Notes/FruitNotes/FruitNotes";
 import Button from "../../UI/Button";
@@ -15,7 +15,7 @@ interface INoteFormProps {
 }
 
 export default function NotesForm({ formData, formState }: INoteFormProps) {
-  const { state, stateSetter } = useOutletContext<ContextType>();
+  const { state, stateSetter } = useOutletContext<ReviewContextType>();
 
   if (state === undefined || !stateSetter) {
     throw new Error(`Error with Outlet context!`);

@@ -19,7 +19,7 @@ import {
 } from "@remix-run/react";
 import { useState } from "react";
 
-import type { ContextType } from "../new";
+import type { ReviewContextType } from "../new";
 import {
   getDataFromRedis,
   requireFormData,
