@@ -15,6 +15,7 @@ type Errors = {
   palate?: string;
   finish?: string;
   thoughts?: string;
+  general?: string;
 };
 interface ISettingFormProps {
   state: FormState;

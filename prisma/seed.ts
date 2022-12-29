@@ -58,6 +58,7 @@ async function seed() {
       size: "750ml",
       color: "amber",
       finishing: "None",
+      imageUrl: "",
     },
   });
 
@@ -80,6 +81,7 @@ async function seed() {
       size: "750ml",
       color: "mahogany",
       finishing: "None",
+      imageUrl: "",
     },
   });
 
@@ -141,7 +143,6 @@ async function seed() {
       value: 6.5,
       overallRating: 6.0,
       userId: user.id,
-      imageUrl: "",
     },
   });
 
@@ -203,7 +204,6 @@ async function seed() {
       overallRating: 9.5,
       value: 10.0,
       userId: user.id,
-      imageUrl: "",
     },
   });
 

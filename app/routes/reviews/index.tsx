@@ -76,7 +76,7 @@ export default function ReviewIndexPage() {
       rating: review.overallRating,
       value: review.value,
       alcoholPercent: review.bottle.alcoholPercent,
-      imageUrl: review.imageUrl,
+      imageUrl: review.bottle.imageUrl,
       reviewId: `${review.id}`,
     };
   });

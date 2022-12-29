@@ -10,7 +10,7 @@ import {
   LoaderFunction,
 } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import type { ContextType } from "~/routes/reviews/new";
+import type { ReviewContextType } from "~/routes/reviews/new";
 import NotesForm from "~/components/Form/NotesForm/NotesForm";
 import {
   getDataFromRedis,
@@ -195,7 +195,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function NewNotesRoute() {
   const formData = useLoaderData<CustomFormData>();
-  const { state, stateSetter } = useOutletContext<ContextType>();
+  const { state, stateSetter } = useOutletContext<ReviewContextType>();
   const actionData = useActionData<ActionData>();
   const transition = useTransition();
   let formState: "idle" | "error" | "submitting" = transition.submission
