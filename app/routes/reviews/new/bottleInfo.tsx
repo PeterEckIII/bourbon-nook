@@ -12,6 +12,31 @@ import { getDataFromRedis, saveToRedis } from "~/utils/redis.server";
 import { generateCode } from "~/utils/helpers.server";
 import type { CustomFormData } from "~/utils/helpers.server";
 import { requireUserId } from "~/session.server";
+import type { LoaderData } from "~/routes/services/combo";
+import { useTypedFetcher } from "remix-typedjson/dist/remix";
+import type { BottleStatus } from "@prisma/client";
+import { ComboProvider } from "~/utils/useCombobox";
+
+export type ComboLoadedData = {
+  id: string;
+  name: string;
+  status: BottleStatus;
+  type: string;
+  distiller: string | null;
+  producer: string | null;
+  country: string | null;
+  region: string | null;
+  price: string | null;
+  age: string | null;
+  year: string | null;
+  batch: string | null;
+  alcoholPercent: string | null;
+  proof: string | null;
+  size: string | null;
+  color: string | null;
+  finishing: string | null;
+  imageUrl: string | null;
+};
 
 interface ActionData {
   name?: string;
@@ -36,7 +61,7 @@ export const action: ActionFunction = async ({ request }) => {
   const userId = await requireUserId(request);
   const formData = await request.formData();
 
-  const name = formData.get("name")?.toString();
+  const name = formData.get("name[name]")?.toString();
   const status = formData.get("status")?.toString();
   const type = formData.get("type")?.toString();
   const distiller = formData.get("distiller")?.toString();
@@ -186,7 +211,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function NewBottleInfoRoute() {
-  const data = useLoaderData<CustomFormData | null>();
+  const data = useLoaderData<CustomFormData>();
   const { state, stateSetter, setFormState } =
     useOutletContext<ReviewContextType>();
   const actionData = useActionData<typeof action>();
