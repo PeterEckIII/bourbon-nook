@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useBeforeUnload } from "@remix-run/react";
 import ValidationMessage from "../../ValidationMessage";
 
-interface ITextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   labelName: string;
   name: string;
@@ -22,7 +22,8 @@ export default function TextInput({
   changeHandler,
   error,
   isSubmitting,
-}: ITextInputProps) {
+  defaultValue,
+}: TextInputProps) {
   useBeforeUnload(
     useCallback(() => {
       localStorage.setItem(name, value);
@@ -48,6 +49,7 @@ export default function TextInput({
           id={name}
           type={type}
           value={value}
+          defaultValue={defaultValue}
           onChange={changeHandler}
           onBlur={() => handleBlur(name, value)}
           className={

@@ -1,6 +1,18 @@
 import { assertNonNullable } from "~/utils/helpers.server";
 import type { user, review } from "@prisma/client";
 import { prisma } from "~/db.server";
+import { ErrorBase } from "~/utils/ErrorBase";
+
+type ErrorName =
+  | "GET_REVIEW_ERROR"
+  | "GET_REVIEW_BY_ID_ERROR"
+  | "GET_REVIEW_LIST_ITEMS_ERROR"
+  | "GET_REVIEWS_FOR_TABLE_ERROR"
+  | "CREATE_REVIEW_ERROR"
+  | "EDIT_REVIEW_ERROR"
+  | "DELETE_REVIEW_ERROR";
+
+export class ReviewError extends ErrorBase<ErrorName> {}
 
 export type { review } from "@prisma/client";
 

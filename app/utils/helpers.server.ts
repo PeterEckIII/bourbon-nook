@@ -4,6 +4,7 @@ import cloudinary from "cloudinary";
 import { writeAsyncIterableToWritable } from "@remix-run/node";
 import type { Status } from "~/routes/reviews/new";
 import { T } from "vitest/dist/global-e98f203b";
+import { FetcherWithComponents, useFetcher } from "@remix-run/react";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -52,6 +53,12 @@ export const generateCode = (length: number): string => {
   }
   return result;
 };
+
+export function useFetcherNoSerialize<
+  TData = any
+>(): FetcherWithComponents<TData> {
+  return useFetcher<TData>() as FetcherWithComponents<TData>;
+}
 
 export type SavedRedisData = { redisId: string } & (
   | BottleInfoFormData

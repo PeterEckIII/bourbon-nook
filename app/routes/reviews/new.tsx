@@ -198,7 +198,7 @@ export function CatchBoundary() {
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   return (
-    <div>
+    <div className="m-4 flex flex-col justify-center">
       <h1>Error!</h1>
       <p>{error.message}</p>
       <p>The stack trace is:</p>
