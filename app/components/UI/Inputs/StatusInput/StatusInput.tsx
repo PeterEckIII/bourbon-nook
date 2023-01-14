@@ -1,13 +1,13 @@
 import { useBeforeUnload } from "@remix-run/react";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import RadioInput from "../RadioInput";
 import type { Status } from "~/routes/reviews/new";
 
-type StatusInputProps = {
+interface StatusInputProps extends React.HTMLAttributes<HTMLSelectElement> {
   loadedStatus: Status;
   state: any;
   setFormState: React.Dispatch<React.SetStateAction<any>> | undefined;
-};
+}
 
 const StatusInput = ({
   loadedStatus,
