@@ -27,6 +27,7 @@ export default function Grid({ initialData }: any) {
       cellStyle: { display: "flex", alignItems: "center" },
       filter: "agTextColumnFilter",
       lockPosition: "left",
+      pinned: "left",
       filterParams: {
         buttons: ["apply", "reset"],
         closeOnApply: true,
@@ -243,10 +244,11 @@ export default function Grid({ initialData }: any) {
   }, [initialData]);
 
   return (
-    <div className="w-full">
-      <section id="bottle-grid-wrapper">
-        <div className="flex">
-          <div className="my-4 w-3/4 p-4">
+    <div className="mt-4 w-full rounded-lg bg-white px-4 pt-2 pb-8">
+      <section id="bottle-grid-wrapper" className="mb-2">
+        <div className="flex flex-col">
+          <h3 className="text-xl font-bold text-blue-700">My Collection</h3>
+          <div className="my-4 w-3/4 p-4 pl-0">
             <input
               type="text"
               onInput={onFilterTextBoxChanged}
@@ -254,26 +256,26 @@ export default function Grid({ initialData }: any) {
               placeholder={`Filter ${records} ${
                 records === 0 || records > 1 ? `records` : `record`
               }`}
-              className="w-full rounded-md sm:w-[50%] md:w-[40%] lg:w-[25%]"
+              className="w-full rounded-md border-2 border-blue-300 p-2 outline-blue-900 sm:w-[50%] md:w-[40%] lg:w-[25%]"
             />
           </div>
         </div>
+        <div className="ag-theme-alpine" style={gridStyle}>
+          <AgGridReact
+            columnDefs={columnDefs}
+            rowData={rowData}
+            ref={grid}
+            defaultColDef={defaultColDef}
+            onFirstDataRendered={onFirstDataRendered}
+            onGridReady={onGridReady}
+            animateRows={true}
+            rowSelection="multiple"
+            rowHeight={70}
+            rowModelType="clientSide"
+            suppressMenuHide={true}
+          />
+        </div>
       </section>
-      <div className="ag-theme-alpine" style={gridStyle}>
-        <AgGridReact
-          columnDefs={columnDefs}
-          rowData={rowData}
-          ref={grid}
-          defaultColDef={defaultColDef}
-          onFirstDataRendered={onFirstDataRendered}
-          onGridReady={onGridReady}
-          animateRows={true}
-          rowSelection="multiple"
-          rowHeight={70}
-          rowModelType="clientSide"
-          suppressMenuHide={true}
-        />
-      </div>
     </div>
   );
 }

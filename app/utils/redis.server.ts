@@ -1,3 +1,4 @@
+import { assertNonNullable } from "~/utils/helpers.server";
 import * as dotenv from "dotenv";
 import * as redis from "redis";
 import type { CustomFormData, SavedRedisData } from "./helpers.server";
@@ -37,20 +38,42 @@ export const requireFormData = async (
 ): Promise<SavedRedisData | CustomFormData> => {
   // Get ID from search params
   const url = new URL(request.url);
-  const id = url.searchParams.get("id");
 
-  if (typeof id !== "string" || !id) {
-    throw Error("Issue getting id");
+  try {
+    const id = url.searchParams.get("id");
+    assertNonNullable(id);
+
+    // Get cached form data from Redis
+    const formData = await getDataFromRedis(id);
+
+    if (!formData) {
+      throw Error("No Data Found");
+    }
+
+    return formData;
+  } catch (error) {
+    return {
+      redisId: "",
+      status: "CLOSED",
+      userId: "",
+      name: "",
+      type: "",
+      distiller: "",
+      producer: "",
+      country: "",
+      region: "",
+      price: "",
+      age: "",
+      year: "",
+      batch: "",
+      alcoholPercent: "",
+      proof: "",
+      size: "",
+      color: "",
+      finishing: "",
+      imageUrl: "",
+    };
   }
-
-  // Get cached form data from Redis
-  const formData = await getDataFromRedis(id);
-
-  if (!formData) {
-    throw Error("No Data Found");
-  }
-
-  return formData;
 };
 
 export const pollForKeys = async () => {

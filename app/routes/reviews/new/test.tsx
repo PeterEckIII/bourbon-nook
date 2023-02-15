@@ -1,108 +1,97 @@
-import type {
-  LoaderFunction,
-  ActionFunction,
-  UploadHandler,
-} from "@remix-run/server-runtime";
-import {
-  json,
-  redirect,
-  unstable_composeUploadHandlers as composeUploadHandlers,
-  unstable_createMemoryUploadHandler as createMemoryUploadHandler,
-  unstable_parseMultipartFormData as parseMultipartFormData,
-} from "@remix-run/server-runtime";
-import {
-  Form,
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useOutletContext,
-} from "@remix-run/react";
-import { useState } from "react";
-
-import type { ReviewContextType } from "../new";
-import {
-  getDataFromRedis,
-  requireFormData,
-  saveToRedis,
-} from "~/utils/redis.server";
-import invariant from "tiny-invariant";
-import type { CustomFormData } from "~/utils/helpers.server";
-import { uploadImage } from "~/utils/helpers.server";
-import { requireUserId } from "~/session.server";
+import { json, redirect } from "@remix-run/server-runtime";
+import type { ActionArgs } from "@remix-run/server-runtime";
 import type { UploadApiResponse } from "cloudinary";
+import { randomUUID } from "crypto";
+import { requireUserId } from "~/session.server";
+import { upload } from "~/utils/cloudinary.server";
+import invariant from "tiny-invariant";
 
-type ActionData = {
-  errorMsg?: string;
-  imgSrc?: string;
-};
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
+  const redirectIfLoggedOut = new URL(request.url);
   const userId = await requireUserId(request);
-  if (typeof userId === "undefined" || userId === undefined) {
-    redirect("/login");
+  invariant(userId, "No user in session");
+  if (!userId || typeof userId === "undefined") {
+    redirect(`/login?redirectTo=${redirectIfLoggedOut}`);
   }
 
-  let uploadedImage: UploadApiResponse;
+  const formData = await request.formData();
 
-  const uploadHandler: UploadHandler = composeUploadHandlers(
-    async ({ name, contentType, data, filename }) => {
-      if (name !== "img") {
-        return undefined;
-      }
-      uploadedImage = (await uploadImage({
-        data,
-        userId,
-      })) as UploadApiResponse;
-      return uploadedImage.secure_url;
-    },
-    createMemoryUploadHandler()
-  );
+  const name = formData.get("name")?.toString();
+  const status = formData.get("status")?.toString();
+  const type = formData.get("type")?.toString();
+  const distiller = formData.get("distiller")?.toString();
+  const producer = formData.get("producer")?.toString();
+  const country = formData.get("country")?.toString();
+  const region = formData.get("region")?.toString();
+  const price = formData.get("price")?.toString();
+  const age = formData.get("age")?.toString();
+  const year = formData.get("year")?.toString();
+  const batch = formData.get("batch")?.toString();
+  const alcoholPercent = formData.get("alcoholPercent")?.toString();
+  const proof = formData.get("proof")?.toString();
+  const size = formData.get("size")?.toString();
+  const color = formData.get("color")?.toString();
+  const finishing = formData.get("finishing")?.toString();
 
-  const formData = await parseMultipartFormData(request, uploadHandler);
-  const imgSrc = formData.get("img");
-  console.log(`ImgSrc: ${imgSrc}`);
+  const errors = {
+    name: name ? undefined : "Name is required",
+    status:
+      status && ["CLOSED", "OPENED", "FINISHED"].indexOf(status) > -1
+        ? undefined
+        : "Status must be one of 'OPENED', 'CLOSED', or 'FINISHED'",
+    type: type ? undefined : "Type is required",
+    distiller: distiller ? undefined : "Distiller is required",
+    producer: producer ? undefined : "Producer is required",
+    country: country ? undefined : "Country is required",
+    region: region ? undefined : "Region is required",
+    price: price ? undefined : "Price is required",
+    age: age ? undefined : "Age is required",
+    year: year ? undefined : "Year is required",
+    batch: batch
+      ? undefined
+      : "Batch is required. Please put 'N/A' if no batch",
+    alcoholPercent: alcoholPercent ? undefined : "Alcohol Percent is required",
+    proof: proof ? undefined : "Proof is required",
+    size: size ? undefined : "Size is required",
+    color: color ? undefined : "Color is required",
+    finishing: finishing
+      ? undefined
+      : "Finishing is required. Please put 'None' if no finish",
+  };
+  const hasErrors = Object.values(errors).some((errorMessage) => errorMessage);
 
-  if (typeof imgSrc === "undefined" || !imgSrc) {
-    return json<ActionData>({
-      errorMsg: "No image source in the document",
-    });
+  if (hasErrors) {
+    return json(errors);
   }
 
-  const id = formData.get("id")?.toString();
-  if (typeof id === "undefined" || !id) {
-    return json<ActionData>({ errorMsg: "Cloudinary upload failed" });
+  if (
+    typeof name !== "string" ||
+    typeof status !== "string" ||
+    typeof type !== "string" ||
+    typeof distiller !== "string" ||
+    typeof producer !== "string" ||
+    typeof country !== "string" ||
+    typeof region !== "string" ||
+    typeof price !== "string" ||
+    typeof age !== "string" ||
+    typeof year !== "string" ||
+    typeof batch !== "string" ||
+    typeof alcoholPercent !== "string" ||
+    typeof proof !== "string" ||
+    typeof size !== "string" ||
+    typeof color !== "string" ||
+    typeof finishing !== "string"
+  ) {
+    throw new Error(
+      `Invalid input. Please only use letters, numbers, and symbols`
+    );
   }
-
-  const formDataObject = await getDataFromRedis(id);
-  if (!formDataObject) {
-    return json<ActionData>({
-      errorMsg:
-        "You must enable JavaScript if you want to use the forward and back buttons",
-    });
-  }
-
-  // TODO: SET IMAGE_URL TO NEWLY UPLOADED IMAGE
-  // This will allow us to bypass the cloudinary transform API
-
-  return json({ imgSrc });
 };
 
-export default function Test() {
-  const data = useActionData<ActionData>();
+export default function TestRoute() {
   return (
-    <>
-      <Form method="post" encType="multipart/form-data">
-        <label htmlFor="img">Upload an image</label>
-        <input type="file" name="img" id="img" accept="image/*" />
-        <button type="submit">Upload to your account</button>
-      </Form>
-      {data?.errorMsg && <h2>{data.errorMsg}</h2>}
-      {data?.imgSrc && (
-        <>
-          <h2>Uploaded image</h2>
-          <img src={data.imgSrc} alt="upload result" />
-        </>
-      )}
-    </>
+    <div>
+      <p>Hello World!</p>
+    </div>
   );
 }

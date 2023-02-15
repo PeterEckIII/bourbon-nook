@@ -7,12 +7,47 @@ type BottleDetailProps = {
 export default function BottleDetails({ bottle }: BottleDetailProps) {
   return (
     <div className="">
-      <h5 className="mb-4 text-left text-2xl">Bottle</h5>
-      <table className="border-collapse border-2 border-gray-300">
+      <table className="mb-4 border-collapse border-2 border-gray-300">
         <tr>
           <th className="border border-[#ccc] py-2 px-8 text-center">Type</th>
           <td className="border border-[#ccc] py-2 px-8 text-center">
             {bottle.type}
+          </td>
+        </tr>
+        <tr>
+          <th className="border border-[#ccc] py-2 px-8 text-center">
+            Distiller
+          </th>
+          <td className="border border-[#ccc] py-2 px-8 text-center">
+            {bottle.distiller}
+          </td>
+        </tr>
+        <tr>
+          <th className="border border-[#ccc] py-2 px-8 text-center">
+            Producer
+          </th>
+          <td className="border border-[#ccc] py-2 px-8 text-center">
+            {bottle.producer}
+          </td>
+        </tr>
+        <tr>
+          <th className="border border-[#ccc] py-2 px-8 text-center">
+            Country
+          </th>
+          <td className="border border-[#ccc] py-2 px-8 text-center">
+            {bottle.country}
+          </td>
+        </tr>
+        <tr>
+          <th className="border border-[#ccc] py-2 px-8 text-center">Region</th>
+          <td className="border border-[#ccc] py-2 px-8 text-center">
+            {bottle.region}
+          </td>
+        </tr>
+        <tr>
+          <th className="border border-[#ccc] py-2 px-8 text-center">Color</th>
+          <td className="border border-[#ccc] py-2 px-8 text-center">
+            {bottle.color}
           </td>
         </tr>
         <tr>
@@ -53,32 +88,10 @@ export default function BottleDetails({ bottle }: BottleDetailProps) {
         </tr>
         <tr>
           <th className="border border-[#ccc] py-2 px-8 text-center">
-            Distiller
+            Finishing
           </th>
           <td className="border border-[#ccc] py-2 px-8 text-center">
-            {bottle.distiller}
-          </td>
-        </tr>
-        <tr>
-          <th className="border border-[#ccc] py-2 px-8 text-center">
-            Producer
-          </th>
-          <td className="border border-[#ccc] py-2 px-8 text-center">
-            {bottle.producer}
-          </td>
-        </tr>
-        <tr>
-          <th className="border border-[#ccc] py-2 px-8 text-center">
-            Country
-          </th>
-          <td className="border border-[#ccc] py-2 px-8 text-center">
-            {bottle.country}
-          </td>
-        </tr>
-        <tr>
-          <th className="border border-[#ccc] py-2 px-8 text-center">Region</th>
-          <td className="border border-[#ccc] py-2 px-8 text-center">
-            {bottle.region}
+            {bottle.finishing}
           </td>
         </tr>
       </table>

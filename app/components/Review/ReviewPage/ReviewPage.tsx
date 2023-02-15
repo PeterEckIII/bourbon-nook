@@ -44,17 +44,22 @@ export default function ReviewPage({
 
   return (
     // CONTAINER
-    <div className="my-2 flex flex-col">
+    <div className="my-2 flex flex-col p-2">
       <div className="flex flex-col">
-        <div className="flex flex-col">
-          <h1 className="mb-4 text-left text-2xl">
+        {/* META INFO */}
+        <div className="mb-4 flex flex-col rounded-md bg-white p-2 shadow-lg shadow-blue-700">
+          <h1 className="mb-8 text-left text-2xl font-semibold">
             {bottle.name}{" "}
             {bottle.batch !== "None" && bottle.batch !== "N/A"
               ? bottle.batch
               : ""}{" "}
           </h1>
-          <p className="mb-4 text-left">{review.date}</p>
-          <h6>Reviewed by: {author.email}</h6>{" "}
+          <p className="mb-8 text-left text-xl">
+            <span className="font-bold">Reviewed on</span>: {review.date}
+          </p>
+          <h6 className="text-xl">
+            <span className="font-bold">Reviewed by</span>: {author.email}
+          </h6>{" "}
           {user.id !== review.userId ? (
             <FollowForm
               CustomForm={follow.Form}
@@ -64,18 +69,28 @@ export default function ReviewPage({
               following={following}
             />
           ) : null}
-          {bottle.imageUrl && (
-            <div className="mb-2">
-              <div className="flex h-[400px] w-[300px]">
-                <img src={bottle.imageUrl} alt={`Bottle of ${bottle.name}`} />
-              </div>
-            </div>
-          )}
         </div>
-        <BottleDetails bottle={bottle} />
-        <SettingDetails bottle={bottle} review={review} />
-        <WrittenNotes review={review} />
+        {/* BOTTLE */}
+        <div className="mb-4 rounded-md bg-white p-2 shadow-lg shadow-blue-700">
+          <h5 className="mb-8 px-2 py-4 text-left text-3xl">Bottle</h5>
+          <div className="flex">
+            {bottle.imageUrl && (
+              <div className="w-[300px]">
+                <div className="flex h-[500px] w-[400px]">
+                  <img src={bottle.imageUrl} alt={`Bottle of ${bottle.name}`} />
+                </div>
+              </div>
+            )}
+            <BottleDetails bottle={bottle} />
+          </div>
+        </div>
+        <div className="shadow-blue-700p-2 mb-4 flex flex-col rounded-md bg-white p-2 shadow-lg">
+          <h5 className="mb-8 px-2 py-4 text-left text-3xl">Review</h5>
+          <SettingDetails review={review} />
+          <WrittenNotes review={review} />
+        </div>
       </div>
+
       <div className="mt-4 flex">
         <NoteTabs
           fruit={{
@@ -141,12 +156,12 @@ export default function ReviewPage({
             <button
               id="edit-button"
               onClick={handleEditClick}
-              className="my-4 rounded bg-blue-500 py-2 px-6 text-white hover:bg-blue-700 focus:bg-blue-400"
+              className="my-4 rounded bg-white py-2 px-6 text-blue-700 hover:bg-gray-300 focus:bg-gray-300"
             >
               <EditIcon /> Edit
             </button>
           </div>
-          <Form method="post" className="m-1 inline text-right">
+          <Form method="post" className="m-1 inline text-right shadow">
             <input type="hidden" name="_deleted" value="_deleted" />
             <button
               id="delete-button"
