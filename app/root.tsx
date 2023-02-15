@@ -78,26 +78,16 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
-        <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
-          <h1 className="text-3xl font-bold">
-            <Link to="/" className="flex items-center text-white">
-              <div className="flex">
-                <Glencairn />
-                <div className="text-center font-['Satisfy'] text-2xl leading-7">
-                  THE
-                  <br />
-                  BOURBON
-                  <br />
-                  NOOK
-                </div>
-              </div>
-            </Link>
-          </h1>
-          <p className="font-['Courgette'] text-xl">{user?.email ?? ""}</p>
-          <Menu opened={opened} setOpened={setOpened} />
+      <body className={opened ? "bg-gray-700" : "bg-blue-500"}>
+        <header>
+          <Menu opened={opened} setOpened={setOpened} user={user} />
         </header>
-        <div id="root">
+        <div
+          id="root"
+          className={`${
+            opened ? "opacity-20 transition-opacity ease-in-out" : ""
+          }`}
+        >
           <Outlet />
           <LiveReload />
           <ScrollRestoration />

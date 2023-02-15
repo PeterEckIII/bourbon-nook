@@ -1,16 +1,12 @@
-import * as React from "react";
-import "dotenv/config";
-import cloudinary from "cloudinary";
-import { writeAsyncIterableToWritable } from "@remix-run/node";
+import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 import type { Status } from "~/routes/reviews/new";
-import { T } from "vitest/dist/global-e98f203b";
-import { FetcherWithComponents, useFetcher } from "@remix-run/react";
-
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { useFetcher } from "@remix-run/react";
+import type { FetcherWithComponents } from "@remix-run/react";
+import type { TypedFetcherWithComponents } from "remix-typedjson";
+import type { ImageActionData } from "~/routes/services/image";
+import type { LoaderData } from "~/routes/services/combo";
+import type { action as newReviewBottleAction } from "~/routes/reviews/new/bottle";
+import type { action as newBottleAction } from "~/routes/bottles/new/bottle";
 
 export function assertNonNullable<T>(
   value: unknown
@@ -18,30 +14,6 @@ export function assertNonNullable<T>(
   if (value === undefined || value === null) {
     throw new Error(`Value is undefined or null`);
   }
-}
-
-interface UploadImageProps {
-  data: AsyncIterable<Uint8Array>;
-  userId: string;
-}
-
-export async function uploadImage({ data, userId }: UploadImageProps) {
-  const uploadPromise = new Promise(async (resolve, reject) => {
-    const uploadStream = cloudinary.v2.uploader.upload_stream(
-      { folder: userId },
-      (error, result) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        console.log(`RESULT: ${JSON.stringify(result)}`);
-        resolve(result);
-      }
-    );
-    await writeAsyncIterableToWritable(data, uploadStream);
-  });
-
-  return uploadPromise;
 }
 
 export const generateCode = (length: number): string => {
@@ -161,6 +133,7 @@ export type BottleInfoFormData = Pick<
   | "size"
   | "color"
   | "finishing"
+  | "redisId"
 >;
 
 export type SettingInfoFormData = Pick<
@@ -339,3 +312,115 @@ export interface ReviewFormValues extends BottleFormValues {
   overallRating?: number;
   value?: number;
 }
+
+export type BottleContext = {
+  name: string;
+  status: Status;
+  type: string;
+  distiller: string;
+  producer: string;
+  country: string;
+  region: string;
+  price: string;
+  age: string;
+  year: string;
+  batch: string;
+  alcoholPercent: string;
+  proof: string;
+  size: string;
+  color: string;
+  finishing: string;
+  imageUrl?: string;
+};
+
+export type ReviewContext = {
+  name: string;
+  status: Status;
+  type: string;
+  distiller: string;
+  producer: string;
+  country: string;
+  region: string;
+  price: string;
+  age: string;
+  year: string;
+  batch: string;
+  alcoholPercent: string;
+  proof: string;
+  size: string;
+  color: string;
+  finishing: string;
+  imageUrl: string;
+
+  date: string;
+  setting: string;
+  glassware: string;
+  restTime: string;
+  nose: string;
+  palate: string;
+  finish: string;
+  thoughts: string;
+  cherry: number;
+  strawberry: number;
+  raspberry: number;
+  blackberry: number;
+  blueberry: number;
+  apple: number;
+  banana: number;
+  grape: number;
+  stone: number;
+  citrus: number;
+  tropical: number;
+  pepper: number;
+  bakingSpice: number;
+  cinnamon: number;
+  herbal: number;
+  mint: number;
+  coffee: number;
+  tobacco: number;
+  leather: number;
+  oak: number;
+  toasted: number;
+  smokey: number;
+  peanut: number;
+  almond: number;
+  pecan: number;
+  walnut: number;
+  oily: number;
+  floral: number;
+  corn: number;
+  rye: number;
+  wheat: number;
+  malt: number;
+  dough: number;
+  vanilla: number;
+  caramel: number;
+  molasses: number;
+  butterscotch: number;
+  honey: number;
+  chocolate: number;
+  toffee: number;
+  sugar: number;
+  overallRating: number;
+  value: number;
+};
+
+type Errors<T> = { general?: string } & {
+  [P in keyof T]?: string;
+};
+
+export type BottleImageProps<
+  ContextType extends BottleContext | ReviewContext,
+  Action extends typeof newReviewBottleAction | typeof newBottleAction,
+  Loader extends CustomFormData | BottleInfoFormData
+> = {
+  state: ContextType;
+  loaderData: Loader;
+  actionData?: Action;
+  errors: Errors<ContextType>;
+  combo: TypedFetcherWithComponents<LoaderData>;
+  imageFetcher: TypedFetcherWithComponents<ImageActionData>;
+  formIsSubmitting: boolean;
+  stateSetter: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  setFormState: Dispatch<SetStateAction<ContextType>> | undefined;
+};

@@ -5,6 +5,8 @@ export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   primary?: boolean;
   type: "button" | "submit" | "reset" | undefined;
   disabled?: boolean;
+  name?: string;
+  value?: string;
 }
 
 export default function Button({
@@ -12,6 +14,8 @@ export default function Button({
   type,
   primary,
   disabled = false,
+  name,
+  value,
 }: ButtonProps) {
   return (
     <div className="my-2 text-right">
@@ -25,6 +29,8 @@ export default function Button({
               : "focus:shadow-outline h-10 rounded-lg border border-blue-600 px-5 text-blue-700 transition-colors duration-150 hover:bg-blue-500 hover:text-blue-100"
           }`}
         disabled={disabled}
+        name={name}
+        value={value}
       >
         {callToAction}
       </button>
