@@ -13,12 +13,10 @@ import type {
 import ImageRenderer from "../ImageRenderer/ImageRenderer";
 import RatingRenderer from "../RatingRenderer/RatingRenderer";
 import LinkRenderer from "../LinkRenderer/LinkRenderer";
-import NoRowsOverlay from "../NoRowsOverlay/NoRowsOverlay";
 import NameTooltip from "../NameTooltip/NameTooltip";
 import PriceRenderer from "../PriceRenderer/PriceRenderer";
 import ABVRenderer from "~/components/Review/Grid/ABVRenderer/ABVRenderer";
 import ProofRenderer from "../ProofRenderer/ProofRenderer";
-import LoadingOverlay from "../LoadingOverlay/LoadingOverlay";
 
 type NumberParserParams = {
   newValue: string;
@@ -45,7 +43,6 @@ function nameGetter(params: ValueGetterParams) {
 
 export default function DataGrid({ initialData }: any) {
   const grid = useRef<AgGridReactType>(null);
-  const containerStyle = useMemo(() => ({ height: "100%", width: "100%" }), []);
   const gridStyle = useMemo(() => ({ height: "100%", width: "100%" }), []);
   const [records, setRecords] = useState<number>(0);
   const [rowData, setRowData] = useState(initialData);
@@ -398,35 +395,16 @@ export default function DataGrid({ initialData }: any) {
     params.api.refreshCells();
   }, []);
 
-  const noRowsOverlayComponent = useMemo<any>(() => {
-    return NoRowsOverlay;
-  }, []);
-
-  const noRowsOverlayComponentParams = useMemo<any>(() => {
-    return {
-      message: "No reviews -- add one using the link above",
-    };
-  }, []);
-
-  const loadingOverlayComponent = useMemo<any>(() => {
-    return LoadingOverlay;
-  }, []);
-
-  const loadingOverlayComponentParams = useMemo<any>(() => {
-    return {
-      message: "Loading...",
-    };
-  }, []);
-
   useEffect(() => {
     setRecords(initialData.length);
   }, [initialData]);
 
   return (
-    <div style={containerStyle}>
-      <section id="grid-wrapper" style={{ height: "100%", width: "100%" }}>
-        <div className="flex">
-          <div className="my-4 w-3/4 p-4">
+    <div className="mt-4 w-full rounded-lg bg-white px-4 pt-2 pb-8">
+      <section id="grid-wrapper" className="mb-2">
+        <div className="flex flex-col">
+          <h3 className="text-xl font-bold text-blue-700">My Reviews</h3>
+          <div className="my-4 w-3/4 p-4 pl-0">
             <input
               type="text"
               onInput={onFilterTextBoxChanged}
@@ -434,9 +412,11 @@ export default function DataGrid({ initialData }: any) {
               placeholder={`Filter ${records} ${
                 records === 0 || records > 1 ? `records` : `record`
               }`}
-              className="w-[100%] rounded-md sm:w-[50%] md:w-[40%] lg:w-[25%]"
+              className="w-[100%] rounded-md border-2 border-blue-300 p-2 outline-blue-900 sm:w-[50%] md:w-[40%] lg:w-[25%]"
             />
-            <div className="ml-1 pt-2 italic">Filter all column data</div>
+            <div className="ml-1 pt-2 italic text-blue-400">
+              Filter all column data
+            </div>
           </div>
         </div>
         <div className="ag-theme-alpine" style={gridStyle}>
@@ -452,14 +432,6 @@ export default function DataGrid({ initialData }: any) {
             rowSelection="multiple"
             rowHeight={100}
             rowModelType="clientSide"
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            noRowsOverlayComponent={noRowsOverlayComponent}
-            noRowsOverlayComponentParams={noRowsOverlayComponentParams}
-            suppressMenuHide={true}
-            suppressHorizontalScroll={true}
-            tooltipShowDelay={500}
-            tooltipHideDelay={5000}
           />
         </div>
       </section>

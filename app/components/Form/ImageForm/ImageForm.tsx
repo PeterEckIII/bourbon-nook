@@ -4,11 +4,7 @@ import { Link, useFetcher, useTransition } from "@remix-run/react";
 import CheckIcon from "~/components/Icons/CheckIcon";
 import Spinner from "~/components/Icons/Spinner";
 import type { FormState } from "~/routes/reviews/new";
-import type {
-  CustomFormData,
-  SavedRedisData,
-  CustomBottleFormData,
-} from "~/utils/helpers.server";
+import type { CustomFormData } from "~/utils/helpers.server";
 
 interface ImageFormProps {
   actionData: {

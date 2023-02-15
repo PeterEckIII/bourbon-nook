@@ -76,10 +76,6 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     return subComments;
   };
 
-  console.log(
-    `Nested Comments: ${JSON.stringify(nestComments(null), null, 2)}`
-  );
-
   return json<LoaderData>({
     reviewId,
     user,
@@ -112,23 +108,6 @@ export const action = async ({ request, params }: ActionArgs) => {
   if (body === "") {
     return;
   }
-
-  // try {
-  //   const newComment = (await createComment(
-  //     userId,
-  //     body,
-  //     reviewId
-  //   )) as unknown as comment;
-  //   return json<ActionData>(
-  //     { newComment },
-  //     { status: 200, statusText: "Successfully loaded comments" }
-  //   );
-  // } catch (error) {
-  //   return json<ActionData>(
-  //     { errors: { body: "Body is invalid" } },
-  //     { status: 400, statusText: "Body is invalid" }
-  //   );
-  // }
 };
 
 export default function ReviewCommentsRoute() {
@@ -146,7 +125,7 @@ export default function ReviewCommentsRoute() {
   }, [comment.state, comment.data]);
 
   return (
-    <div>
+    <div className="rounded-lg bg-white p-4 shadow-lg shadow-blue-700">
       <div>
         <comment.Form
           method="post"
@@ -154,7 +133,10 @@ export default function ReviewCommentsRoute() {
           action={`/reviews/${loaderData.reviewId}/comments/create`}
         >
           <div className="mx-2">
-            <label className="my-2 flex w-full flex-col gap-1" htmlFor="body">
+            <label
+              className="my-2 my-2 flex w-full flex-col gap-1 text-2xl text-blue-700"
+              htmlFor="body"
+            >
               Add Comment
             </label>
             <textarea

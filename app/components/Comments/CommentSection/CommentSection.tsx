@@ -1,6 +1,5 @@
 import type { user } from "@prisma/client";
 import Comment from "../Comment/Comment";
-import type { CommentFromDB } from "~/routes/reviews/$reviewId/comments";
 import type { Comments } from "~/routes/reviews/$reviewId/comments";
 
 interface CommentSectionProps {
@@ -14,9 +13,10 @@ export function CommentSection({
   reviewId,
   user,
 }: CommentSectionProps) {
-  console.log(`Comments: ${JSON.stringify(comments, null, 2)}`);
   return (
     <div>
+      <h4 className="my-2 text-2xl text-blue-700">Comments</h4>
+      <span className="text-sm "></span>
       {comments.map((comment) => {
         return (
           <div key={comment.id} className="comment-stack">

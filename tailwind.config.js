@@ -11,6 +11,9 @@ module.exports = {
       borderColor: {
         followerBtn: "#8fc688",
       },
+      transitionProperty: {
+        left: "left",
+      }
     },
   },
   plugins: [],

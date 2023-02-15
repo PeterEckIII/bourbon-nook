@@ -98,6 +98,7 @@ export default function ReviewDetailsPage() {
         author={data.reviewAuthor}
         following={data.following}
       />
+      {/* THIS IS THE EDIT PAGE BELOW */}
       <div className="min-h-[200px]">
         <Outlet />
       </div>

@@ -43,17 +43,16 @@ export const links: LinksFunction = () => {
 
 export interface LoaderData {
   reviewListItems: Awaited<ReturnType<typeof getReviewsForTable>>;
-  userId: string;
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
   const reviewListItems = await getReviewsForTable({ userId });
-  return json<LoaderData>({ reviewListItems, userId });
+  return json<LoaderData>({ reviewListItems });
 };
 
 export default function ReviewIndexPage() {
-  const { reviewListItems, userId } = useLoaderData<LoaderData>();
+  const { reviewListItems } = useLoaderData<LoaderData>();
   const reviewList = reviewListItems.map((review) => {
     if (
       typeof window === "undefined" ||
@@ -84,12 +83,12 @@ export default function ReviewIndexPage() {
   return (
     <div className="w-full">
       {reviewListItems.length > 0 ? (
-        <p>
-          No review selected. Select a review from the table below, or{" "}
+        <p className="text-lg font-semibold text-white">
+          Select a review from the table below or{" "}
           <Link
             prefetch="intent"
-            to="/reviews/new/bottleInfo"
-            className="text-blue-500 underline"
+            to="/reviews/new/bottle"
+            className="text-lg font-semibold text-white underline"
             id="create-new-review-link"
           >
             create a new review.
@@ -100,8 +99,8 @@ export default function ReviewIndexPage() {
           You have no reviews. Create your first review{" "}
           <Link
             prefetch="intent"
-            to="/reviews/new/bottleInfo"
-            className="text-blue-500 underline"
+            to="/reviews/new/bottle"
+            className="text-lg font-semibold text-white underline"
             id="create-new-review-link"
           >
             here
@@ -113,9 +112,7 @@ export default function ReviewIndexPage() {
           <DataGrid initialData={reviewList} />
         </>
       ) : null}
-      <div className="flex min-h-full flex-col justify-center">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 }

@@ -48,24 +48,21 @@ export default function BottleIndexPage() {
   return (
     <div className="w-full">
       {data?.collection.length > 0 ? (
-        <p>
-          No bottle selected. Select a bottle from your collection, or{" "}
-          <Link
-            prefetch="intent"
-            to="/bottles/new/image"
-            className="text-blue-500 underline"
-            id="create-new-bottle-link"
-          >
-            add a new bottle to your collection
-          </Link>
-        </p>
+        <Link
+          prefetch="intent"
+          to="/bottles/new/bottle"
+          className="text-lg font-semibold text-white underline"
+          id="create-new-bottle-link"
+        >
+          Add a new bottle to your collection
+        </Link>
       ) : (
         <p>
           You have no bottles in your collection. Add your first bottle{" "}
           <Link
-            to="/bottles/new/image"
+            to="/bottles/new/bottle"
             prefetch="intent"
-            className="text-blue-500 underline"
+            className="text-lg font-semibold text-white underline"
             id="create-new-bottle-link"
           >
             here
@@ -75,9 +72,7 @@ export default function BottleIndexPage() {
       {data?.collection.length > 0 ? (
         <Grid initialData={data?.collection} />
       ) : null}
-      <div className="flex min-h-full flex-col justify-center">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 }

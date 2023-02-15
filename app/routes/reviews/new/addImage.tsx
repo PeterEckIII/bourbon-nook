@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import {
   useActionData,
   useFetcher,
@@ -12,15 +13,14 @@ import {
   unstable_parseMultipartFormData as parseMultipartFormData,
 } from "@remix-run/server-runtime";
 import type {
-  LoaderFunction,
-  ActionFunction,
+  ActionArgs,
+  LoaderArgs,
   UploadHandler,
 } from "@remix-run/server-runtime";
 import { v4 as uuid } from "uuid";
 import { getUserId } from "~/session.server";
 import type { ReviewContextType } from "../new";
 import { useState } from "react";
-import type { ChangeEvent } from "react";
 import { upload } from "~/utils/cloudinary.server";
 import type { ICloudinaryUploadResponse } from "~/utils/cloudinary.server";
 import invariant from "tiny-invariant";
@@ -38,7 +38,7 @@ type ActionData = {
   publicId?: string;
 };
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const userId = await getUserId(request);
   invariant(userId, "No user ID in session");
   if (typeof userId === "undefined" || userId === undefined) {
@@ -57,7 +57,6 @@ export const action: ActionFunction = async ({ request }) => {
         userId,
         publicId,
       })) as ICloudinaryUploadResponse;
-      console.log(`Uploaded Image: ${JSON.stringify(uploadedImage)}`);
       return uploadedImage.secure_url;
     },
     createMemoryUploadHandler()
@@ -97,7 +96,7 @@ export const action: ActionFunction = async ({ request }) => {
   });
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const formData = await requireFormData(request);
   return formData;
 };
@@ -143,66 +142,6 @@ export default function NewAddImageRoute() {
         handlePreviewChange={handlePreviewChange}
         redirectString={`/reviews/new/setting?id=${formData.redisId}`}
       />
-      {/* <image.Form
-        encType="multipart/form-data"
-        method="post"
-        className="max-w-[500px]"
-      >
-        <input type="hidden" name="id" value={formData.redisId} />
-        <div className="flex w-full items-center justify-center">
-          <label htmlFor="img">Upload an Image</label>
-          <input
-            type="file"
-            name="img"
-            accept="image/*"
-            id="img"
-            onChange={(e) => handlePreviewChange(e)}
-          />
-        </div>
-        {previewUrl !== "" && confirmed === false && image.data === undefined && (
-          <div className="h-50 w-25 m-3 flex items-center justify-center">
-            <img
-              src={previewUrl}
-              alt={`The ${formData.name} bottle you uploaded`}
-            />
-          </div>
-        )}
-        <div className="my-2 text-right">
-          <button
-            type="submit"
-            id="submit-button"
-            className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-            disabled={isUploading}
-          >
-            {isUploading ? <Spinner /> : "Upload Image"}
-          </button>
-        </div>
-      </image.Form>
-      {image.type === "done" && (
-        <div
-          id="uploadConfirmation"
-          className="border-black-100 m-4 flex items-center justify-center rounded-md p-4 text-green-700"
-        >
-          <CheckIcon />
-          <span>&nbsp;</span>Successfully uploaded!
-        </div>
-      )}
-      <div className="my-8 text-right">
-        <Link
-          prefetch="intent"
-          id="next-button"
-          className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          to={`/reviews/new/setting?id=${formData.redisId}`}
-          onClick={() =>
-            setFormState({
-              ...state,
-              imageUrl: formData.imageUrl ?? "",
-            })
-          }
-        >
-          {formState === "submitting" ? "Loading" : "Next"}
-        </Link>
-      </div> */}
     </div>
   );
 }
