@@ -26,6 +26,7 @@ interface ISettingFormProps {
   formState: string;
   errors: Errors;
   isSubmitting: boolean;
+  bottleId: string;
 }
 
 export default function SettingForm({
@@ -35,11 +36,13 @@ export default function SettingForm({
   formState,
   errors,
   isSubmitting,
+  bottleId,
 }: ISettingFormProps) {
   return (
     <Form method="post" className="flex w-full flex-col">
       <h2>Setting Information</h2>
       <input type="hidden" name="id" value={formData?.redisId} />
+      <input type="hidden" name="bottleId" value={bottleId} />
       <div className="-mx-3 my-3 mb-6 flex flex-wrap rounded-xl border border-gray-200 bg-white bg-gradient-to-r p-2 sm:p-6">
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-full">
           <TextInput

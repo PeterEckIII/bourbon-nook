@@ -64,6 +64,8 @@ export const action: ActionFunction = async ({ request, params }) => {
   const bottleId = formData.get("bottleId")?.toString();
   const reviewId = formData.get("reviewId")?.toString();
   const createdAt = formData.get("createdAt")?.toString();
+  const openDate = formData.get("openDate")?.toString();
+  const killDate = formData.get("killDate")?.toString();
 
   // SPICE
   const pepper = Number(formData.get("pepper")?.toString());
@@ -144,6 +146,8 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(imageUrl, `imageUrl is required`);
   invariant(bottleId, "No bottle with id {null}");
   invariant(reviewId, "No review with id {null}");
+  invariant(openDate, "Open Date!!");
+  invariant(killDate, "Kill Date!!");
 
   if (
     typeof pepper !== "number" ||
@@ -281,6 +285,8 @@ export const action: ActionFunction = async ({ request, params }) => {
     color,
     finishing,
     imageUrl,
+    openDate,
+    killDate,
   });
   if (!newBottle || !newReview) {
     return new Error(`ERROR UPDATING REVIEW`);

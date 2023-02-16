@@ -106,16 +106,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Distiller"
                 name="distiller"
-                value={
-                  state.distiller
-                    ? state.distiller
-                    : valIsBottle(value)
-                    ? typeof value.distiller === "string"
-                      ? value.distiller
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.distiller ?? null}
+                value={state.distiller}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌱"
                 isSubmitting={formIsSubmitting}
@@ -127,16 +118,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Producer"
                 name="producer"
-                value={
-                  state.producer
-                    ? state.producer
-                    : valIsBottle(value)
-                    ? typeof value.producer === "string"
-                      ? value.producer
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.producer ?? null}
+                value={state.producer}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🏗️"
                 isSubmitting={formIsSubmitting}
@@ -148,16 +130,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Type"
                 name="type"
-                value={
-                  state.type
-                    ? state.type
-                    : valIsBottle(value)
-                    ? typeof value.type === "string"
-                      ? value.type
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.type ?? null}
+                value={state.type}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="©️"
                 isSubmitting={formIsSubmitting}
@@ -169,16 +142,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Country of Origin"
                 name="country"
-                value={
-                  state.country
-                    ? state.country
-                    : valIsBottle(value)
-                    ? typeof value.country === "string"
-                      ? value.country
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.country ?? null}
+                value={state.country}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌎"
                 isSubmitting={formIsSubmitting}
@@ -190,16 +154,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Region"
                 name="region"
-                value={
-                  state.region
-                    ? state.region
-                    : valIsBottle(value)
-                    ? typeof value.region === "string"
-                      ? value.region
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.region ?? null}
+                value={state.region}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🏔️"
                 isSubmitting={formIsSubmitting}
@@ -212,16 +167,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Price"
                 name="price"
-                value={
-                  state.price
-                    ? state.price
-                    : valIsBottle(value)
-                    ? typeof value.price === "string"
-                      ? value.price
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.price ?? null}
+                value={state.price}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="💲"
                 isSubmitting={formIsSubmitting}
@@ -233,16 +179,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Age"
                 name="age"
-                value={
-                  state.age
-                    ? state.age
-                    : valIsBottle(value)
-                    ? typeof value.age === "string"
-                      ? value.age
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.age ?? null}
+                value={state.age}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="👴"
                 isSubmitting={formIsSubmitting}
@@ -254,16 +191,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Color"
                 name="color"
-                value={
-                  state.color
-                    ? state.color
-                    : valIsBottle(value)
-                    ? typeof value.color === "string"
-                      ? value.color
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.color ?? null}
+                value={state.color}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌈"
                 isSubmitting={formIsSubmitting}
@@ -275,16 +203,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Year"
                 name="year"
-                value={
-                  state.year
-                    ? state.year
-                    : valIsBottle(value)
-                    ? typeof value.year === "string"
-                      ? value.year
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.year ?? null}
+                value={state.year}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="📆"
                 isSubmitting={formIsSubmitting}
@@ -296,16 +215,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Batch / Barrel"
                 name="batch"
-                value={
-                  state.batch
-                    ? state.batch
-                    : valIsBottle(value)
-                    ? typeof value.batch === "string"
-                      ? value.batch
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.batch ?? null}
+                value={state.batch}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="2️⃣"
                 isSubmitting={formIsSubmitting}
@@ -317,16 +227,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Size"
                 name="size"
-                value={
-                  state.size
-                    ? state.size
-                    : valIsBottle(value)
-                    ? typeof value.size === "string"
-                      ? value.size
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.size ?? null}
+                value={state.size}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🍆"
                 isSubmitting={formIsSubmitting}
@@ -339,16 +240,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Alcohol Percent"
                 name="alcoholPercent"
-                value={
-                  state.alcoholPercent
-                    ? state.alcoholPercent
-                    : valIsBottle(value)
-                    ? typeof value.alcoholPercent === "string"
-                      ? value.alcoholPercent
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.alcoholPercent ?? null}
+                value={state.alcoholPercent}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="💫"
                 isSubmitting={formIsSubmitting}
@@ -361,16 +253,7 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Proof"
                 name="proof"
-                value={
-                  state.proof
-                    ? state.proof
-                    : valIsBottle(value)
-                    ? typeof value.proof === "string"
-                      ? value.proof
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.proof ?? null}
+                value={state.proof}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🔥"
                 isSubmitting={formIsSubmitting}
@@ -382,20 +265,35 @@ export default function BottleImageForm<T, A, L>({
                 type="text"
                 labelName="Finishing"
                 name="finishing"
-                value={
-                  state.finishing
-                    ? state.finishing
-                    : valIsBottle(value)
-                    ? typeof value.finishing === "string"
-                      ? value.finishing
-                      : ""
-                    : ""
-                }
-                defaultValue={loaderData?.finishing ?? null}
+                value={state.finishing}
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🍷"
                 isSubmitting={formIsSubmitting}
                 error={errors?.finishing ?? ""}
+              />
+            </div>
+            <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
+              <TextInput
+                type="text"
+                labelName="Open Date"
+                name="openDate"
+                value={state.openDate}
+                changeHandler={(e) => stateSetter(e)}
+                emoji="🍷"
+                isSubmitting={formIsSubmitting}
+                error={errors?.openDate ?? ""}
+              />
+            </div>
+            <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
+              <TextInput
+                type="text"
+                labelName="Kill Date"
+                name="killDate"
+                value={state.killDate}
+                changeHandler={(e) => stateSetter(e)}
+                emoji="🍷"
+                isSubmitting={formIsSubmitting}
+                error={errors?.killDate ?? ""}
               />
             </div>
           </div>

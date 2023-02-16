@@ -184,4 +184,6 @@ model bottle {
   size           String?
   color          String?
   finishing      String?
+  openDate       String?
+  killDate       String?
 }

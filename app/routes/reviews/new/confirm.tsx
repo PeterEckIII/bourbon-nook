@@ -7,13 +7,13 @@ import {
 } from "@remix-run/react";
 import type {
   ActionFunction,
-  LoaderFunction,
   LinksFunction,
+  ActionArgs,
+  LoaderArgs,
 } from "@remix-run/server-runtime";
 import { redirect, json } from "@remix-run/server-runtime";
 import { createReview } from "~/models/review.server";
-import { createBottle } from "~/models/bottle.server";
-import { getUser, requireUserId } from "~/session.server";
+import { requireUserId } from "~/session.server";
 import type { ReviewContextType } from "../new";
 import {
   deleteFormData,
@@ -41,21 +41,18 @@ interface ActionData {
   error?: string;
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const userId = await requireUserId(request);
   if (userId === null) {
-    return json<ActionData>({
-      error: "You must be signed in to submit a review",
-    });
+    redirect("/login");
   }
-
-  const bottleId = uuid();
 
   const form = await request.formData();
   const imageUrl = form.get("imageUrl")?.toString();
-  const redisId = form.get("id")?.toString();
+  const redisId = form.get("redisId")?.toString();
+  const bottleId = form.get("bottleId")?.toString();
 
-  if (typeof redisId !== "string" || typeof imageUrl !== "string") {
+  if (typeof redisId !== "string" || typeof bottleId !== "string") {
     return json<ActionData>({
       error: "Form data is invalid",
     });
@@ -69,40 +66,12 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  const newBottle = await createBottle({
-    userId,
-    status: "OPENED",
-    id: bottleId,
-    name: customFormData.name,
-    type: customFormData.type,
-    distiller: customFormData.distiller,
-    producer: customFormData.producer,
-    country: customFormData.country,
-    region: customFormData.region,
-    price: customFormData.price,
-    age: customFormData.age,
-    year: customFormData.year,
-    batch: customFormData.batch,
-    alcoholPercent: customFormData.alcoholPercent,
-    proof: customFormData.proof,
-    size: customFormData.size,
-    color: customFormData.color,
-    finishing: customFormData.finishing,
-    imageUrl: customFormData.imageUrl ?? "",
-  });
-  if (!newBottle) {
-    return json(
-      { errors: { message: "Error submitting bottle!" } },
-      { status: 400 }
-    );
-  }
-
   const today = new Date();
   const reviewId = uuid();
 
   const newReview = await createReview({
     id: reviewId,
-    bottleId: newBottle.id,
+    bottleId: bottleId,
     userId,
     createdAt: today,
     updatedAt: today,
@@ -169,20 +138,28 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect(`/reviews/${newReview.id}/comments`);
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const formData = await requireFormData(request);
-  if (formData === null) {
-    throw Error(`Form data not found`);
-  }
-  return { formData };
+type LoaderData = {
+  formData: CustomFormData;
+  bottleId: string;
 };
 
-interface LoaderData {
-  formData: CustomFormData;
-}
+export const loader = async ({ request }: LoaderArgs) => {
+  const formData = await requireFormData(request);
+  const url = new URL(request.url);
+  const bottleId = url.searchParams.get("bid");
+
+  if (typeof bottleId === "string") {
+    return json<LoaderData>({
+      formData,
+      bottleId,
+    });
+  } else {
+    redirect("/reviews/new/bottle");
+  }
+};
 
 export default function NewConfirmationRoute() {
-  const { formData } = useLoaderData<LoaderData>();
+  const loaderData = useLoaderData<LoaderData>();
   const { state } = useOutletContext<ReviewContextType>();
   const actionData = useActionData<ActionData>();
   const transition = useTransition();
@@ -196,7 +173,8 @@ export default function NewConfirmationRoute() {
     <div>
       <h1>Confirm your Review</h1>
       <ConfirmForm
-        formData={formData}
+        formData={loaderData.formData}
+        bottleId={loaderData.bottleId}
         imageUrl={state.imageUrl}
         formState={formState}
       />
