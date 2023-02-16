@@ -1,4 +1,4 @@
-import type { ActionArgs } from "@remix-run/server-runtime";
+import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import { Form, useOutletContext, useTransition } from "@remix-run/react";
 import StatusInput from "~/components/UI/Inputs/StatusInput";
@@ -10,13 +10,24 @@ import { requireUserId } from "~/session.server";
 import invariant from "tiny-invariant";
 import { v4 as uuid } from "uuid";
 import { createBottle } from "~/models/bottle.server";
-import type { BottleStatus } from "@prisma/client";
-import { useTypedActionData, useTypedFetcher } from "remix-typedjson";
+import type { bottle, BottleStatus } from "@prisma/client";
+import {
+  useTypedActionData,
+  useTypedFetcher,
+  useTypedLoaderData,
+} from "remix-typedjson";
 import Button from "~/components/UI/Button";
 import type { ImageActionData } from "~/routes/services/image";
 import type { BottleContextType } from "~/routes/bottles/new";
+import ComboBox from "~/components/UI/Combobox/Combobox";
+import { useEffect, useState } from "react";
+import useDebounce from "~/utils/useDebounce";
+import type { LoaderData as ComboData } from "~/routes/services/combo";
+import { getDataFromRedis, saveToRedis } from "~/utils/redis.server";
+import { generateCode } from "~/utils/helpers.server";
+import type { CustomFormData } from "~/utils/helpers.server";
 
-type ErrorData = {
+export type ErrorData = {
   imageSrc?: string;
   name?: string;
   type?: string;
@@ -47,7 +58,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   const formData = await request.formData();
 
-  const name = (await formData).get("name")?.toString();
+  const name = (await formData).get("name[name]")?.toString();
   const status = (await formData).get("status")?.toString();
   const type = (await formData).get("type")?.toString();
   const distiller = (await formData).get("distiller")?.toString();
@@ -64,6 +75,8 @@ export const action = async ({ request }: ActionArgs) => {
   const color = (await formData).get("color")?.toString();
   const finishing = (await formData).get("finishing")?.toString();
   const imageUrl = (await formData).get("imageUrl")?.toString();
+  const openDate = (await formData).get("openDate")?.toString();
+  const killDate = (await formData).get("killDate")?.toString();
 
   // Iterate through fields and create error object
   const errors = {
@@ -114,14 +127,76 @@ export const action = async ({ request }: ActionArgs) => {
   invariant(color, `Color is required`);
   invariant(finishing, `Finishing is required`);
 
-  // Create a new bottle or throw
-  try {
-    await createBottle({
-      id: uuid(),
+  const formId = (await formData).get("redisId")?.toString();
+
+  let id = "";
+
+  if (typeof formId === "string" && formId !== "") {
+    id = formId;
+
+    const formDataObject = await getDataFromRedis(id);
+    if (!formDataObject) {
+      return json<ErrorData>({
+        general: `You must enable JavaScript for this form to work`,
+      });
+    }
+
+    formDataObject.name = name;
+    formDataObject.type = type;
+    formDataObject.status = status as BottleStatus;
+    formDataObject.distiller = distiller;
+    formDataObject.producer = producer;
+    formDataObject.country = country;
+    formDataObject.region = region;
+    formDataObject.price = price;
+    formDataObject.age = age;
+    formDataObject.year = year;
+    formDataObject.batch = batch;
+    formDataObject.alcoholPercent = alcoholPercent;
+    formDataObject.proof = proof;
+    formDataObject.size = size;
+    formDataObject.color = color;
+    formDataObject.finishing = finishing;
+    formDataObject.imageUrl = imageUrl;
+
+    await saveToRedis(formDataObject);
+
+    try {
+      const bottle = await createBottle({
+        id: uuid(),
+        userId,
+        imageUrl: imageUrl || "",
+        name,
+        status: status as BottleStatus,
+        type,
+        distiller,
+        producer,
+        country,
+        region,
+        price,
+        age,
+        year,
+        batch,
+        alcoholPercent,
+        proof,
+        size,
+        color,
+        finishing,
+        openDate: openDate ?? "",
+        killDate: killDate ?? "",
+      });
+      return redirect(`/reviews/new/setting?id=${id}&bid=${bottle.id}`);
+    } catch (error) {
+      console.error(`ERROR SUBMITTING: ${error}`);
+      return redirect(`/bottles/new/bottle`);
+    }
+  } else {
+    id = generateCode(6);
+    const dataFormObject: CustomFormData = {
       userId,
-      imageUrl: imageUrl || "",
-      name,
       status: status as BottleStatus,
+      redisId: id,
+      name,
       type,
       distiller,
       producer,
@@ -136,18 +211,75 @@ export const action = async ({ request }: ActionArgs) => {
       size,
       color,
       finishing,
-    });
-    return redirect(`/bottles`);
-  } catch (error) {
-    console.error(`ERROR SUBMITTING: ${error}`);
-    return redirect(`/bottles/new/bottle`);
+      imageUrl,
+    };
+
+    await saveToRedis(dataFormObject);
+
+    try {
+      const bottle = await createBottle({
+        id: uuid(),
+        userId,
+        imageUrl: imageUrl || "",
+        name,
+        status: status as BottleStatus,
+        type,
+        distiller,
+        producer,
+        country,
+        region,
+        price,
+        age,
+        year,
+        batch,
+        alcoholPercent,
+        proof,
+        size,
+        color,
+        finishing,
+        openDate: openDate ?? "",
+        killDate: killDate ?? "",
+      });
+      return redirect(`/reviews/new/setting?id=${id}&bid=${bottle.id}`);
+    } catch (error) {
+      console.error(`ERROR SUBMITTING: ${error}`);
+      return redirect(`/reviews/new/bottle`);
+    }
   }
 };
 
+export const loader = async ({ request }: LoaderArgs) => {
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+  if (typeof id !== "string" || !id) {
+    return null;
+  }
+  const formData = await getDataFromRedis(id);
+
+  if (!formData) {
+    return null;
+  }
+  return formData;
+};
+
 export default function NewBottleRoute() {
-  const actionData = useTypedActionData<ErrorData>();
+  const [value, setValue] = useState<{} | bottle | string>("");
+  const [query, setQuery] = useState<string>("");
+  const errors = useTypedActionData<ErrorData>();
+  const formData = useTypedLoaderData<typeof loader>();
+
   const { state, stateSetter, setFormState } =
     useOutletContext<BottleContextType>();
+  const queryTerm = useDebounce(value, 400);
+  const combo = useTypedFetcher<ComboData>();
+  const { data, load } = combo;
+
+  let bottles = data?.bottles || [];
+
+  if (typeof value === "undefined") {
+    throw new Error(`No!`);
+  }
+
   const transition = useTransition();
   const formIsSubmitting = transition.type === "actionSubmission";
 
@@ -161,7 +293,19 @@ export default function NewBottleRoute() {
     throw new Error(`Error with route context.`);
   }
 
-  const errors = actionData || {};
+  useEffect(() => {
+    function getInitialData() {
+      load(`/services/combo`);
+    }
+    getInitialData();
+  }, [load]);
+
+  useEffect(() => {
+    function getFilteredBottles() {
+      load(`/services/combo?query=${queryTerm}`);
+    }
+    getFilteredBottles();
+  }, [queryTerm, load]);
 
   return (
     <>
@@ -203,15 +347,14 @@ export default function NewBottleRoute() {
                 value={imageFetcher.data.imageSrc}
               />
             ) : null}
-            <TextInput
-              type="text"
-              labelName="Name"
-              name="name"
-              value={state.name}
-              changeHandler={(e) => stateSetter(e)}
-              emoji="📛"
-              isSubmitting={formIsSubmitting}
-              error={errors?.name ?? ""}
+            <input type="hidden" name="redisId" value={formData?.redisId} />
+            <ComboBox
+              value={value}
+              setValue={setValue}
+              query={query}
+              setQuery={setQuery}
+              bottles={bottles}
+              queryTerm={queryTerm}
             />
             <div className="mb-2 flex w-full px-3 md:mb-0">
               <span className="mr-8 flex items-center">Bottle Status</span>
@@ -230,7 +373,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌱"
                 isSubmitting={formIsSubmitting}
-                error={errors?.distiller ?? ""}
+                error={errors?.distiller}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -242,7 +385,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🏗️"
                 isSubmitting={formIsSubmitting}
-                error={errors?.producer ?? ""}
+                error={errors?.producer}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -254,7 +397,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="©️"
                 isSubmitting={formIsSubmitting}
-                error={errors?.type ?? ""}
+                error={errors?.type}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -266,7 +409,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌎"
                 isSubmitting={formIsSubmitting}
-                error={errors?.country ?? ""}
+                error={errors?.country}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -278,7 +421,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🏔️"
                 isSubmitting={formIsSubmitting}
-                error={errors?.region ?? ""}
+                error={errors?.region}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -291,7 +434,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="💲"
                 isSubmitting={formIsSubmitting}
-                error={errors?.price ?? ""}
+                error={errors?.price}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -303,7 +446,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="👴"
                 isSubmitting={formIsSubmitting}
-                error={errors?.age ?? ""}
+                error={errors?.age}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -315,7 +458,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌈"
                 isSubmitting={formIsSubmitting}
-                error={errors?.color ?? ""}
+                error={errors?.color}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -327,7 +470,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="📆"
                 isSubmitting={formIsSubmitting}
-                error={errors?.year ?? ""}
+                error={errors?.year}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -339,7 +482,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="2️⃣"
                 isSubmitting={formIsSubmitting}
-                error={errors?.batch ?? ""}
+                error={errors?.batch}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -351,7 +494,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🍆"
                 isSubmitting={formIsSubmitting}
-                error={errors?.size ?? ""}
+                error={errors?.size}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -364,7 +507,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="💫"
                 isSubmitting={formIsSubmitting}
-                error={errors?.alcoholPercent ?? ""}
+                error={errors?.alcoholPercent}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -377,7 +520,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🔥"
                 isSubmitting={formIsSubmitting}
-                error={errors?.proof ?? ""}
+                error={errors?.proof}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -389,7 +532,31 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🍷"
                 isSubmitting={formIsSubmitting}
-                error={errors?.finishing ?? ""}
+                error={errors?.finishing}
+              />
+            </div>
+            <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
+              <TextInput
+                type="text"
+                labelName="Open Date"
+                name="openDate"
+                value={state.openDate}
+                changeHandler={(e) => stateSetter(e)}
+                emoji="🍷"
+                isSubmitting={formIsSubmitting}
+                error=""
+              />
+            </div>
+            <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
+              <TextInput
+                type="text"
+                labelName="Close Date"
+                name="killDate"
+                value={state.killDate}
+                changeHandler={(e) => stateSetter(e)}
+                emoji="🍷"
+                isSubmitting={formIsSubmitting}
+                error=""
               />
             </div>
             <Button

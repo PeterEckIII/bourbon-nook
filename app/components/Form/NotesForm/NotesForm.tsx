@@ -12,9 +12,14 @@ import type { CustomFormData } from "~/utils/helpers.server";
 interface INoteFormProps {
   formData: CustomFormData;
   formState: string;
+  bottleId: string;
 }
 
-export default function NotesForm({ formData, formState }: INoteFormProps) {
+export default function NotesForm({
+  formData,
+  formState,
+  bottleId,
+}: INoteFormProps) {
   const { state, stateSetter } = useOutletContext<ReviewContextType>();
 
   if (state === undefined || !stateSetter) {
@@ -23,7 +28,8 @@ export default function NotesForm({ formData, formState }: INoteFormProps) {
 
   return (
     <Form method="post" className="w-full max-w-xl">
-      <input type="hidden" name="id" value={formData?.redisId} />
+      <input type="hidden" name="redisId" value={formData?.redisId} />
+      <input type="hidden" name="bottleId" value={bottleId} />
       <EarthNotes
         state={state}
         changeHandler={stateSetter}

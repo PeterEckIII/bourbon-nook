@@ -21,6 +21,8 @@ export type FormState = {
   color: string;
   finishing: string;
   imageUrl?: string;
+  openDate: string;
+  killDate: string;
 };
 
 export type BottleContextType = {
@@ -48,6 +50,8 @@ const initialState: FormState = {
   size: "",
   color: "",
   finishing: "",
+  openDate: "",
+  killDate: "",
 };
 
 export default function NewBottleRoute() {
