@@ -148,13 +148,12 @@ export type SettingInfoFormData = Pick<
   | "thoughts"
 >;
 
-export type NotesInfoFormData =
-  | FruitNotesFormData
-  | SpiceNotesFormData
-  | EarthNotesFormData
-  | GrainNotesFormData
-  | SweetNotesFormData
-  | RatingNotesFormData;
+export type NotesInfoFormData = FruitNotesFormData &
+  SpiceNotesFormData &
+  EarthNotesFormData &
+  GrainNotesFormData &
+  SweetNotesFormData &
+  RatingNotesFormData;
 
 export type FruitNotesFormData = Pick<
   CustomFormData,
@@ -331,6 +330,8 @@ export type BottleContext = {
   color: string;
   finishing: string;
   imageUrl?: string;
+  openDate: string;
+  killDate: string;
 };
 
 export type ReviewContext = {
@@ -351,6 +352,8 @@ export type ReviewContext = {
   color: string;
   finishing: string;
   imageUrl: string;
+  openDate: string;
+  killDate: string;
 
   date: string;
   setting: string;

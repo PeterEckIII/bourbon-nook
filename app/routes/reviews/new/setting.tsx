@@ -1,11 +1,6 @@
-import {
-  useActionData,
-  useLoaderData,
-  useOutletContext,
-  useTransition,
-} from "@remix-run/react";
+import { useOutletContext, useTransition } from "@remix-run/react";
 import { redirect, json } from "@remix-run/server-runtime";
-import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import SettingForm from "~/components/Form/SettingForm/SettingForm";
 
 import type { ReviewContextType } from "~/routes/reviews/new";
@@ -15,6 +10,7 @@ import {
   saveToRedis,
 } from "~/utils/redis.server";
 import type { CustomFormData } from "~/utils/helpers.server";
+import { useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 
 interface ActionData {
   date?: string;
@@ -28,7 +24,7 @@ interface ActionData {
   general?: string;
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData();
 
   const redisId = formData.get("id")?.toString();
@@ -40,6 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
   const palate = formData.get("palate")?.toString();
   const finish = formData.get("finish")?.toString();
   const thoughts = formData.get("thoughts")?.toString();
+  const bottleId = formData.get("bottleId")?.toString();
 
   if (
     typeof redisId !== "string" ||
@@ -50,7 +47,8 @@ export const action: ActionFunction = async ({ request }) => {
     typeof nose !== "string" ||
     typeof palate !== "string" ||
     typeof finish !== "string" ||
-    typeof thoughts !== "string"
+    typeof thoughts !== "string" ||
+    typeof bottleId !== "string"
   ) {
     return json<ActionData>({
       general: "Input was not a string",
@@ -97,18 +95,35 @@ export const action: ActionFunction = async ({ request }) => {
 
   saveToRedis(customFormData);
 
-  return redirect(`/reviews/new/notes?id=${customFormData.redisId}`);
+  return redirect(
+    `/reviews/new/notes?id=${customFormData.redisId}&bid=${bottleId}`
+  );
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+type LoaderData = {
+  formData: CustomFormData;
+  bottleId: string;
+};
+
+export const loader = async ({ request }: LoaderArgs) => {
   const formData = await requireFormData(request);
-  return formData;
+  const url = new URL(request.url);
+  const bottleId = url.searchParams.get("bid");
+
+  if (typeof bottleId === "string") {
+    return json<LoaderData>({
+      formData,
+      bottleId,
+    });
+  } else {
+    throw new Error(`Bottle ID is not a string`);
+  }
 };
 
 export default function NewSettingRoute() {
-  const formData = useLoaderData<CustomFormData>();
+  const loaderData = useTypedLoaderData<LoaderData>();
   const { state, stateSetter } = useOutletContext<ReviewContextType>();
-  const actionData = useActionData<ActionData>();
+  const actionData = useTypedActionData<ActionData>();
   const transition = useTransition();
   let formState: "idle" | "error" | "submitting" = transition.submission
     ? "submitting"
@@ -125,7 +140,8 @@ export default function NewSettingRoute() {
   return (
     <>
       <SettingForm
-        formData={formData}
+        bottleId={loaderData.bottleId}
+        formData={loaderData.formData}
         state={state}
         changeHandler={stateSetter}
         formState={formState}

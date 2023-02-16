@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "bottle" ALTER COLUMN "killDate" SET DATA TYPE TEXT,
+ALTER COLUMN "openDate" SET DATA TYPE TEXT;

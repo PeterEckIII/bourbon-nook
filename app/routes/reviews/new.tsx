@@ -22,6 +22,8 @@ export type FormState = {
   color: string;
   finishing: string;
   imageUrl: string;
+  openDate: string;
+  killDate: string;
 
   date: string;
   setting: string;
@@ -102,6 +104,8 @@ const initialState: FormState = {
   color: "",
   finishing: "",
   imageUrl: "",
+  openDate: "",
+  killDate: "",
 
   date: "",
   setting: "",
