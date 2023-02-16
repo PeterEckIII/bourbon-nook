@@ -35,7 +35,7 @@ export const getDataFromRedis = async (
 
 export const requireFormData = async (
   request: Request
-): Promise<SavedRedisData | CustomFormData> => {
+): Promise<CustomFormData> => {
   // Get ID from search params
   const url = new URL(request.url);
 

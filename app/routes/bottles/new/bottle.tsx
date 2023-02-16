@@ -2,9 +2,7 @@ import type { ActionArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import { Form, useOutletContext, useTransition } from "@remix-run/react";
 import StatusInput from "~/components/UI/Inputs/StatusInput";
-import type { BottleContextType } from "../new";
 import TextInput from "~/components/UI/Inputs/TextInput";
-import ImageUploader from "~/components/Form/ImageUploader";
 import PrependedInput from "~/components/UI/Inputs/PrependedInput";
 import PostpendedInput from "~/components/UI/Inputs/PostpendedInput";
 import { requireUserId } from "~/session.server";
@@ -15,8 +13,10 @@ import type { BottleStatus } from "@prisma/client";
 import { useTypedActionData, useTypedFetcher } from "remix-typedjson";
 import Button from "~/components/UI/Button";
 import type { ImageActionData } from "~/routes/services/image";
+import type { BottleContextType } from "~/routes/bottles/new";
+import ImageForm from "~/components/Form/ImageForm";
 
-type ErrorData = {
+export type ErrorData = {
   imageSrc?: string;
   name?: string;
   type?: string;
@@ -64,6 +64,8 @@ export const action = async ({ request }: ActionArgs) => {
   const color = (await formData).get("color")?.toString();
   const finishing = (await formData).get("finishing")?.toString();
   const imageUrl = (await formData).get("imageUrl")?.toString();
+  const openDate = (await formData).get("openDate")?.toString();
+  const killDate = (await formData).get("killDate")?.toString();
 
   // Iterate through fields and create error object
   const errors = {
@@ -136,6 +138,8 @@ export const action = async ({ request }: ActionArgs) => {
       size,
       color,
       finishing,
+      openDate: openDate ?? "",
+      killDate: killDate ?? "",
     });
     return redirect(`/bottles`);
   } catch (error) {
@@ -173,25 +177,10 @@ export default function NewBottleRoute() {
           id="form-container"
           className="max-h-800 flex flex-col rounded-xl border border-gray-200 bg-white p-4 lg:flex-row"
         >
-          <div
-            id="image-container"
-            className="m-4 w-full lg:block lg:h-full lg:w-1/3"
-          >
-            <imageFetcher.Form
-              encType="multipart/form-data"
-              method="post"
-              action="/services/image"
-              className="h-full"
-            >
-              <ImageUploader imageFetcher={imageFetcher} />
-              <Button
-                type="submit"
-                callToAction={
-                  imageIsSubmitting ? "Uploading..." : "Upload Image"
-                }
-              />
-            </imageFetcher.Form>
-          </div>
+          <ImageForm
+            imageFetcher={imageFetcher}
+            imageIsSubmitting={imageIsSubmitting}
+          />
           <Form
             method="post"
             className="-mx-3 my-3 mb-6 flex w-full flex-wrap p-2 sm:p-6 lg:w-2/3"
@@ -211,7 +200,7 @@ export default function NewBottleRoute() {
               changeHandler={(e) => stateSetter(e)}
               emoji="📛"
               isSubmitting={formIsSubmitting}
-              error={errors?.name ?? ""}
+              error={errors?.name}
             />
             <div className="mb-2 flex w-full px-3 md:mb-0">
               <span className="mr-8 flex items-center">Bottle Status</span>
@@ -230,7 +219,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌱"
                 isSubmitting={formIsSubmitting}
-                error={errors?.distiller ?? ""}
+                error={errors?.distiller}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -242,7 +231,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🏗️"
                 isSubmitting={formIsSubmitting}
-                error={errors?.producer ?? ""}
+                error={errors?.producer}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -254,7 +243,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="©️"
                 isSubmitting={formIsSubmitting}
-                error={errors?.type ?? ""}
+                error={errors?.type}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -266,7 +255,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌎"
                 isSubmitting={formIsSubmitting}
-                error={errors?.country ?? ""}
+                error={errors?.country}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -278,7 +267,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🏔️"
                 isSubmitting={formIsSubmitting}
-                error={errors?.region ?? ""}
+                error={errors?.region}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -291,7 +280,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="💲"
                 isSubmitting={formIsSubmitting}
-                error={errors?.price ?? ""}
+                error={errors?.price}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -303,7 +292,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="👴"
                 isSubmitting={formIsSubmitting}
-                error={errors?.age ?? ""}
+                error={errors?.age}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -315,7 +304,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🌈"
                 isSubmitting={formIsSubmitting}
-                error={errors?.color ?? ""}
+                error={errors?.color}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -327,7 +316,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="📆"
                 isSubmitting={formIsSubmitting}
-                error={errors?.year ?? ""}
+                error={errors?.year}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -339,7 +328,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="2️⃣"
                 isSubmitting={formIsSubmitting}
-                error={errors?.batch ?? ""}
+                error={errors?.batch}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -351,7 +340,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🍆"
                 isSubmitting={formIsSubmitting}
-                error={errors?.size ?? ""}
+                error={errors?.size}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -364,7 +353,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="💫"
                 isSubmitting={formIsSubmitting}
-                error={errors?.alcoholPercent ?? ""}
+                error={errors?.alcoholPercent}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -377,7 +366,7 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🔥"
                 isSubmitting={formIsSubmitting}
-                error={errors?.proof ?? ""}
+                error={errors?.proof}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -389,7 +378,31 @@ export default function NewBottleRoute() {
                 changeHandler={(e) => stateSetter(e)}
                 emoji="🍷"
                 isSubmitting={formIsSubmitting}
-                error={errors?.finishing ?? ""}
+                error={errors?.finishing}
+              />
+            </div>
+            <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
+              <TextInput
+                type="text"
+                labelName="Open Date"
+                name="openDate"
+                value={state.openDate}
+                changeHandler={(e) => stateSetter(e)}
+                emoji="🍷"
+                isSubmitting={formIsSubmitting}
+                error=""
+              />
+            </div>
+            <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
+              <TextInput
+                type="text"
+                labelName="Close Date"
+                name="killDate"
+                value={state.killDate}
+                changeHandler={(e) => stateSetter(e)}
+                emoji="🍷"
+                isSubmitting={formIsSubmitting}
+                error=""
               />
             </div>
             <Button

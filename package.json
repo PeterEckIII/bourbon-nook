@@ -55,6 +55,7 @@
     "ag-grid-react": "^28.2.0",
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
     "cloudinary": "^1.32.0",
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
@@ -74,7 +75,8 @@
     "redis": "^4.3.1",
     "remix-typedjson": "^0.1.6",
     "tiny-invariant": "^1.2.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yup": "^1.0.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",

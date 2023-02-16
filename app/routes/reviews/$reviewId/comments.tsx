@@ -134,7 +134,7 @@ export default function ReviewCommentsRoute() {
         >
           <div className="mx-2">
             <label
-              className="my-2 my-2 flex w-full flex-col gap-1 text-2xl text-blue-700"
+              className="my-2 flex w-full flex-col gap-1 text-2xl text-blue-700"
               htmlFor="body"
             >
               Add Comment

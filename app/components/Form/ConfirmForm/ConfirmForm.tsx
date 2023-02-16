@@ -8,12 +8,14 @@ interface IConfirmFormProps {
   formData: CustomFormData;
   imageUrl: string;
   formState: string;
+  bottleId: string;
 }
 
 export default function ConfirmForm({
   formData,
   imageUrl,
   formState,
+  bottleId,
 }: IConfirmFormProps) {
   return (
     <div className="my-2 flex flex-col">
@@ -27,7 +29,6 @@ export default function ConfirmForm({
             : ""}{" "}
         </h1>
         <p>{formData.date}</p>
-        <input type="hidden" name="imageUrl" value={imageUrl} />
         {/* <h4 className="mb-4 text-left text-2xl">Bottle Information</h4> */}
         <Collapsible label="Bottle Information">
           <div className="my-4 flex rounded-lg border border-gray-200 bg-white shadow-md">
@@ -67,7 +68,7 @@ export default function ConfirmForm({
           <Link
             prefetch="intent"
             className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-            to={`/review/new/bottle?id=${formData.redisId}`}
+            to={`/reviews/new/bottle?id=${formData.redisId}`}
           >
             Edit Bottle Information
           </Link>
@@ -142,7 +143,7 @@ export default function ConfirmForm({
           <Link
             prefetch="intent"
             className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-            to={`/review/new/setting?id=${formData.redisId}`}
+            to={`/reviews/new/setting?id=${formData.redisId}`}
           >
             Edit Your Review
           </Link>
@@ -214,15 +215,16 @@ export default function ConfirmForm({
           <Link
             prefetch="intent"
             className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-            to={`/review/new/notes?id=${formData.redisId}`}
+            to={`/reviews/new/notes?id=${formData.redisId}`}
           >
             Edit Tasting Notes
           </Link>
         </div>
       </div>
       <Form method="post">
-        <input type="hidden" name="id" value={formData.redisId} />
         <input type="hidden" name="imageUrl" value={imageUrl} />
+        <input type="hidden" name="bottleId" value={bottleId} />
+        <input type="hidden" name="redisId" value={formData.redisId} />
         <Button callToAction="Cancel" type="button" />
         <Button
           primary

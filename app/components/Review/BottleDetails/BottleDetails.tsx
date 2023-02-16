@@ -94,6 +94,22 @@ export default function BottleDetails({ bottle }: BottleDetailProps) {
             {bottle.finishing}
           </td>
         </tr>
+        <tr>
+          <th className="border border-[#ccc] py-2 px-8 text-center">
+            Open Date
+          </th>
+          <td className="border border-[#ccc] py-2 px-8 text-center">
+            {bottle.openDate ?? "-"}
+          </td>
+        </tr>
+        <tr>
+          <th className="border border-[#ccc] py-2 px-8 text-center">
+            Kill Date
+          </th>
+          <td className="border border-[#ccc] py-2 px-8 text-center">
+            {bottle.killDate ?? "-"}
+          </td>
+        </tr>
       </table>
     </div>
   );
