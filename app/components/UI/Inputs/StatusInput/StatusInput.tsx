@@ -1,62 +1,29 @@
-import { useBeforeUnload } from "@remix-run/react";
-import React, { useCallback, useEffect, useState } from "react";
+import type { BottleStatus } from "@prisma/client";
+import type { HTMLAttributes } from "react";
+import { useEffect, useState } from "react";
 import RadioInput from "../RadioInput";
-import type { Status } from "~/routes/reviews/new";
 
-interface StatusInputProps extends React.HTMLAttributes<HTMLSelectElement> {
-  loadedStatus: Status;
-  state: any;
-  setFormState: React.Dispatch<React.SetStateAction<any>> | undefined;
+interface StatusInputProps extends HTMLAttributes<HTMLSelectElement> {
+  loadedStatus: BottleStatus;
+  error?: string;
 }
 
-const StatusInput = ({
-  loadedStatus,
-  state,
-  setFormState,
-}: StatusInputProps) => {
-  const [status, setStatus] = useState<Status>("CLOSED");
-
-  if (!state || !setFormState) {
-    throw Error();
-  }
+export default function StatusInput({ loadedStatus, error }: StatusInputProps) {
+  const [status, setStatus] = useState<BottleStatus>("CLOSED");
 
   useEffect(() => {
     setStatus(loadedStatus);
   }, [loadedStatus]);
 
-  useBeforeUnload(
-    useCallback(() => {
-      localStorage.setItem("status", status);
-    }, [status])
-  );
-
-  const handleBlur = (key: string, value: string) => {
-    if (typeof window !== "undefined") {
-      return window.localStorage.setItem(key, value);
-    }
-  };
-
-  const handleCloseStatus = () => {
-    setFormState({
-      ...state,
-      status: "CLOSED",
-    });
+  const handleClosedStatus = () => {
     setStatus("CLOSED");
   };
 
-  const handleOpenStatus = () => {
-    setFormState({
-      ...state,
-      status: "OPENED",
-    });
+  const handleOpenedStatus = () => {
     setStatus("OPENED");
   };
 
-  const handleFinishStatus = () => {
-    setFormState({
-      ...state,
-      status: "FINISHED",
-    });
+  const handleFinishedStatus = () => {
     setStatus("FINISHED");
   };
 
@@ -68,32 +35,27 @@ const StatusInput = ({
           <RadioInput
             label="Closed"
             value={status === "CLOSED"}
-            id="closed"
-            onChange={handleCloseStatus}
-            onBlur={() => handleBlur("status", "CLOSED")}
+            field="closed"
+            onChange={handleClosedStatus}
           />
         </li>
-        <li className="bg-gray-300x relative mx-4 flex h-8">
+        <li className="bg-gray-300x relative flex h-8">
           <RadioInput
             label="Opened"
             value={status === "OPENED"}
-            id="opened"
-            onChange={handleOpenStatus}
-            onBlur={() => handleBlur("status", "OPENED")}
+            field="opened"
+            onChange={handleOpenedStatus}
           />
         </li>
         <li className="bg-gray-300x relative flex h-8">
           <RadioInput
             label="Finished"
             value={status === "FINISHED"}
-            id="finished"
-            onChange={handleFinishStatus}
-            onBlur={() => handleBlur("status", "FINISHED")}
+            field="finished"
+            onChange={handleFinishedStatus}
           />
         </li>
       </ul>
     </div>
   );
-};
-
-export default StatusInput;
+}

@@ -1,15 +1,16 @@
-import { redirect, json } from "@remix-run/server-runtime";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
-import SettingForm from "~/components/Form/SettingForm";
+import type { LoaderArgs, ActionArgs } from "@remix-run/server-runtime";
+import { json, redirect } from "@remix-run/server-runtime";
+import { useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import { requireUserId } from "~/session.server";
+import type { RedisFormData } from "~/utils/types";
+import { handleFormData, settingSchema } from "~/utils/newHelpers.server";
 import {
   getAnyDataFromRedis,
   requireAnyFormData,
   saveAnyDataToRedis,
 } from "~/utils/redis.server";
-import { useTypedActionData, useTypedLoaderData } from "remix-typedjson";
-import type { RedisFormData, SettingErrors } from "~/utils/types";
-import { settingSchema, handleFormData } from "~/utils/newHelpers.server";
-import { requireUserId } from "~/session.server";
+import type { SettingErrors } from "~/utils/types";
+import SettingForm from "~/components/Form/SettingForm";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const redisObject = await requireAnyFormData(request);
@@ -48,20 +49,17 @@ export const action = async ({ request }: ActionArgs) => {
     redisObject.thoughts = result.thoughts;
 
     await saveAnyDataToRedis(redisObject);
-    return redirect(`/reviews/new/notes?rid=${redisObject.redisId}`);
+
+    return redirect(`/tester/new/notes?rid=${rid}`);
   } catch (error) {
     console.log(`Error saving Redis data: ${JSON.stringify(error, null, 2)}`);
     return json<SettingErrors>(errors as SettingErrors);
   }
 };
 
-export default function NewSettingRoute() {
-  const redisData = useTypedLoaderData<RedisFormData | null>();
+export default function SettingRoute() {
+  const data = useTypedLoaderData<RedisFormData | null>();
   const errors = useTypedActionData<SettingErrors>();
 
-  return (
-    <>
-      <SettingForm data={redisData || null} errors={errors} />
-    </>
-  );
+  return <SettingForm data={data} errors={errors} />;
 }

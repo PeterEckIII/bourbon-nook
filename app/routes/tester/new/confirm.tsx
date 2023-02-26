@@ -1,15 +1,125 @@
-import { Form } from "@remix-run/react";
-import { Link } from "react-router-dom";
+import { json, redirect } from "@remix-run/server-runtime";
+import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import { useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import type { RedisFormData, NoteErrors } from "~/utils/types";
+import {
+  deleteFormData,
+  getAnyDataFromRedis,
+  requireAnyFormData,
+} from "~/utils/redis.server";
+import { requireUserId } from "~/session.server";
+import { v4 as uuid } from "uuid";
+import { createReview } from "~/models/review.server";
+import { Form, Link } from "@remix-run/react";
+import Collapsible from "~/components/UI/Collapsible";
 import NoteTabs from "~/components/Review/NoteTabs/NoteTabs";
 import Button from "~/components/UI/Button";
-import Collapsible from "~/components/UI/Collapsible";
-import type { RedisFormData } from "~/utils/types";
 
-type ConfirmFormProps = {
-  data?: RedisFormData;
+export const loader = async ({ request }: LoaderArgs) => {
+  const formData = await requireAnyFormData(request);
+  return formData;
 };
 
-export default function ConfirmForm({ data }: ConfirmFormProps) {
+export const action = async ({ request }: ActionArgs) => {
+  const userId = await requireUserId(request);
+  const form = await request.formData();
+
+  const redisFormId = form.get("redisId")?.toString();
+
+  if (!redisFormId || typeof redisFormId === "undefined") {
+    return json<NoteErrors>({
+      general: `We couldn't find the saved data. Please re-input it`,
+    });
+  }
+
+  const rid = redisFormId;
+
+  const redisObject = await getAnyDataFromRedis(rid);
+  if (!redisObject || !redisObject.bottleId) {
+    return json<NoteErrors>({
+      general: `We couldn't find the saved data. Please re-input it`,
+    });
+  }
+
+  const reviewId = uuid();
+
+  const today = new Date();
+
+  try {
+    const newReview = await createReview({
+      id: reviewId,
+      updatedAt: today,
+      createdAt: today,
+      bottleId: redisObject.bottleId,
+      userId,
+      date: redisObject.date as string,
+      setting: redisObject.setting as string,
+      glassware: redisObject.glassware as string,
+      restTime: redisObject.restTime as string,
+      nose: redisObject.nose as string,
+      palate: redisObject.palate as string,
+      finish: redisObject.finish as string,
+      thoughts: redisObject.thoughts as string,
+      cherry: redisObject.cherry as number,
+      strawberry: redisObject.strawberry as number,
+      raspberry: redisObject.raspberry as number,
+      blackberry: redisObject.blackberry as number,
+      blueberry: redisObject.blueberry as number,
+      apple: redisObject.apple as number,
+      banana: redisObject.banana as number,
+      grape: redisObject.grape as number,
+      stone: redisObject.stone as number,
+      citrus: redisObject.citrus as number,
+      tropical: redisObject.tropical as number,
+      pepper: redisObject.pepper as number,
+      bakingSpice: redisObject.bakingSpice as number,
+      cinnamon: redisObject.cinnamon as number,
+      herbal: redisObject.herbal as number,
+      mint: redisObject.mint as number,
+      coffee: redisObject.coffee as number,
+      tobacco: redisObject.tobacco as number,
+      leather: redisObject.leather as number,
+      oak: redisObject.oak as number,
+      toasted: redisObject.toasted as number,
+      smokey: redisObject.smokey as number,
+      peanut: redisObject.peanut as number,
+      almond: redisObject.almond as number,
+      pecan: redisObject.pecan as number,
+      walnut: redisObject.walnut as number,
+      oily: redisObject.oily as number,
+      floral: redisObject.floral as number,
+      corn: redisObject.corn as number,
+      rye: redisObject.rye as number,
+      wheat: redisObject.wheat as number,
+      malt: redisObject.malt as number,
+      dough: redisObject.dough as number,
+      vanilla: redisObject.vanilla as number,
+      caramel: redisObject.caramel as number,
+      molasses: redisObject.molasses as number,
+      butterscotch: redisObject.butterscotch as number,
+      honey: redisObject.honey as number,
+      chocolate: redisObject.chocolate as number,
+      toffee: redisObject.toffee as number,
+      sugar: redisObject.sugar as number,
+      overallRating: redisObject.overallRating as number,
+      value: redisObject.value as number,
+    });
+    if (newReview) {
+      await deleteFormData(rid);
+      return redirect(`/reviews/${newReview.id}/comments`);
+    }
+  } catch (error) {
+    console.log(
+      `Error submitting review data: ${JSON.stringify(error, null, 2)}`
+    );
+    return redirect(`/tester/new/confirm?rid=${rid}`);
+  }
+};
+
+export default function ConfirmRoute() {
+  const data = useTypedLoaderData<RedisFormData | null>();
+  const errors = useTypedActionData<NoteErrors>();
+
   return (
     <div className="w-full bg-white">
       <div className="my-2 flex flex-col">
@@ -58,7 +168,7 @@ export default function ConfirmForm({ data }: ConfirmFormProps) {
             </div>
           </Collapsible>
           <div className="my-2 text-right">
-            <Link to={`/reviews/new/bottle?rid=${data?.redisId}`}>
+            <Link to={`/tester/new/bottle?rid=${data?.redisId}`}>
               Edit Bottle Information
             </Link>
           </div>
@@ -127,8 +237,9 @@ export default function ConfirmForm({ data }: ConfirmFormProps) {
           </Collapsible>
           <div className="my-2 text-right">
             <Link
+              prefetch="intent"
               className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-              to={`/reviews/new/setting?id=${data?.redisId}`}
+              to={`/tester/new/setting?id=${data?.redisId}`}
             >
               Edit Your Review
             </Link>
@@ -196,8 +307,9 @@ export default function ConfirmForm({ data }: ConfirmFormProps) {
           </Collapsible>
           <div className="my-2 text-right">
             <Link
+              prefetch="intent"
               className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-              to={`/reviews/new/notes?id=${data?.redisId}`}
+              to={`/tester/new/notes?id=${data?.redisId}`}
             >
               Edit Tasting Notes
             </Link>

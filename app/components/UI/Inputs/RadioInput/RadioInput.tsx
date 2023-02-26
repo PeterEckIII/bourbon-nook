@@ -1,30 +1,29 @@
-interface RadioInputProps extends React.HTMLAttributes<HTMLInputElement> {
+import type { HTMLAttributes } from "react";
+
+interface RadioInputProps extends HTMLAttributes<HTMLInputElement> {
   label: string;
-  id: string;
   value: boolean;
   onChange: () => void;
-  onBlur: () => void;
+  field: string;
 }
 
 export default function RadioInput({
   label,
-  id,
   value,
   onChange,
-  onBlur,
+  field,
 }: RadioInputProps) {
   return (
     <>
       <input
         type="radio"
         checked={value}
-        id={id}
-        onChange={onChange}
+        id={`${field}-field`}
         className="peer sr-only"
-        onBlur={onBlur}
+        onChange={onChange}
       />
       <label
-        htmlFor={id}
+        htmlFor={`${field}-field`}
         className="h-8 cursor-pointer rounded bg-white bg-opacity-0 py-1 px-2 text-sm leading-6 text-gray-600 shadow-none hover:text-gray-800 peer-checked:bg-opacity-100 peer-checked:shadow"
       >
         {label}
