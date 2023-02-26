@@ -25,7 +25,7 @@ export type Bottle = {
 };
 
 interface ComboBoxProps {
-  value: Bottle | {};
+  value: Bottle | {} | "";
   setValue: React.Dispatch<React.SetStateAction<{} | Bottle>>;
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
@@ -43,7 +43,12 @@ export default function ComboBox({
 }: ComboBoxProps) {
   return (
     <div className="mb-2 w-full rounded-lg px-3 md:mb-0">
-      <Combobox value={value ?? []} onChange={setValue} name="name" nullable>
+      <Combobox
+        value={value ?? []}
+        onChange={setValue}
+        name="bottleName"
+        nullable
+      >
         <Combobox.Label className="my-2 flex w-full flex-col gap-1">
           Bottle Name
         </Combobox.Label>

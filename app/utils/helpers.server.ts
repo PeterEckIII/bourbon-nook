@@ -1,5 +1,5 @@
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
-import type { Status } from "~/routes/reviews/new";
+import type { BottleStatus } from "@prisma/client";
 import { useFetcher } from "@remix-run/react";
 import type { FetcherWithComponents } from "@remix-run/react";
 import type { TypedFetcherWithComponents } from "remix-typedjson";
@@ -15,6 +15,10 @@ export function assertNonNullable<T>(
     throw new Error(`Value is undefined or null`);
   }
 }
+
+type FormDataProps = {
+  request: Request;
+};
 
 export const generateCode = (length: number): string => {
   let result = "";
@@ -41,7 +45,7 @@ export type SavedRedisData = { redisId: string } & (
 
 export interface CustomFormData {
   redisId: string;
-  status: Status;
+  status: BottleStatus;
   userId: string;
   name: string;
   type: string;
@@ -215,7 +219,7 @@ export type RatingNotesFormData = Pick<
 
 export type CustomBottleFormData = {
   redisId: string;
-  status: Status;
+  status: BottleStatus;
   userId: string;
   name: string;
   type: string;
@@ -237,7 +241,7 @@ export type CustomBottleFormData = {
 
 export interface BottleFormValues {
   redisId: string;
-  status: Status;
+  status: BottleStatus;
   userId: string;
   name: string;
   type: string;
@@ -314,7 +318,7 @@ export interface ReviewFormValues extends BottleFormValues {
 
 export type BottleContext = {
   name: string;
-  status: Status;
+  status: BottleStatus;
   type: string;
   distiller: string;
   producer: string;
@@ -336,7 +340,7 @@ export type BottleContext = {
 
 export type ReviewContext = {
   name: string;
-  status: Status;
+  status: BottleStatus;
   type: string;
   distiller: string;
   producer: string;

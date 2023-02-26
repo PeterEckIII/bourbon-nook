@@ -1,25 +1,25 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
-import { json, redirect } from "@remix-run/node";
 import { useTransition } from "@remix-run/react";
-import { requireUserId } from "~/session.server";
-import invariant from "tiny-invariant";
-import { createBottle, editBottle } from "~/models/bottle.server";
-import type { bottle, BottleStatus } from "@prisma/client";
+import type { LoaderArgs, ActionArgs } from "@remix-run/server-runtime";
+import { json, redirect } from "@remix-run/server-runtime";
 import {
   useTypedActionData,
   useTypedFetcher,
   useTypedLoaderData,
 } from "remix-typedjson";
-import type { ImageActionData } from "~/routes/services/image";
-import { useEffect, useState } from "react";
-import useDebounce from "~/utils/useDebounce";
-import type { LoaderData as ComboData } from "~/routes/services/combo";
+import { createBottle, editBottle, getBottle } from "~/models/bottle.server";
+import { requireUserId } from "~/session.server";
 import { generateCode } from "~/utils/helpers.server";
-import { getBottle } from "~/models/bottle.server";
-import BottleForm from "~/components/Form/BottleForm";
-import type { BottleErrors, RedisFormData } from "~/utils/types";
-import { bottleSchema, handleFormData } from "~/utils/newHelpers.server";
+import type { ComboData, RedisFormData } from "~/utils/types";
 import { getAnyDataFromRedis, saveAnyDataToRedis } from "~/utils/redis.server";
+import { z } from "zod";
+import { handleFormData, bottleSchema } from "~/utils/newHelpers.server";
+import type { bottle, BottleStatus } from "@prisma/client";
+import invariant from "tiny-invariant";
+import type { BottleErrors } from "~/utils/types";
+import BottleForm from "~/components/Form/BottleForm";
+import { useEffect, useState } from "react";
+import type { ImageData } from "~/utils/types";
+import useDebounce from "~/utils/useDebounce";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
@@ -35,20 +35,12 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  // Handle user auth
-  const redirectIfLoggedOut = new URL(request.url);
   const userId = await requireUserId(request);
-  invariant(userId, "No user in session");
-  if (!userId || typeof userId === "undefined") {
-    redirect(`/login?redirectTo=${redirectIfLoggedOut}`);
-  }
 
   const { result, errors, formData } = await handleFormData(
     request,
     bottleSchema
   );
-  console.log(`Results: ${JSON.stringify(result, null, 2)}`);
-  const status = formData.get("status")?.toString();
 
   const redisFormId = formData.get("redisId")?.toString();
 
@@ -60,7 +52,7 @@ export const action = async ({ request }: ActionArgs) => {
     const newRedisObject: RedisFormData = {
       userId,
       redisId: rid,
-      status: status as BottleStatus,
+      status: result.status as BottleStatus,
       name: result.name,
       type: result.type,
       distiller: result.distiller,
@@ -90,7 +82,7 @@ export const action = async ({ request }: ActionArgs) => {
 
       newRedisObject.bottleId = newBottle.id;
       await saveAnyDataToRedis(newRedisObject);
-      return redirect(`/reviews/new/setting?rid=${rid}`);
+      return redirect(`/tester/new/setting?rid=${rid}`);
     } catch (error) {
       console.log(`Error submitting bottle: ${JSON.stringify(error, null, 2)}`);
       return json<BottleErrors>(errors as BottleErrors);
@@ -111,7 +103,7 @@ export const action = async ({ request }: ActionArgs) => {
       const updatedBottle = {
         userId,
         id: savedRecord.id,
-        status: status as BottleStatus,
+        status: result.status as BottleStatus,
         name: result.name,
         type: result.type,
         distiller: result.distiller,
@@ -139,7 +131,7 @@ export const action = async ({ request }: ActionArgs) => {
           bottleId: newResult.id,
           ...updatedBottle,
         });
-        return redirect(`/reviews/new/setting?rid=${rid}`);
+        return redirect(`/tester/new/setting?rid=${rid}`);
       } catch (error) {
         console.log(`Error editing bottle: ${error}`);
         return null;
@@ -153,7 +145,7 @@ export const action = async ({ request }: ActionArgs) => {
         const newBottle = await createBottle({
           userId,
           id: savedRecord.id,
-          status: status as BottleStatus,
+          status: result.status as BottleStatus,
           name: result.name,
           type: result.type,
           distiller: result.distiller,
@@ -178,7 +170,7 @@ export const action = async ({ request }: ActionArgs) => {
           bottleId: newBottle.id,
           ...result,
         });
-        return redirect(`/reviews/setting?rid=${rid}`);
+        return redirect(`/tester/setting?rid=${rid}`);
       } catch (error) {
         throw new Error(
           `Couldn't save bottle to database: ${JSON.stringify(error, null, 2)}`
@@ -188,28 +180,54 @@ export const action = async ({ request }: ActionArgs) => {
   }
 };
 
-export default function NewBottleRoute() {
-  const redisData = useTypedLoaderData<typeof loader>();
+export default function TesterBottleRoute() {
+  const [value, setValue] = useState<{} | bottle | string>("");
+  const [query, setQuery] = useState<string>("");
+  const queryTerm = useDebounce(value, 400);
+
   const errors = useTypedActionData<BottleErrors>();
+  const redisData = useTypedLoaderData<RedisFormData | null>();
+
+  const imageFetcher = useTypedFetcher<ImageData>();
+  const combo = useTypedFetcher<ComboData>();
+  const { data: comboData, load } = combo;
+
+  let bottles = comboData?.bottles || [];
+
+  if (typeof value === "undefined") {
+    throw new Error(`Something bad happened`);
+  }
 
   const transition = useTransition();
   const formIsSubmitting = transition.type === "actionSubmission";
 
-  // image fetcher
-  const imageFetcher = useTypedFetcher<ImageActionData>();
   const imageIsSubmitting = imageFetcher.type === "actionSubmission";
   const submissionSuccessful =
     imageFetcher.type === "done" &&
     typeof imageFetcher.data.imageSrc !== "undefined";
+
+  useEffect(() => {
+    function getInitialData() {
+      load(`/services/combo`);
+    }
+    getInitialData();
+  }, [load]);
+
+  useEffect(() => {
+    function getFilteredBottles() {
+      load(`/services/combo?query=${queryTerm}`);
+    }
+    getFilteredBottles();
+  }, [load, queryTerm]);
 
   return (
     <BottleForm
       data={redisData || null}
       errors={errors}
       imageFetcher={imageFetcher}
-      formIsSubmitting={formIsSubmitting}
       imageIsSubmitting={imageIsSubmitting}
       submissionSuccessful={submissionSuccessful}
+      formIsSubmitting={formIsSubmitting}
     />
   );
 }
