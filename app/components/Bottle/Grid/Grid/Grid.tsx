@@ -5,6 +5,8 @@ import type {
   FirstDataRenderedEvent,
   GridReadyEvent,
   GridSizeChangedEvent,
+  GroupCellRendererParams,
+  ValueFormatterParams,
   ValueGetterParams,
 } from "ag-grid-community";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -13,10 +15,14 @@ import StatusPill from "../StatusPill";
 import PriceRenderer from "~/components/Review/Grid/PriceRenderer";
 import ABVRenderer from "~/components/Review/Grid/ABVRenderer";
 import ProofRenderer from "~/components/Review/Grid/ProofRenderer";
+import type { GridCollection } from "~/models/bottle.server";
+import AddIcon from "~/components/Icons/AddIcon";
+import ExternalLink from "~/components/Icons/ExternalLink";
+import { Link } from "@remix-run/react";
 
 export default function Grid({ initialData }: any) {
   const [records, setRecords] = useState<number>(0);
-  const [rowData, setRowData] = useState(initialData);
+  const [rowData, setRowData] = useState<GridCollection[]>(initialData);
   const gridStyle = useMemo(() => ({ height: "100%", width: "100%" }), []);
   const grid = useRef<AgGridReactType>(null);
   const [columnDefs, setColumnDefs] = useState<ColDef[]>([
@@ -201,9 +207,27 @@ export default function Grid({ initialData }: any) {
 
     {
       headerName: "Review",
-      field: "reviewId",
       minWidth: 100,
-      cellRenderer: LinkRenderer,
+      valueGetter: (params: ValueGetterParams) => {
+        return params.data?.reviewId ? params.data?.reviewId : params.data?.id;
+      },
+      cellRenderer: (props: any) => {
+        if (props.data?.reviews.length < 1) {
+          return (
+            <>
+              <Link to={`/reviews/new/setting?bid=${props.data?.id}`}>
+                <AddIcon classes="text-green-600" />
+              </Link>
+            </>
+          );
+        } else {
+          return (
+            <Link to={`/reviews/${props.data?.reviews[0].id}/comments`}>
+              <ExternalLink className="" />
+            </Link>
+          );
+        }
+      },
       cellStyle: {
         display: "flex",
         justifyContent: "center",

@@ -1,21 +1,15 @@
+import NoteInput from "~/components/UI/Inputs/NoteInput";
+import NoteInputWithImage from "~/components/UI/Inputs/NoteInputWithImage";
 import rye from "~/images/rye.png";
 import wheat from "~/images/wheat.png";
-import type { FormState } from "~/routes/reviews/new";
-import NoteInput from "~/components/UI/Inputs/NoteInput/NoteInput";
-import NoteInputCustom from "~/components/UI/Inputs/NoteInputCustom/NoteInputCustom";
-import type { CustomFormData } from "~/utils/helpers.server";
+import type { GrainNotesErrors, RedisFormData } from "~/utils/types";
 
-interface IGrainNoteProps {
-  state: FormState;
-  changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  formData: CustomFormData;
+interface GrainNoteProps {
+  data: RedisFormData | null;
+  errors: GrainNotesErrors | null;
 }
 
-export default function GrainNotes({
-  state,
-  changeHandler,
-  formData,
-}: IGrainNoteProps) {
+export default function GrainNotes({ data, errors }: GrainNoteProps) {
   return (
     <>
       <h4>Grain Notes</h4>
@@ -23,51 +17,46 @@ export default function GrainNotes({
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
           <NoteInput
             name="corn"
-            value={state.corn}
-            defaultValue={formData?.corn}
+            defaultValue={data?.corn}
+            error={errors?.corn}
             emoji="🌽"
             labelName="Corn"
-            changeHandler={(e) => changeHandler(e)}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <NoteInputCustom
+          <NoteInputWithImage
             name="rye"
             labelName="Rye"
-            value={state.rye}
-            defaultValue={formData?.rye}
-            changeHandler={(e) => changeHandler(e)}
-            noteSource={rye}
+            defaultValue={data?.rye}
+            error={errors?.rye}
+            imageSource={rye}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <NoteInputCustom
+          <NoteInputWithImage
             name="wheat"
             labelName="Wheat"
-            value={state.wheat}
-            defaultValue={formData?.wheat}
-            changeHandler={(e) => changeHandler(e)}
-            noteSource={wheat}
+            defaultValue={data?.wheat}
+            error={errors?.wheat}
+            imageSource={wheat}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
           <NoteInput
             name="malt"
             emoji="🍺"
-            value={state.malt}
-            defaultValue={formData?.malt}
+            defaultValue={data?.malt}
+            error={errors?.malt}
             labelName="Malt"
-            changeHandler={(e) => changeHandler(e)}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
           <NoteInput
             name="dough"
             emoji="🥖"
-            value={state.dough}
-            defaultValue={formData?.dough}
+            defaultValue={data?.dough}
+            error={errors?.dough}
             labelName="Dough / Bread"
-            changeHandler={(e) => changeHandler(e)}
           />
         </div>
       </div>

@@ -3,10 +3,12 @@ import { json } from "@remix-run/server-runtime";
 import type { LoaderArgs, LinksFunction } from "@remix-run/server-runtime";
 import { requireUserId } from "~/session.server";
 import { getBottlesForUser } from "~/models/bottle.server";
+import type { GridCollection } from "~/models/bottle.server";
 
 import GridStyles from "ag-grid-community/styles/ag-grid.css";
 import AlpineTheme from "ag-grid-community/styles/ag-theme-alpine.css";
 import Grid from "~/components/Bottle/Grid/Grid";
+import { bottle, review } from "@prisma/client";
 
 export const links: LinksFunction = () => {
   return [
@@ -32,7 +34,7 @@ export const links: LinksFunction = () => {
 };
 
 export interface LoaderData {
-  collection: Awaited<ReturnType<typeof getBottlesForUser>>;
+  collection: (bottle & { reviews: review[] })[];
   userId: string;
 }
 

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
-import Download from "../Icons/Download";
+import Download from "../../Icons/Download";
 import type { TypedFetcherWithComponents } from "remix-typedjson";
 import type { ImageActionData } from "~/routes/services/image";
-import CheckIcon from "../Icons/CheckIcon";
-import Spinner from "../Icons/Spinner";
+import CheckIcon from "../../Icons/CheckIcon";
+import Spinner from "../../Icons/Spinner";
 
 type ImageUploaderProps = {
   imageFetcher: TypedFetcherWithComponents<ImageActionData>;

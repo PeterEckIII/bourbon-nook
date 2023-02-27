@@ -1,18 +1,12 @@
-import NoteInput from "~/components/UI/Inputs/NoteInput/NoteInput";
-import type { FormState } from "~/routes/reviews/new";
-import type { CustomFormData } from "~/utils/helpers.server";
+import type { RedisFormData, RatingErrors } from "~/utils/types";
+import NoteInput from "~/components/UI/Inputs/NoteInput";
 
 interface IRatingProps {
-  state: FormState;
-  changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  formData: CustomFormData;
+  data: RedisFormData | null;
+  errors: RatingErrors | null;
 }
 
-export default function Rating({
-  state,
-  changeHandler,
-  formData,
-}: IRatingProps) {
+export default function Rating({ data, errors }: IRatingProps) {
   return (
     <>
       <h4>Rating</h4>
@@ -21,9 +15,8 @@ export default function Rating({
           <NoteInput
             labelName="Value for Money"
             name="value"
-            value={state.value}
-            defaultValue={formData?.value}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.value}
+            error={errors?.value}
             emoji="💰"
           />
         </div>
@@ -31,9 +24,8 @@ export default function Rating({
           <NoteInput
             labelName="Overall Rating"
             name="overallRating"
-            value={state.overallRating}
-            defaultValue={formData?.overallRating}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.overallRating}
+            error={errors?.overallRating}
             emoji="💯"
           />
         </div>

@@ -1,21 +1,15 @@
 import raspberry from "~/images/raspberry.webp";
 import blackberry from "~/images/blackberry.webp";
-import type { FormState } from "~/routes/reviews/new";
-import NoteInput from "~/components/UI/Inputs/NoteInput/NoteInput";
-import NoteInputCustom from "~/components/UI/Inputs/NoteInputCustom/NoteInputCustom";
-import type { CustomFormData } from "~/utils/helpers.server";
+import NoteInput from "~/components/UI/Inputs/NoteInput";
+import NoteInputWithImage from "~/components/UI/Inputs/NoteInputWithImage";
+import type { FruitNotesErrors, RedisFormData } from "~/utils/types";
 
-interface IFruitNoteProps {
-  state: FormState;
-  changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  formData: CustomFormData;
+interface FruitNoteProps {
+  data: RedisFormData | null;
+  errors: FruitNotesErrors | null;
 }
 
-export default function FruitNotes({
-  state,
-  changeHandler,
-  formData,
-}: IFruitNoteProps) {
+export default function FruitNotes({ data, errors }: FruitNoteProps) {
   return (
     <>
       <h4>Fruit Notes</h4>
@@ -25,9 +19,8 @@ export default function FruitNotes({
             labelName="Cherry"
             emoji="🍒"
             name="cherry"
-            value={state.cherry}
-            defaultValue={formData?.cherry}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.cherry}
+            error={errors?.cherry}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -35,29 +28,26 @@ export default function FruitNotes({
             labelName="Strawberry"
             emoji="🍓"
             name="strawberry"
-            value={state.strawberry}
-            defaultValue={formData?.strawberry}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.strawberry}
+            error={errors?.strawberry}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <NoteInputCustom
+          <NoteInputWithImage
             name="raspberry"
             labelName="Raspberry"
-            value={state.raspberry}
-            defaultValue={formData?.raspberry}
-            changeHandler={(e) => changeHandler(e)}
-            noteSource={raspberry}
+            defaultValue={data?.raspberry}
+            error={errors?.raspberry}
+            imageSource={raspberry}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <NoteInputCustom
+          <NoteInputWithImage
             name="blackberry"
             labelName="Blackberry"
-            value={state.blackberry}
-            defaultValue={formData?.blackberry}
-            changeHandler={(e) => changeHandler(e)}
-            noteSource={blackberry}
+            defaultValue={data?.blackberry}
+            error={errors?.blackberry}
+            imageSource={blackberry}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -65,9 +55,8 @@ export default function FruitNotes({
             labelName="Blueberry"
             emoji="🫐"
             name="blueberry"
-            value={state.blueberry}
-            defaultValue={formData?.blueberry}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.blueberry}
+            error={errors?.blueberry}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -75,9 +64,8 @@ export default function FruitNotes({
             labelName="Apple"
             emoji="🍎"
             name="apple"
-            value={state.apple}
-            defaultValue={formData?.apple}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.apple}
+            error={errors?.apple}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -85,9 +73,8 @@ export default function FruitNotes({
             labelName="Banana"
             emoji="🍌"
             name="banana"
-            value={state.banana}
-            defaultValue={formData?.banana}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.banana}
+            error={errors?.banana}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -95,9 +82,8 @@ export default function FruitNotes({
             labelName="Grape"
             emoji="🍇"
             name="grape"
-            value={state.grape}
-            defaultValue={formData?.grape}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.grape}
+            error={errors?.grape}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -105,9 +91,8 @@ export default function FruitNotes({
             labelName="Stone Fruit"
             emoji="🍑"
             name="stone"
-            value={state.stone}
-            defaultValue={formData?.stone}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.stone}
+            error={errors?.stone}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -115,9 +100,8 @@ export default function FruitNotes({
             labelName="Citrus"
             emoji="🍋"
             name="citrus"
-            value={state.citrus}
-            defaultValue={formData?.citrus}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.citrus}
+            error={errors?.citrus}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -125,9 +109,8 @@ export default function FruitNotes({
             labelName="Tropical"
             emoji="🍍"
             name="tropical"
-            value={state.tropical}
-            defaultValue={formData?.tropical}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.tropical}
+            error={errors?.tropical}
           />
         </div>
       </div>

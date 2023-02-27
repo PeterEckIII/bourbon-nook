@@ -1,26 +1,18 @@
-import * as React from "react";
-import type { FormState } from "~/routes/reviews/new";
-
-import NoteInput from "~/components/UI/Inputs/NoteInput/NoteInput";
-import NoteInputCustom from "~/components/UI/Inputs/NoteInputCustom/NoteInputCustom";
+import NoteInput from "~/components/UI/Inputs/NoteInput";
+import NoteInputWithImage from "~/components/UI/Inputs/NoteInputWithImage";
 
 import leather from "~/images/leather.webp";
 import almond from "~/images/almond.png";
 import pecan from "~/images/pecan.png";
 import walnut from "~/images/walnut.webp";
-import type { CustomFormData } from "~/utils/helpers.server";
+import type { EarthNoteErrors, RedisFormData } from "~/utils/types";
 
 interface IEarthNoteProps {
-  state: FormState;
-  changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  formData: CustomFormData;
+  data: RedisFormData | null;
+  errors: EarthNoteErrors | null;
 }
 
-export default function EarthNotes({
-  state,
-  changeHandler,
-  formData,
-}: IEarthNoteProps) {
+export default function EarthNotes({ data, errors }: IEarthNoteProps) {
   return (
     <>
       <h4>Earth Notes</h4>
@@ -30,9 +22,8 @@ export default function EarthNotes({
             labelName="Coffee"
             emoji="☕"
             name="coffee"
-            value={state.coffee}
-            defaultValue={formData?.coffee}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.coffee}
+            error={errors?.coffee}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -40,19 +31,17 @@ export default function EarthNotes({
             labelName="Tobacco Leaf"
             emoji="🍁"
             name="tobacco"
-            value={state.tobacco}
-            defaultValue={formData?.tobacco}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.tobacco}
+            error={errors?.tobacco}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <NoteInputCustom
+          <NoteInputWithImage
             name="leather"
             labelName="Leather"
-            value={state.leather}
-            defaultValue={formData?.leather}
-            changeHandler={(e) => changeHandler(e)}
-            noteSource={leather}
+            defaultValue={data?.leather}
+            error={errors?.leather}
+            imageSource={leather}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -60,9 +49,8 @@ export default function EarthNotes({
             labelName="Oak"
             emoji="🪵"
             name="oak"
-            value={state.oak}
-            defaultValue={formData?.oak}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.oak}
+            error={errors?.oak}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -70,9 +58,8 @@ export default function EarthNotes({
             labelName="Toasted"
             emoji="🍞"
             name="toasted"
-            value={state.toasted}
-            defaultValue={formData?.toasted}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.toasted}
+            error={errors?.toasted}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -80,9 +67,8 @@ export default function EarthNotes({
             labelName="Smokey"
             emoji="💨"
             name="smokey"
-            value={state.smokey}
-            defaultValue={formData?.smokey}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.smokey}
+            error={errors?.smokey}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -90,39 +76,35 @@ export default function EarthNotes({
             labelName="Peanut"
             emoji="🥜"
             name="peanut"
-            value={state.peanut}
-            defaultValue={formData?.peanut}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.peanut}
+            error={errors?.peanut}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <NoteInputCustom
+          <NoteInputWithImage
             labelName="Almond"
-            noteSource={almond}
+            imageSource={almond}
             name="almond"
-            value={state.almond}
-            defaultValue={formData?.almond}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.almond}
+            error={errors?.almond}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <NoteInputCustom
+          <NoteInputWithImage
             labelName="Pecan"
-            noteSource={pecan}
+            imageSource={pecan}
             name="pecan"
-            value={state.pecan}
-            defaultValue={formData?.pecan}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.pecan}
+            error={errors?.pecan}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
-          <NoteInputCustom
+          <NoteInputWithImage
             labelName="Walnut"
-            noteSource={walnut}
+            imageSource={walnut}
             name="walnut"
-            value={state.walnut}
-            defaultValue={formData?.walnut}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.walnut}
+            error={errors?.walnut}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -130,9 +112,8 @@ export default function EarthNotes({
             labelName="Oily"
             emoji="🛢️"
             name="oily"
-            value={state.oily}
-            defaultValue={formData?.oily}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.oily}
+            error={errors?.oily}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -140,9 +121,8 @@ export default function EarthNotes({
             labelName="Floral"
             emoji="🌹"
             name="floral"
-            value={state.floral}
-            defaultValue={formData?.floral}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.floral}
+            error={errors?.floral}
           />
         </div>
       </div>
