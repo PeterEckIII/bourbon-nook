@@ -1,4 +1,4 @@
-import type { bottle, user } from "@prisma/client";
+import type { bottle, BottleStatus, user } from "@prisma/client";
 import { ErrorBase } from "~/utils/ErrorBase";
 import { prisma } from "~/db.server";
 
@@ -28,33 +28,35 @@ export const getBottleListItems = async () => {
   });
 };
 
+export type GridCollection = {
+  id: string;
+  status: BottleStatus;
+  name: string;
+  type: string;
+  distiller: string | null;
+  producer: string | null;
+  country: string | null;
+  region: string | null;
+  price: string | null;
+  age: string | null;
+  year: string | null;
+  batch: string | null;
+  alcoholPercent: string | null;
+  proof: string | null;
+  size: string | null;
+  color: string | null;
+  finishing: string | null;
+  imageUrl: string | null;
+  review: {
+    id: string | null;
+  };
+};
+
 export const getBottlesForUser = async (userId: user["id"]) => {
   return prisma.bottle.findMany({
     where: { userId },
-    select: {
-      id: true,
-      status: true,
-      name: true,
-      type: true,
-      distiller: true,
-      producer: true,
-      country: true,
-      region: true,
-      price: true,
-      age: true,
-      year: true,
-      batch: true,
-      alcoholPercent: true,
-      proof: true,
-      size: true,
-      color: true,
-      finishing: true,
-      imageUrl: true,
-      reviews: {
-        select: {
-          id: true,
-        },
-      },
+    include: {
+      reviews: true,
     },
   });
 };
@@ -68,6 +70,7 @@ export const getBottlesForCombobox = async (userId: string, query: string) => {
         mode: "insensitive",
       },
     },
+    take: 4,
     select: {
       id: true,
       name: true,
@@ -131,6 +134,25 @@ export const createBottle = async ({
       color,
       finishing,
       imageUrl,
+    },
+  });
+};
+
+type EditBottleByIdProps = {
+  bottleId: bottle["id"];
+  bottle: Omit<bottle, "id">;
+};
+
+export const editBottleById = async ({
+  bottleId,
+  bottle,
+}: EditBottleByIdProps) => {
+  return prisma.bottle.update({
+    where: {
+      id: bottleId,
+    },
+    data: {
+      ...bottle,
     },
   });
 };

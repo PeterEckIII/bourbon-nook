@@ -1,63 +1,42 @@
-import { useBeforeUnload } from "@remix-run/react";
-import React from "react";
+import type { InputHTMLAttributes } from "react";
 import ValidationMessage from "../../ValidationMessage";
 
-interface ITextareaInputProps
-  extends React.InputHTMLAttributes<HTMLTextAreaElement> {
-  error?: string;
-  labelName: string;
+interface TextareaInputProps extends InputHTMLAttributes<HTMLTextAreaElement> {
   name: string;
-  value: string;
-  emoji: string;
-  changeHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  isSubmitting: boolean;
+  labelName: string;
+  emoji?: string;
+  error?: string;
+  defaultValue?: string;
 }
 
 export default function TextareaInput({
-  labelName,
   name,
-  value,
+  labelName,
   emoji,
-  changeHandler,
   error,
-  isSubmitting,
-}: ITextareaInputProps) {
-  useBeforeUnload(
-    React.useCallback(() => {
-      if (typeof window !== "undefined") {
-        return window.localStorage.setItem(name, value);
-      }
-    }, [name, value])
-  );
-
-  const handleBlur = (key: string, value: string) => {
-    if (typeof window !== "undefined") {
-      return window.localStorage.setItem(key, value);
-    }
-  };
-
+  defaultValue,
+}: TextareaInputProps) {
   return (
-    <div className="mx-3 flex w-full flex-col">
-      <label htmlFor={name} className="my-2 flex w-full flex-col gap-1">
+    <div className="flex w-full flex-col">
+      <label
+        htmlFor={`${name}-field`}
+        className="my-2 flex w-full flex-col gap-1"
+      >
         {labelName}&nbsp;
         {emoji}{" "}
       </label>
       <div className="flex">
         <textarea
           name={name}
-          aria-label={`${labelName}`}
-          id={name}
+          id={`${name}-field`}
           rows={6}
-          value={value}
-          onChange={changeHandler}
-          onBlur={() => handleBlur(name, value)}
-          className={
-            "block w-full min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-          }
+          defaultValue={defaultValue}
+          aria-label={`${labelName}`}
           aria-invalid={Boolean(error) || undefined}
+          className="block w-full min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
         />
       </div>
-      {error && <ValidationMessage error={error} isSubmitting={isSubmitting} />}
+      {error && <ValidationMessage error={error} isSubmitting={false} />}
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import type { TypedFetcherWithComponents } from "remix-typedjson";
+import ImageUploader from "~/components/UI/ImageUploader/ImageUploader";
 import Button from "~/components/UI/Button";
-import type { ImageActionData } from "~/routes/services/image";
-import ImageUploader from "../ImageUploader";
+import type { ImageData } from "~/utils/types";
 
 type ImageFormProps = {
-  imageFetcher: TypedFetcherWithComponents<ImageActionData>;
+  imageFetcher: TypedFetcherWithComponents<ImageData>;
   imageIsSubmitting: boolean;
 };
 
@@ -24,10 +24,12 @@ export default function ImageForm({
         className="h-full"
       >
         <ImageUploader imageFetcher={imageFetcher} />
-        <Button
-          type="submit"
-          callToAction={imageIsSubmitting ? "Uploading..." : "Upload Image"}
-        />
+        <div className="-mx-2 flex w-full justify-end">
+          <Button
+            type="submit"
+            callToAction={imageIsSubmitting ? "Uploading..." : "Upload Image"}
+          />
+        </div>
       </imageFetcher.Form>
     </div>
   );

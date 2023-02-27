@@ -1,53 +1,37 @@
-import * as React from "react";
-import { useBeforeUnload } from "@remix-run/react";
+import type { InputHTMLAttributes } from "react";
+import ValidationMessage from "../../ValidationMessage";
 
-interface INoteInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface NoteInputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
-  value: number;
   labelName: string;
   emoji?: string;
-  changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 export default function NoteInput({
   name,
-  value,
   labelName,
   emoji,
-  changeHandler,
-}: INoteInputProps) {
-  useBeforeUnload(
-    React.useCallback(() => {
-      localStorage.setItem(name, String(value));
-    }, [name, value])
-  );
-
-  const handleBlur = (key: string, value: string | number) => {
-    if (typeof window !== "undefined") {
-      return window.localStorage.setItem(key, String(value));
-    }
-  };
-
+  error,
+}: NoteInputProps) {
   return (
     <div className="flex w-full flex-col">
-      <label htmlFor={name} className="my-2 flex w-full flex-col gap-1">
+      <label
+        htmlFor={`${name}-field`}
+        className="my-2 flex w-full flex-col gap-1"
+      >
         {labelName}&nbsp; {emoji ? emoji : ""}{" "}
       </label>
       <div className="flex">
         <input
+          type="text"
           name={name}
-          aria-label={`${labelName}`}
-          id={name}
-          type={"number"}
-          value={value}
-          onChange={changeHandler}
-          onBlur={() => handleBlur(name, value)}
-          className={
-            "block w-full min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-          }
+          id={`${name}-field`}
+          aria-label={labelName}
+          className="block w-full min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
         />
       </div>
-      {/* {error && <span className="text-red-600">{error}</span>} */}
+      {error && <ValidationMessage error={error} isSubmitting={false} />}
     </div>
   );
 }

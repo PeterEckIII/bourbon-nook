@@ -1,7 +1,7 @@
 import { Outlet, useCatch } from "@remix-run/react";
 import type { ErrorBoundaryComponent } from "@remix-run/server-runtime";
 
-export default function NewBottleRoute() {
+export default function NewTesterRouter() {
   return (
     <>
       <Outlet />
@@ -12,9 +12,9 @@ export default function NewBottleRoute() {
 export function CatchBoundary() {
   const caught = useCatch();
   return (
-    <div>
-      <h1>Caught!</h1>
-      <p>Status: {caught.status}</p>
+    <div className="h-[1000px] w-[500px]">
+      <h1>Caught</h1>
+      <p>Status: {caught.status} </p>
       <pre>
         <code>{JSON.stringify(caught.data, null, 2)}</code>
       </pre>
@@ -24,10 +24,10 @@ export function CatchBoundary() {
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   return (
-    <div>
+    <div className="h-[1000px] w-[500px]">
       <h1>Error!</h1>
       <p>{error.message}</p>
-      <p>The stack trace is:</p>
+      <p>Stack trace is:</p>
       <pre>{error.stack}</pre>
     </div>
   );

@@ -1,12 +1,5 @@
 import { v4 as uuid } from "uuid";
-import {
-  useActionData,
-  useLoaderData,
-  useOutletContext,
-  useTransition,
-} from "@remix-run/react";
 import type {
-  ActionFunction,
   LinksFunction,
   ActionArgs,
   LoaderArgs,
@@ -14,15 +7,16 @@ import type {
 import { redirect, json } from "@remix-run/server-runtime";
 import { createReview } from "~/models/review.server";
 import { requireUserId } from "~/session.server";
-import type { ReviewContextType } from "../new";
 import {
   deleteFormData,
-  getDataFromRedis,
-  requireFormData,
+  getAnyDataFromRedis,
+  requireAnyFormData,
 } from "~/utils/redis.server";
-import type { CustomFormData } from "~/utils/helpers.server";
 import ConfirmForm from "~/components/Form/ConfirmForm/ConfirmForm";
 import CollapsedStyles from "~/styles/collapsed.css";
+import type { RedisFormData } from "~/utils/types";
+import ValidationMessage from "~/components/UI/ValidationMessage";
+import { useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 
 export const links: LinksFunction = () => {
   return [
@@ -37,147 +31,121 @@ export const links: LinksFunction = () => {
     },
   ];
 };
+
+export const loader = async ({ request }: LoaderArgs) => {
+  const formData = await requireAnyFormData(request);
+  return formData;
+};
+
 interface ActionData {
   error?: string;
 }
 
 export const action = async ({ request }: ActionArgs) => {
   const userId = await requireUserId(request);
-  if (userId === null) {
-    redirect("/login");
-  }
-
   const form = await request.formData();
-  const imageUrl = form.get("imageUrl")?.toString();
-  const redisId = form.get("redisId")?.toString();
-  const bottleId = form.get("bottleId")?.toString();
 
-  if (typeof redisId !== "string" || typeof bottleId !== "string") {
+  const redisFormId = form.get("redisId")?.toString();
+
+  if (!redisFormId || typeof redisFormId === "undefined") {
     return json<ActionData>({
-      error: "Form data is invalid",
+      error: `We couldn't find the saved data. Please re-input it`,
     });
   }
 
-  const customFormData = await getDataFromRedis(redisId);
+  const rid = redisFormId;
 
-  if (!customFormData) {
+  const redisObject = await getAnyDataFromRedis(rid);
+  if (!redisObject || !redisObject.bottleId) {
     return json<ActionData>({
-      error: "You must enable JavasScript for this form to work",
+      error: `We couldn't find the saved data. Please re-input it`,
     });
   }
 
-  const today = new Date();
   const reviewId = uuid();
 
-  const newReview = await createReview({
-    id: reviewId,
-    bottleId: bottleId,
-    userId,
-    createdAt: today,
-    updatedAt: today,
-    date: customFormData.date as string,
-    setting: customFormData.setting as string,
-    glassware: customFormData.glassware as string,
-    restTime: customFormData.restTime as string,
-    nose: customFormData.nose as string,
-    palate: customFormData.palate as string,
-    finish: customFormData.finish as string,
-    thoughts: customFormData.thoughts as string,
-    cherry: customFormData.cherry as number,
-    strawberry: customFormData.strawberry as number,
-    raspberry: customFormData.raspberry as number,
-    blackberry: customFormData.blackberry as number,
-    blueberry: customFormData.blueberry as number,
-    apple: customFormData.apple as number,
-    banana: customFormData.banana as number,
-    grape: customFormData.grape as number,
-    stone: customFormData.stone as number,
-    citrus: customFormData.citrus as number,
-    tropical: customFormData.tropical as number,
-    pepper: customFormData.pepper as number,
-    bakingSpice: customFormData.bakingSpice as number,
-    cinnamon: customFormData.cinnamon as number,
-    herbal: customFormData.herbal as number,
-    mint: customFormData.mint as number,
-    coffee: customFormData.coffee as number,
-    tobacco: customFormData.tobacco as number,
-    leather: customFormData.leather as number,
-    oak: customFormData.oak as number,
-    toasted: customFormData.toasted as number,
-    smokey: customFormData.smokey as number,
-    peanut: customFormData.peanut as number,
-    almond: customFormData.almond as number,
-    pecan: customFormData.pecan as number,
-    walnut: customFormData.walnut as number,
-    oily: customFormData.oily as number,
-    floral: customFormData.floral as number,
-    corn: customFormData.corn as number,
-    rye: customFormData.rye as number,
-    wheat: customFormData.wheat as number,
-    malt: customFormData.malt as number,
-    dough: customFormData.dough as number,
-    vanilla: customFormData.vanilla as number,
-    caramel: customFormData.caramel as number,
-    molasses: customFormData.molasses as number,
-    butterscotch: customFormData.butterscotch as number,
-    honey: customFormData.honey as number,
-    chocolate: customFormData.chocolate as number,
-    toffee: customFormData.toffee as number,
-    sugar: customFormData.sugar as number,
-    overallRating: customFormData.overallRating as number,
-    value: customFormData.value as number,
-  });
-  if (!newReview) {
-    return json(
-      { errors: { message: "ERROR SUBMITTING REVIEW!" } },
-      { status: 400 }
-    );
-  }
+  const today = new Date();
 
-  await deleteFormData(redisId);
-  return redirect(`/reviews/${newReview.id}/comments`);
-};
-
-type LoaderData = {
-  formData: CustomFormData;
-  bottleId: string;
-};
-
-export const loader = async ({ request }: LoaderArgs) => {
-  const formData = await requireFormData(request);
-  const url = new URL(request.url);
-  const bottleId = url.searchParams.get("bid");
-
-  if (typeof bottleId === "string") {
-    return json<LoaderData>({
-      formData,
-      bottleId,
+  try {
+    const newReview = await createReview({
+      id: reviewId,
+      updatedAt: today,
+      createdAt: today,
+      bottleId: redisObject.bottleId,
+      userId,
+      date: redisObject.date as string,
+      setting: redisObject.setting as string,
+      glassware: redisObject.glassware as string,
+      restTime: redisObject.restTime as string,
+      nose: redisObject.nose as string,
+      palate: redisObject.palate as string,
+      finish: redisObject.finish as string,
+      thoughts: redisObject.thoughts as string,
+      cherry: redisObject.cherry as number,
+      strawberry: redisObject.strawberry as number,
+      raspberry: redisObject.raspberry as number,
+      blackberry: redisObject.blackberry as number,
+      blueberry: redisObject.blueberry as number,
+      apple: redisObject.apple as number,
+      banana: redisObject.banana as number,
+      grape: redisObject.grape as number,
+      stone: redisObject.stone as number,
+      citrus: redisObject.citrus as number,
+      tropical: redisObject.tropical as number,
+      pepper: redisObject.pepper as number,
+      bakingSpice: redisObject.bakingSpice as number,
+      cinnamon: redisObject.cinnamon as number,
+      herbal: redisObject.herbal as number,
+      mint: redisObject.mint as number,
+      coffee: redisObject.coffee as number,
+      tobacco: redisObject.tobacco as number,
+      leather: redisObject.leather as number,
+      oak: redisObject.oak as number,
+      toasted: redisObject.toasted as number,
+      smokey: redisObject.smokey as number,
+      peanut: redisObject.peanut as number,
+      almond: redisObject.almond as number,
+      pecan: redisObject.pecan as number,
+      walnut: redisObject.walnut as number,
+      oily: redisObject.oily as number,
+      floral: redisObject.floral as number,
+      corn: redisObject.corn as number,
+      rye: redisObject.rye as number,
+      wheat: redisObject.wheat as number,
+      malt: redisObject.malt as number,
+      dough: redisObject.dough as number,
+      vanilla: redisObject.vanilla as number,
+      caramel: redisObject.caramel as number,
+      molasses: redisObject.molasses as number,
+      butterscotch: redisObject.butterscotch as number,
+      honey: redisObject.honey as number,
+      chocolate: redisObject.chocolate as number,
+      toffee: redisObject.toffee as number,
+      sugar: redisObject.sugar as number,
+      overallRating: redisObject.overallRating as number,
+      value: redisObject.value as number,
     });
-  } else {
-    redirect("/reviews/new/bottle");
+    if (newReview) {
+      await deleteFormData(rid);
+      return redirect(`/reviews/${newReview.id}/comments`);
+    }
+  } catch (error) {
+    console.log(`Error submitting review data: ${error}`);
+    return redirect(`/reviews/new/confirm?rid=${rid}`);
   }
 };
 
 export default function NewConfirmationRoute() {
-  const loaderData = useLoaderData<LoaderData>();
-  const { state } = useOutletContext<ReviewContextType>();
-  const actionData = useActionData<ActionData>();
-  const transition = useTransition();
-  let formState: "idle" | "error" | "submitting" = transition.submission
-    ? "submitting"
-    : actionData?.error
-    ? "error"
-    : "idle";
+  const data = useTypedLoaderData<RedisFormData>();
+  const actionData = useTypedActionData<ActionData>();
 
   return (
-    <div>
+    <div className="w-full">
       <h1>Confirm your Review</h1>
-      <ConfirmForm
-        formData={loaderData.formData}
-        bottleId={loaderData.bottleId}
-        imageUrl={state.imageUrl}
-        formState={formState}
-      />
+      {actionData?.error ?? (
+        <ValidationMessage error={actionData?.error} isSubmitting={false} />
+      )}
+      <ConfirmForm data={data} />
     </div>
   );
 }

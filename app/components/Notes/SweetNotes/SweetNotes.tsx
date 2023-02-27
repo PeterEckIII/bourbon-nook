@@ -1,18 +1,12 @@
-import type { FormState } from "~/routes/reviews/new";
-import NoteInput from "~/components/UI/Inputs/NoteInput/NoteInput";
-import type { CustomFormData } from "~/utils/helpers.server";
+import NoteInput from "~/components/UI/Inputs/NoteInput";
+import type { SweetNotesErrors, RedisFormData } from "~/utils/types";
 
-interface ISweetNoteProps {
-  state: FormState;
-  changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  formData: CustomFormData;
+interface SweetNoteProps {
+  data: RedisFormData | null;
+  errors: SweetNotesErrors | null;
 }
 
-export default function SweetNotes({
-  state,
-  changeHandler,
-  formData,
-}: ISweetNoteProps) {
+export default function SweetNotes({ data, errors }: SweetNoteProps) {
   return (
     <>
       <h4>Sweet Notes</h4>
@@ -22,9 +16,8 @@ export default function SweetNotes({
             labelName="Vanilla"
             emoji="🍦"
             name="vanilla"
-            value={state.vanilla}
-            defaultValue={formData?.vanilla}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.vanilla}
+            error={errors?.vanilla}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -32,18 +25,16 @@ export default function SweetNotes({
             labelName="Caramel"
             emoji="🍮"
             name="caramel"
-            value={state.caramel}
-            defaultValue={formData?.caramel}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.caramel}
+            error={errors?.caramel}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
           <NoteInput
             name="molasses"
             labelName="Molasses"
-            value={state.molasses}
-            defaultValue={formData?.molasses}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.molasses}
+            error={errors?.molasses}
             emoji="🥞"
           />
         </div>
@@ -51,9 +42,8 @@ export default function SweetNotes({
           <NoteInput
             name="butterscotch"
             labelName="Butterscotch"
-            value={state.butterscotch}
-            defaultValue={formData?.butterscotch}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.butterscotch}
+            error={errors?.butterscotch}
             emoji="🧈"
           />
         </div>
@@ -63,9 +53,8 @@ export default function SweetNotes({
             labelName="Honey"
             emoji="🍯"
             name="honey"
-            value={state.honey}
-            defaultValue={formData?.honey}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.honey}
+            error={errors?.honey}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -73,18 +62,16 @@ export default function SweetNotes({
             labelName="Chocolate"
             emoji="🍫"
             name="chocolate"
-            value={state.chocolate}
-            defaultValue={formData?.chocolate}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.chocolate}
+            error={errors?.chocolate}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
           <NoteInput
             name="toffee"
             labelName="Toffee"
-            value={state.toffee}
-            defaultValue={formData?.toffee}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.toffee}
+            error={errors?.toffee}
             emoji="🍬"
           />
         </div>
@@ -93,9 +80,8 @@ export default function SweetNotes({
             labelName="Powdered Sugar"
             emoji="🥄"
             name="sugar"
-            value={state.sugar}
-            defaultValue={formData?.sugar}
-            changeHandler={(e) => changeHandler(e)}
+            defaultValue={data?.sugar}
+            error={errors?.sugar}
           />
         </div>
       </div>
