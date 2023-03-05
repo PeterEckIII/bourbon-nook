@@ -1,12 +1,11 @@
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime/dist/router";
 import type { comment } from "~/models/comment.server";
 import { createComment } from "~/models/comment.server";
 import { requireUserId } from "~/session.server";
 import { assertNonNullable } from "~/utils/helpers.server";
 
-type ActionData = {
+export type CreateCommentData = {
   newComment?: comment;
   errors?: {
     body?: string;
@@ -24,7 +23,11 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   assertNonNullable(body);
   if (body === "") {
-    return;
+    return json<CreateCommentData>({
+      errors: {
+        body: `Please add a comment body before submitting`,
+      },
+    });
   }
 
   try {
@@ -34,12 +37,12 @@ export const action = async ({ request, params }: ActionArgs) => {
       reviewId
     )) as unknown as comment;
 
-    return json<ActionData>(
+    return json<CreateCommentData>(
       { newComment },
       { status: 200, statusText: "Successfully created comment" }
     );
   } catch (error) {
-    return json<ActionData>(
+    return json<CreateCommentData>(
       {
         errors: {
           body: `There was an error creating your comment: ${error}`,

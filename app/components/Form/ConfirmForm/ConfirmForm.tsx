@@ -2,6 +2,7 @@ import { Form } from "@remix-run/react";
 import { Link } from "react-router-dom";
 import NoteTabs from "~/components/Review/NoteTabs/NoteTabs";
 import Button from "~/components/UI/Button";
+import ButtonGroup from "~/components/UI/ButtonGroup/ButtonGroup";
 import Collapsible from "~/components/UI/Collapsible";
 import type { RedisFormData } from "~/utils/types";
 
@@ -208,11 +209,15 @@ export default function ConfirmForm({ data }: ConfirmFormProps) {
         <input type="hidden" name="redisId" value={data?.redisId} />
         <input type="hidden" name="bottleId" value={data?.bottleId} />
         <input type="hidden" name="imageUrl" value={data?.imageUrl} />
-        <div>
-          <Button callToAction="Cancel" type="button" />
-        </div>
-        <div>
-          <Button callToAction="Submit" type="submit" />
+        <div className="flex justify-between">
+          <div>
+            <Link to={`/reviews/new/notes?rid=${data?.redisId}`}>
+              <Button primary callToAction="Back" type="button" />
+            </Link>
+          </div>
+          <div>
+            <Button primary callToAction="Submit" type="submit" />
+          </div>
         </div>
       </Form>
     </div>

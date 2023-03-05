@@ -1,5 +1,4 @@
 import { Form, Link } from "@remix-run/react";
-import Button from "~/components/UI/Button";
 import type { NoteErrors, RedisFormData } from "~/utils/types";
 import EarthNotes from "~/components/Notes/EarthNotes";
 import FruitNotes from "~/components/Notes/FruitNotes";
@@ -7,6 +6,7 @@ import SpiceNotes from "~/components/Notes/SpiceNotes";
 import SweetNotes from "~/components/Notes/SweetNotes";
 import GrainNotes from "~/components/Notes/GrainNotes";
 import Rating from "~/components/Notes/Rating";
+import Button from "~/components/UI/Button";
 
 type NoteFormProps = {
   data: RedisFormData | null;
@@ -25,14 +25,14 @@ export default function NoteForm({ data, errors }: NoteFormProps) {
         <SweetNotes data={data} errors={errors} />
         <GrainNotes data={data} errors={errors} />
         <Rating data={data} errors={errors} />
-        <div className="space-between flex">
+        <div className="flex justify-between">
           <div>
-            <Link to={`/reviews/new/setting?rid==${data?.redisId}`}>
+            <Link to={`/reviews/new/setting?rid=${data?.redisId}`}>
               <Button type="button" callToAction="Back" />
             </Link>
           </div>
           <div>
-            <Button type="submit" callToAction="Next" />
+            <Button type="submit" callToAction="Review" />
           </div>
         </div>
       </Form>

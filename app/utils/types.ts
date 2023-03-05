@@ -227,3 +227,5 @@ export type SweetNotesErrors = Pick<
   | "sugar"
 >;
 export type RatingErrors = Pick<NoteErrors, "value" | "overallRating">;
+
+export type ValueOf<T> = T[keyof T];

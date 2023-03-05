@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { ChangeEvent } from "react";
 import Download from "../../Icons/Download";
 import type { TypedFetcherWithComponents } from "remix-typedjson";
@@ -8,28 +7,15 @@ import Spinner from "../../Icons/Spinner";
 
 type ImageUploaderProps = {
   imageFetcher: TypedFetcherWithComponents<ImageActionData>;
+  handlePreviewChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  previewUrl: string;
 };
 
-export default function ImageUploader({ imageFetcher }: ImageUploaderProps) {
-  const [previewUrl, setPreviewUrl] = useState<string>("");
-
-  const handlePreviewChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.currentTarget.files)
-      throw new Error(`Error reading files from import`);
-    if (e.currentTarget.files && e.currentTarget.files[0] !== undefined) {
-      console.log(`Handling preview image`);
-      const newUrl = URL.createObjectURL(e.currentTarget.files[0]);
-      setPreviewUrl(newUrl);
-    } else {
-      console.log(`Cannot handle preview image`);
-      setPreviewUrl("");
-    }
-  };
-
-  const handleClearSelection = () => {
-    setPreviewUrl("");
-  };
-
+export default function ImageUploader({
+  imageFetcher,
+  previewUrl,
+  handlePreviewChange,
+}: ImageUploaderProps) {
   return (
     <div className="m-2 mt-0 mr-0 mb-2 ml-0 rounded-lg bg-white p-2">
       <span className="text-lg">Image of Bottle</span>
@@ -50,7 +36,11 @@ export default function ImageUploader({ imageFetcher }: ImageUploaderProps) {
             <div className="">
               {previewUrl !== "" && imageFetcher.type === "init" ? (
                 <div className="">
-                  <img src={previewUrl} alt={`The bottle you uploaded]`} />
+                  <img
+                    src={previewUrl}
+                    alt={`The bottle you uploaded]`}
+                    className="my-0 mx-auto h-[450px] w-[275px] object-cover lg:h-[600px] lg:w-[400px]"
+                  />
                 </div>
               ) : imageFetcher.type === "actionSubmission" ? (
                 <div>

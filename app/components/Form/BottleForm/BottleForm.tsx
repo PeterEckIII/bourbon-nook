@@ -223,7 +223,7 @@ export default function BottleForm({
                 error={errors?.killDate}
               />
             </div>
-            <div className="m-4 flex w-full justify-end p-4">
+            <div className="flex w-full justify-end">
               <Button
                 type="submit"
                 callToAction={
