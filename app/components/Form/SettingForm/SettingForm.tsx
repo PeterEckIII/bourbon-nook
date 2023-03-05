@@ -1,8 +1,8 @@
-import { Form, Link } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 import TextInput from "~/components/UI/Inputs/TextInput";
 import TextareaInput from "~/components/UI/Inputs/TextareaInput";
 import type { SettingErrors, RedisFormData } from "~/utils/types";
-import Button from "~/components/UI/Button";
+import ButtonGroup from "~/components/UI/ButtonGroup/ButtonGroup";
 
 type SettingFormProps = {
   data: RedisFormData | null;
@@ -77,16 +77,11 @@ export default function SettingForm({ data, errors }: SettingFormProps) {
             error={errors?.thoughts}
           />
         </div>
-        <div className="space-between flex w-full">
-          <div>
-            <Link to={`/tester/new/bottle?rid=${data?.redisId}`}>
-              <Button callToAction="Back" type="button" />
-            </Link>
-          </div>
-          <div>
-            <Button callToAction="Submit" type="submit" />
-          </div>
-        </div>
+        <ButtonGroup
+          linkTo={`/reviews/notes?rid=${data?.redisId}`}
+          ctaBack="Back"
+          ctaForward="Next"
+        />
       </Form>
     </div>
   );

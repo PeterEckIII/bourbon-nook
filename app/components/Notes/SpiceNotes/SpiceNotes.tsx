@@ -22,6 +22,7 @@ export default function SpiceNotes({ data, errors }: SpiceNoteProps) {
             name="pepper"
             labelName="Black Pepper"
             defaultValue={data?.pepper}
+            error={errors?.pepper}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -30,6 +31,7 @@ export default function SpiceNotes({ data, errors }: SpiceNoteProps) {
             name="cinnamon"
             labelName="Cinnamon"
             defaultValue={data?.cinnamon}
+            error={errors?.cinnamon}
           />
         </div>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2 lg:w-1/3">
@@ -38,6 +40,7 @@ export default function SpiceNotes({ data, errors }: SpiceNoteProps) {
             name="bakingSpice"
             labelName="Baking Spice"
             defaultValue={data?.bakingSpice}
+            error={errors?.bakingSpice}
           />
         </div>
 
@@ -46,6 +49,7 @@ export default function SpiceNotes({ data, errors }: SpiceNoteProps) {
             name="herbal"
             labelName="Herbal"
             defaultValue={data?.herbal}
+            error={errors?.herbal}
             emoji="🌿"
           />
         </div>
@@ -55,6 +59,7 @@ export default function SpiceNotes({ data, errors }: SpiceNoteProps) {
             name="mint"
             labelName="Mint"
             defaultValue={data?.mint}
+            error={errors?.mint}
           />
         </div>
       </div>

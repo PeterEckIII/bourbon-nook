@@ -14,7 +14,8 @@ import { createComment, getComments, update } from "~/models/comment.server";
 import { getUser, requireUserId } from "~/session.server";
 import { getUserById } from "~/models/user.server";
 import { assertNonNullable } from "~/utils/helpers.server";
-import { useTypedLoaderData } from "remix-typedjson";
+import { useTypedFetcher, useTypedLoaderData } from "remix-typedjson";
+import { CreateCommentData } from "./comments/create";
 
 export const links: LinksFunction = () => {
   return [
@@ -101,7 +102,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("intent")?.toString();
   const body = await formData.get("body")?.toString();
-  const commentId = (await formData.get("commentId")?.toString()) ?? null;
+  const commentId = formData.get("commentId")?.toString();
 
   assertNonNullable(intent);
   assertNonNullable(body);
@@ -113,21 +114,21 @@ export const action = async ({ request, params }: ActionArgs) => {
 export default function ReviewCommentsRoute() {
   const loaderData = useTypedLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
-  const comment = useFetcher();
+  const commentFetcher = useTypedFetcher<CreateCommentData>();
   const commentRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
     if (commentRef.current) {
-      if (comment.state === "submitting") {
+      if (commentFetcher.state === "submitting") {
         commentRef.current.reset();
       }
     }
-  }, [comment.state, comment.data]);
+  }, [commentFetcher.state, commentFetcher.data]);
 
   return (
     <div className="rounded-lg bg-white p-4 shadow-lg shadow-blue-700">
       <div>
-        <comment.Form
+        <commentFetcher.Form
           method="post"
           ref={commentRef}
           action={`/reviews/${loaderData.reviewId}/comments/create`}
@@ -148,15 +149,19 @@ export default function ReviewCommentsRoute() {
             />
           </div>
           <input type="hidden" name="intent" value="create" />
-
-          {actionData?.errors?.body && (
-            <div className="pt-1 text-red-700" id="email-error">
-              {actionData.errors.body}
+          {commentFetcher.data?.errors?.body && (
+            <div className="ml-4 p-1 text-red-500" id="email-error">
+              <p className="text-red-500">
+                {commentFetcher?.data?.errors?.body}
+              </p>
             </div>
           )}
-          <Button callToAction="Submit" type="submit" />
-        </comment.Form>
+          <div className="float-right">
+            <Button primary callToAction="Submit" type="submit" />
+          </div>
+        </commentFetcher.Form>
       </div>
+      <h4 className="mt-8 text-2xl text-blue-700">Comments</h4>
       {loaderData.comments.length < 1 ? (
         <div className="m-2 p-2">No comments. Be the first to comment!</div>
       ) : (

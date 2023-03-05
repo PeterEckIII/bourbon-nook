@@ -1,6 +1,7 @@
 import { getAnyDataFromRedis } from "~/utils/redis.server";
 import { z, ZodError } from "zod";
 import { BottleStatus } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime";
 
 export type ErrorObject = {
   [name: string]: string;

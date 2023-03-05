@@ -5,7 +5,7 @@ export interface HamburgerProps {
 export default function Hamburger({ opened }: HamburgerProps) {
   const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-black transition ease transform duration-300`;
   return (
-    <div className="group flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded md:hidden">
+    <div className="group flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded lg:hidden">
       <div
         className={`${genericHamburgerLine} ${
           opened
