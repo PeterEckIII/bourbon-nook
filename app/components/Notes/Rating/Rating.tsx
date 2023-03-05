@@ -9,8 +9,8 @@ interface IRatingProps {
 export default function Rating({ data, errors }: IRatingProps) {
   return (
     <>
-      <h4>Rating</h4>
       <div className="-mx-3 my-3 mb-6 flex flex-wrap rounded-xl border border-gray-200 bg-white bg-gradient-to-r p-2 sm:p-6">
+        <h4>Rating</h4>
         <div className="mb-2 w-full px-3 md:mb-0 md:w-1/2">
           <NoteInput
             labelName="Value for Money"

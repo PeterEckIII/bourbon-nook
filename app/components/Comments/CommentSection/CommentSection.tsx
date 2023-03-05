@@ -15,7 +15,6 @@ export function CommentSection({
 }: CommentSectionProps) {
   return (
     <div>
-      <h4 className="my-2 text-2xl text-blue-700">Comments</h4>
       <span className="text-sm "></span>
       {comments.map((comment) => {
         return (

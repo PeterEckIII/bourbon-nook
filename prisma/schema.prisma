@@ -102,51 +102,51 @@ model review {
   finish        String?
   thoughts      String?
   //  SPICE:
-  pepper        Int?
-  bakingSpice   Int?
-  cinnamon      Int?
-  herbal        Int?
-  mint          Int?
+  pepper        Float?
+  bakingSpice   Float?
+  cinnamon      Float?
+  herbal        Float?
+  mint          Float?
   // FRUIT
-  cherry        Int?
-  strawberry    Int?
-  raspberry     Int?
-  blackberry    Int?
-  blueberry     Int?
-  apple         Int?
-  banana        Int?
-  grape         Int?
-  stone         Int?
-  citrus        Int?
-  tropical      Int?
+  cherry        Float?
+  strawberry    Float?
+  raspberry     Float?
+  blackberry    Float?
+  blueberry     Float?
+  apple         Float?
+  banana        Float?
+  grape         Float?
+  stone         Float?
+  citrus        Float?
+  tropical      Float?
   // EARTHY
-  coffee        Int?
-  tobacco       Int?
-  leather       Int?
-  oak           Int?
-  toasted       Int?
-  smokey        Int?
-  peanut        Int?
-  almond        Int?
-  pecan         Int?
-  walnut        Int?
-  oily          Int?
-  floral        Int?
+  coffee        Float?
+  tobacco       Float?
+  leather       Float?
+  oak           Float?
+  toasted       Float?
+  smokey        Float?
+  peanut        Float?
+  almond        Float?
+  pecan         Float?
+  walnut        Float?
+  oily          Float?
+  floral        Float?
   // GRAIN
-  corn          Int?
-  rye           Int?
-  wheat         Int?
-  malt          Int?
-  dough         Int?
+  corn          Float?
+  rye           Float?
+  wheat         Float?
+  malt          Float?
+  dough         Float?
   // SWEET
-  vanilla       Int?
-  caramel       Int?
-  molasses      Int?
-  butterscotch  Int?
-  honey         Int?
-  chocolate     Int?
-  toffee        Int?
-  sugar         Int?
+  vanilla       Float?
+  caramel       Float?
+  molasses      Float?
+  butterscotch  Float?
+  honey         Float?
+  chocolate     Float?
+  toffee        Float?
+  sugar         Float?
   // RATING
   value         Float?
   overallRating Float?

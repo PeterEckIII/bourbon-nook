@@ -31,11 +31,11 @@ export default function Menu({ opened, setOpened, user }: MenuProps) {
       <ul
         className={
           (opened ? "left-0" : "-left-full") +
-          " fixed top-0 h-full w-10/12 space-y-5 bg-gray-50 py-2 text-white transition-left duration-300 md:static md:flex md:w-auto md:items-center md:justify-center md:space-y-0 md:space-x-7 md:bg-transparent md:text-gray-500"
+          " fixed top-0 h-full w-10/12 space-y-5 bg-gray-50 py-2 text-white transition-left duration-300 lg:static lg:flex lg:w-auto lg:items-center lg:justify-center lg:space-y-0 lg:space-x-7 lg:bg-transparent lg:text-gray-500"
         }
       >
-        <div className="mr-4 mt-2 flex items-center justify-between md:hidden">
-          <Link to="/" className="text-4xl font-bold leading-none md:hidden">
+        <div className="mr-4 mt-2 flex items-center justify-between lg:hidden">
+          <Link to="/" className="text-4xl font-bold leading-none lg:hidden">
             <Glencairn height="110px" width="110px" />
           </Link>
           <div>
@@ -72,42 +72,46 @@ export default function Menu({ opened, setOpened, user }: MenuProps) {
             )}
           </div>
         </div>
-        <MenuItem to="/" label="Home" setOpened={setOpened} />
-        <ThreeVerticalDots classes="hidden md:inline" />
-        <MenuItem to="/bottles" label="Collection" setOpened={setOpened} />
-        <ThreeVerticalDots classes="hidden md:inline" />
-        <MenuItem to="/reviews" label="Reviews" setOpened={setOpened} />
-        <ThreeVerticalDots classes="hidden md:inline" />
-        <MenuItem
-          to="/bottles/new/bottle"
-          label="Add Bottle"
-          setOpened={setOpened}
-        />
-        <ThreeVerticalDots classes="hidden md:inline" />
-        <MenuItem
-          to="/reviews/new/bottle"
-          label="New Review"
-          setOpened={setOpened}
-        />
-        <div className="self-end p-4 pl-4 text-center font-['Satisfy'] text-3xl leading-7 text-blue-500 md:hidden">
+        {/* MEDIUM AND UP */}
+        <div className="hidden lg:flex lg:justify-evenly">
+          <MenuItem to="/" label="Home" setOpened={setOpened} />
+          <ThreeVerticalDots classes="hidden lg:inline" />
+          <MenuItem to="/bottles" label="Collection" setOpened={setOpened} />
+          <ThreeVerticalDots classes="hidden lg:inline" />
+          <MenuItem to="/reviews" label="Reviews" setOpened={setOpened} />
+          <ThreeVerticalDots classes="hidden lg:inline" />
+          <MenuItem
+            to="/bottles/new/bottle"
+            label="Add Bottle"
+            setOpened={setOpened}
+          />
+          <ThreeVerticalDots classes="hidden lg:inline" />
+          <MenuItem
+            to="/reviews/new/bottle"
+            label="New Review"
+            setOpened={setOpened}
+          />
+        </div>
+        <div className="self-end p-4 pl-4 text-center font-['Satisfy'] text-3xl leading-7 text-blue-500 lg:hidden">
           THE BOURBON NOOK
           <br />
           <span className="text-sm text-gray-700">Created by Peter Eck</span>
         </div>
       </ul>
-      <div className="block items-center md:flex">
+      {/* MOBILE MENU */}
+      <div className="block items-center lg:flex">
         <button
           onClick={() => setOpened(!opened)}
-          className="group mr-2 flex h-12 w-12 cursor-pointer flex-col items-center justify-center rounded border-2 border-black md:hidden"
+          className="group mr-2 flex h-12 w-12 cursor-pointer flex-col items-center justify-center rounded border-2 border-black lg:hidden"
         >
           <Hamburger opened={opened} />
         </button>
         {user ? (
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <AuthMenuItem to="/logout" label="Logout" />
           </div>
         ) : (
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <AuthMenuItem to="/login" label="Login" />
             <AuthMenuItem to="/join" label="Sign Up" />
           </div>

@@ -13,7 +13,7 @@ module.exports = {
       },
       transitionProperty: {
         left: "left",
-      }
+      },
     },
   },
   plugins: [require("@headlessui/tailwindcss")],

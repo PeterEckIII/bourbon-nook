@@ -17,7 +17,7 @@ export default function MenuItem({ to, label, setOpened }: MenuItemProps) {
     <li onClick={() => setOpened(false)} className="list-none">
       <Link
         to={to}
-        className="md:text-md mx-4 block cursor-pointer rounded-lg p-4 text-lg font-bold text-gray-500 hover:bg-blue-50 hover:text-blue-500 md:text-gray-400 md:hover:bg-white md:hover:text-gray-500"
+        className="block cursor-pointer rounded-lg py-4 px-2 text-lg font-bold text-gray-500 hover:bg-blue-50 hover:text-blue-500 lg:mx-4 lg:text-base lg:text-gray-400 lg:hover:bg-white lg:hover:text-gray-500 xl:mx-6 xl:px-6 xl:text-lg"
       >
         {label}
       </Link>

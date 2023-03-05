@@ -9,10 +9,11 @@ import type { action as newReviewBottleAction } from "~/routes/reviews/new/bottl
 import type { action as newBottleAction } from "~/routes/bottles/new/bottle";
 
 export function assertNonNullable<T>(
-  value: unknown
+  value: unknown,
+  message?: string
 ): asserts value is NonNullable<T> {
   if (value === undefined || value === null) {
-    throw new Error(`Value is undefined or null`);
+    throw new Error(message || `Value is undefined or null`);
   }
 }
 
