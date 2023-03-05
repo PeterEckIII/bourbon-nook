@@ -48,6 +48,7 @@ export const action = async ({ request }: ActionArgs) => {
   const redisFormId = form.get("redisId")?.toString();
 
   if (!redisFormId || typeof redisFormId === "undefined") {
+    console.log(`NO REDIS FORM ID!`);
     return json<ActionData>({
       error: `We couldn't find the saved data. Please re-input it`,
     });
@@ -56,7 +57,8 @@ export const action = async ({ request }: ActionArgs) => {
   const rid = redisFormId;
 
   const redisObject = await getAnyDataFromRedis(rid);
-  if (!redisObject || !redisObject.bottleId) {
+  if (!redisObject) {
+    console.log(`NO STORED REDIS OBJECT`);
     return json<ActionData>({
       error: `We couldn't find the saved data. Please re-input it`,
     });
@@ -71,7 +73,7 @@ export const action = async ({ request }: ActionArgs) => {
       id: reviewId,
       updatedAt: today,
       createdAt: today,
-      bottleId: redisObject.bottleId,
+      bottleId: redisObject.bottleId as string,
       userId,
       date: redisObject.date as string,
       setting: redisObject.setting as string,

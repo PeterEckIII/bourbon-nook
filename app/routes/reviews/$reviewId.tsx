@@ -1,5 +1,9 @@
 import type { bottle, user, review } from "@prisma/client";
-import type { LoaderFunction, ActionFunction } from "@remix-run/server-runtime";
+import type {
+  LoaderFunction,
+  ActionFunction,
+  LinksFunction,
+} from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import {
   useLoaderData,
@@ -29,24 +33,43 @@ type LoaderData = {
   following: any;
 };
 
+export const links: LinksFunction = () => [
+  {
+    href: "https://fonts.googleapis.com",
+    rel: "preconnect",
+  },
+  {
+    href: "https://fonts.gstatic.com",
+    rel: "preconnect",
+  },
+  {
+    href: "https://fonts.googleapis.com/css2?family=Caveat&display=swap",
+    rel: "stylesheet",
+  },
+];
+
 export const loader: LoaderFunction = async ({ request, params }) => {
   const userId = await requireUserId(request);
-  assertNonNullable(userId);
+  assertNonNullable(userId, `User ID is undefined`);
+
   const user = await getUserById(userId);
-  assertNonNullable(user);
+  assertNonNullable(user, `User is undefined`);
 
   const following = getFollowing(userId);
+  assertNonNullable(params.reviewId, `ReviewId is undefined`);
 
-  assertNonNullable(params.reviewId);
   const review = await getReviewById(params.reviewId);
-  assertNonNullable(review);
-  assertNonNullable(review.bottleId);
+  assertNonNullable(review, `Review is undefined`);
+  assertNonNullable(review.bottleId, `BottleId is undefined`);
+
   const reviewAuthorId = review.userId;
   const reviewAuthor = await getUserById(reviewAuthorId);
-  assertNonNullable(reviewAuthor);
+  assertNonNullable(reviewAuthor, `Author is undefined`);
+
   const bottle = await getBottle(review.bottleId);
-  assertNonNullable(bottle);
-  assertNonNullable(bottle.imageUrl);
+
+  assertNonNullable(bottle, `Bottle is undefined`);
+  assertNonNullable(bottle.imageUrl, `ImageURL is undefined`);
   return json<LoaderData>({
     review,
     bottle,
@@ -98,7 +121,6 @@ export default function ReviewDetailsPage() {
         author={data.reviewAuthor}
         following={data.following}
       />
-      {/* THIS IS THE EDIT PAGE BELOW */}
       <div className="min-h-[200px]">
         <Outlet />
       </div>
@@ -110,19 +132,9 @@ export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
 
   return (
-    <html lang="en">
-      <head>
-        <title>Error!</title>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <div className="bg-red-300 text-red-800">
-          An unexpected error occurred: {error.message}
-        </div>
-        <Scripts />
-      </body>
-    </html>
+    <div className="bg-red-300 text-red-800">
+      An unexpected error occurred: {error.message}
+    </div>
   );
 }
 

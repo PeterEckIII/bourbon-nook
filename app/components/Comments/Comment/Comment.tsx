@@ -233,7 +233,6 @@ export default function Comment({ comment, user, reviewId }: CommentProps) {
           </button>
         </>
       ) : null}
-
       {/* <div className="my-2 ml-8 flex flex-col">
           <p>{comment.body}</p>
           <div className="my-2 flex flex-col items-start">

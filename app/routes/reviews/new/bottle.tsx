@@ -4,34 +4,37 @@ import { useTransition } from "@remix-run/react";
 import { requireUserId } from "~/session.server";
 import invariant from "tiny-invariant";
 import { createBottle, editBottle } from "~/models/bottle.server";
-import type { bottle, BottleStatus } from "@prisma/client";
+import type { BottleStatus } from "@prisma/client";
 import {
   useTypedActionData,
   useTypedFetcher,
   useTypedLoaderData,
 } from "remix-typedjson";
 import type { ImageActionData } from "~/routes/services/image";
-import { useEffect, useState } from "react";
-import useDebounce from "~/utils/useDebounce";
-import type { LoaderData as ComboData } from "~/routes/services/combo";
 import { generateCode } from "~/utils/helpers.server";
 import { getBottle } from "~/models/bottle.server";
 import BottleForm from "~/components/Form/BottleForm";
 import type { BottleErrors, RedisFormData } from "~/utils/types";
 import { bottleSchema, handleFormData } from "~/utils/newHelpers.server";
-import { getAnyDataFromRedis, saveAnyDataToRedis } from "~/utils/redis.server";
+import {
+  getAnyDataFromRedis,
+  requireAnyFormData,
+  saveAnyDataToRedis,
+} from "~/utils/redis.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
   const rid = url.searchParams.get("rid");
-  if (typeof rid !== "string" || !rid) {
+  if (rid !== "" && typeof rid === "string") {
+    const data = await getAnyDataFromRedis(rid);
+    if (typeof data === "undefined") {
+      return null;
+    } else {
+      return data;
+    }
+  } else {
     return null;
   }
-  const redisData = await getAnyDataFromRedis(rid);
-  if (!redisData) {
-    return null;
-  }
-  return redisData;
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -178,7 +181,7 @@ export const action = async ({ request }: ActionArgs) => {
           bottleId: newBottle.id,
           ...result,
         });
-        return redirect(`/reviews/setting?rid=${rid}`);
+        return redirect(`/reviews/new/setting?rid=${rid}`);
       } catch (error) {
         throw new Error(
           `Couldn't save bottle to database: ${JSON.stringify(error, null, 2)}`

@@ -10,10 +10,60 @@ import { useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { RedisFormData, SettingErrors } from "~/utils/types";
 import { settingSchema, handleFormData } from "~/utils/newHelpers.server";
 import { requireUserId } from "~/session.server";
+import { getBottle } from "~/models/bottle.server";
+import { generateCode } from "~/utils/helpers.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const redisObject = await requireAnyFormData(request);
-  return redisObject;
+  const userId = await requireUserId(request);
+  const url = new URL(request.url);
+  const rid = url.searchParams.get("rid");
+  const bid = url.searchParams.get("bid");
+
+  if (typeof rid !== "undefined" && rid !== "" && rid !== null) {
+    const data = await getAnyDataFromRedis(rid);
+    return data;
+  } else if (typeof bid !== "undefined" && bid !== "" && bid !== null) {
+    const bottle = await getBottle(bid);
+    if (!bottle) {
+      console.log(`NO BOTTLE FROM DB!!`);
+      return redirect(`/reviews/new/bottle`);
+    } else {
+      const newRedisObject: RedisFormData = {
+        userId,
+        redisId: generateCode(6),
+        bottleId: bottle.id,
+        imageUrl: bottle.imageUrl || "",
+        name: bottle.name || "",
+        status: bottle.status,
+        type: bottle.type || "",
+        distiller: bottle.distiller || "",
+        producer: bottle.producer || "",
+        country: bottle.country || "",
+        region: bottle.region || "",
+        price: bottle.price || "",
+        age: bottle.age || "",
+        year: bottle.year || "",
+        batch: bottle.batch || "",
+        alcoholPercent: bottle.alcoholPercent || "",
+        proof: bottle.proof || "",
+        size: bottle.size || "",
+        color: bottle.color || "",
+        finishing: bottle.finishing || "",
+        openDate: bottle.openDate || "",
+        killDate: bottle.killDate || "",
+      };
+      try {
+        await saveAnyDataToRedis(newRedisObject);
+        return json<RedisFormData>(newRedisObject);
+      } catch (error) {
+        console.log(`ERROR SAVING REDIS DATA: ${error}`);
+        return redirect(`/reviews/new/bottle`);
+      }
+    }
+  } else {
+    console.log(`No situation matched this route`);
+    return redirect(`/reviews/new/bottle`);
+  }
 };
 
 export const action = async ({ request }: ActionArgs) => {
