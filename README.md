@@ -6,7 +6,7 @@
 
 - [Remix.run](https://remix.run/) via [Remix Stacks](https://remix.run/docs/en/v1/pages/stacks)
 - [Fly app deployment](https://fly.io) with [Docker](https://www.docker.com/)
-- Production-ready [SQLite Database](https://sqlite.org)
+- Multi-region Fly PostgreSQL Cluster [Postgresql Database](https://fly.io/docs/getting-started/multi-region-databases/)
 - Healthcheck endpoint for [Fly backups region fallbacks](https://fly.io/docs/reference/configuration/#services-http_checks)
 - [GitHub Actions](https://github.com/features/actions) for deploy on merge to production and staging environments
 - Email/Password Authentication with [cookie-based sessions via Remix](https://remix.run/docs/en/v1/api/remix#createcookiesessionstorage)

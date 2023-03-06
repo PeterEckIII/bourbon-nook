@@ -54,7 +54,7 @@ describe("Login", () => {
       console.log(`Response: ${JSON.stringify(response)}`);
 
       expect(response.status).toBe(302);
-      expect(response.headers.get("Set-Cookie")).toContain(`__session=`);
+      expect(response.headers.get("Set-Cookie")).toContain(`BN__session=`);
     });
 
     it("Shows an incorrect password error", async () => {
