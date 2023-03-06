@@ -87,6 +87,7 @@ export default function App() {
           className={`${
             opened ? "opacity-20 transition-opacity ease-in-out" : ""
           }`}
+          onClick={() => setOpened(false)}
         >
           <Outlet />
           <LiveReload />

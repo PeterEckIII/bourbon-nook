@@ -8,7 +8,7 @@ invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
-    name: "__session",
+    name: "BN__session",
     httpOnly: true,
     path: "/",
     sameSite: "lax",
@@ -21,7 +21,8 @@ const USER_SESSION_KEY = "userId";
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get("Cookie");
-  return sessionStorage.getSession(cookie);
+  const session = await sessionStorage.getSession(cookie);
+  return session;
 }
 
 export async function getUserId(
@@ -89,7 +90,7 @@ export async function createUserSession({
 
 export async function logout(request: Request) {
   const session = await getSession(request);
-  return redirect("/", {
+  return redirect("/login", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
     },
