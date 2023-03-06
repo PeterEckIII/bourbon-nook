@@ -1,5 +1,5 @@
 import type { user } from "@prisma/client";
-import { Link } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import type { SetStateAction } from "react";
 import Glencairn from "~/components/Icons/Glencairn";
 import Hamburger from "~/components/Icons/Hamburger";
@@ -41,14 +41,15 @@ export default function Menu({ opened, setOpened, user }: MenuProps) {
           <div>
             {typeof user !== "undefined" ? (
               <div className="w-full">
-                <button onClick={() => setOpened(false)}>
-                  <Link
-                    to="/logout"
+                <Form method="post" action="/logout">
+                  <button
+                    onClick={() => setOpened(false)}
+                    type="submit"
                     className="rounded-lg bg-gray-300 py-2 px-6 font-bold text-gray-900 transition duration-200 hover:bg-gray-200 lg:ml-auto lg:mr-3 lg:inline-block"
                   >
                     Logout
-                  </Link>
-                </button>
+                  </button>
+                </Form>
               </div>
             ) : (
               <div className="w-full">
@@ -92,13 +93,43 @@ export default function Menu({ opened, setOpened, user }: MenuProps) {
             setOpened={setOpened}
           />
         </div>
+
+        {/* MOBILE MENU */}
+        <div className="mx-4 flex flex-col lg:hidden">
+          <div className="my-2">
+            <h3 className="text-xl text-gray-500">Bottles</h3>
+            <div className="ml-4 mt-2 flex flex-col">
+              <MenuItem
+                to="/bottles"
+                label="Collection"
+                setOpened={setOpened}
+              />
+              <MenuItem
+                to="/bottles/new/bottle"
+                label="Add Bottle"
+                setOpened={setOpened}
+              />
+            </div>
+          </div>
+          <div className="my-2">
+            <h3 className="text-xl text-gray-500">Reviews</h3>
+            <div className="ml-4 mt-2 flex flex-col">
+              <MenuItem to="/reviews" label="Reviews" setOpened={setOpened} />
+              <MenuItem
+                to="/reviews/new/bottle"
+                label="New Review"
+                setOpened={setOpened}
+              />
+            </div>
+          </div>
+        </div>
         <div className="self-end p-4 pl-4 text-center font-['Satisfy'] text-3xl leading-7 text-blue-500 lg:hidden">
           THE BOURBON NOOK
           <br />
           <span className="text-sm text-gray-700">Created by Peter Eck</span>
         </div>
       </ul>
-      {/* MOBILE MENU */}
+      {/* HAMBURGER */}
       <div className="block items-center lg:flex">
         <button
           onClick={() => setOpened(!opened)}
@@ -107,9 +138,14 @@ export default function Menu({ opened, setOpened, user }: MenuProps) {
           <Hamburger opened={opened} />
         </button>
         {user ? (
-          <div className="hidden lg:block">
-            <AuthMenuItem to="/logout" label="Logout" />
-          </div>
+          <Form method="post" action="/logout">
+            <button
+              type="submit"
+              className="rounded-xl bg-gray-100 py-2 px-6 text-sm font-bold text-gray-900 transition duration-200 hover:bg-gray-200 lg:ml-auto lg:mr-3 lg:inline-block"
+            >
+              Logout
+            </button>
+          </Form>
         ) : (
           <div className="hidden lg:block">
             <AuthMenuItem to="/login" label="Login" />
