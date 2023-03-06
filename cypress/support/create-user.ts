@@ -39,7 +39,7 @@ async function createAndLogin(email: string) {
   console.log(
     `
 <cookie>
-  ${parsedCookie.__session}
+  ${parsedCookie.BN__session}
 </cookie>
   `.trim()
   );
