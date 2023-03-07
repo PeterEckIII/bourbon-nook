@@ -11,9 +11,6 @@ import {
   useFetcher,
   useNavigate,
   useParams,
-  Links,
-  Meta,
-  Scripts,
   Outlet,
 } from "@remix-run/react";
 import { getBottle } from "~/models/bottle.server";
