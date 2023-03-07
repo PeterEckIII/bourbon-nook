@@ -4,9 +4,10 @@ import type { TypedFetcherWithComponents } from "remix-typedjson";
 import type { ImageActionData } from "~/routes/services/image";
 import CheckIcon from "../../Icons/CheckIcon";
 import Spinner from "../../Icons/Spinner";
+import type { ImageUpdateData } from "~/routes/services/updateImage";
 
 type ImageUploaderProps = {
-  imageFetcher: TypedFetcherWithComponents<ImageActionData>;
+  imageFetcher: TypedFetcherWithComponents<ImageActionData | ImageUpdateData>;
   handlePreviewChange: (e: ChangeEvent<HTMLInputElement>) => void;
   previewUrl: string;
 };
