@@ -17,6 +17,8 @@ import NameTooltip from "../NameTooltip/NameTooltip";
 import PriceRenderer from "../PriceRenderer/PriceRenderer";
 import ABVRenderer from "~/components/Review/Grid/ABVRenderer/ABVRenderer";
 import ProofRenderer from "../ProofRenderer/ProofRenderer";
+import AddIcon from "~/components/Icons/AddIcon";
+import { Link } from "@remix-run/react";
 
 type NumberParserParams = {
   newValue: string;
@@ -402,7 +404,12 @@ export default function DataGrid({ initialData }: any) {
   return (
     <div className="mt-4 w-full rounded-lg bg-white px-4 pt-2 pb-8">
       <section id="grid-wrapper" className="mb-2">
-        <div className="flex flex-col">
+        <div className="relative flex flex-col">
+          <div className="absolute top-8 right-4 text-blue-500">
+            <Link to="/reviews/new/bottle" className="">
+              <AddIcon />
+            </Link>
+          </div>
           <h3 className="text-xl font-bold text-blue-700">My Reviews</h3>
           <div className="my-4 w-3/4 p-4 pl-0">
             <input

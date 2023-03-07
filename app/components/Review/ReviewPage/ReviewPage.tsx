@@ -6,8 +6,6 @@ import BottleImage from "../BottleImage";
 import SettingDetails from "../SettingDetails";
 import WrittenNotes from "../WrittenNotes";
 import Carousel from "~/components/UI/Carousel/Carousel";
-import noImage from "~/images/no_image.png";
-import DataDisplay from "~/components/UI/DataDisplay";
 import Bottle from "../Bottle/Bottle";
 
 type ReviewPageProps = {
@@ -78,7 +76,7 @@ export default function ReviewPage({
       </div>
 
       {/* BOTTLE */}
-      <Bottle bottle={bottle} />
+      <Bottle bottle={bottle} reviewId={review.id} />
       {/* REVIEW */}
       <div className="shadow-blue-700p-2 mb-8 flex flex-col rounded-md bg-white p-2 shadow-lg">
         <h5 className="mb-8 px-2 py-4 text-left text-3xl">Review</h5>
