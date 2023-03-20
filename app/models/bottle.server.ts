@@ -1,18 +1,6 @@
+import { assertNonNullable } from "~/utils/helpers.server";
 import type { bottle, BottleStatus, user } from "@prisma/client";
-import { ErrorBase } from "~/utils/ErrorBase";
 import { prisma } from "~/db.server";
-
-type ErrorName =
-  | "GET_BOTTLE_ERROR"
-  | "GET_BOTTLE_LIST_ITEMS_ERROR"
-  | "GET_BOTTLES_FOR_USER_ERROR"
-  | "GET_BOTTLES_FOR_COMBOBOX_ERROR"
-  | "CREATE_BOTTLE_ERROR"
-  | "EDIT_BOTTLE_ERROR"
-  | "DELETE_BOTTLE_ERROR";
-
-export class BottleError extends ErrorBase<ErrorName> {}
-
 export type { bottle };
 
 export const getBottle = async (id: bottle["id"]) => {
@@ -28,7 +16,7 @@ export const getBottleListItems = async () => {
   });
 };
 
-export type GridCollection = {
+export type GridBottle = {
   id: string;
   status: BottleStatus;
   name: string;
@@ -47,9 +35,139 @@ export type GridCollection = {
   color: string | null;
   finishing: string | null;
   imageUrl: string | null;
-  review: {
-    id: string | null;
-  };
+  reviews:
+    | {
+        id: string | null;
+      }[]
+    | null;
+};
+
+export const filterBottlesForTable = async ({
+  userId,
+  query,
+  skip,
+  take,
+}: {
+  userId: user["id"];
+  query?: string;
+  skip?: number;
+  take?: number;
+}) => {
+  assertNonNullable(userId);
+  const bottles = await prisma.bottle.findMany({
+    where: {
+      userId,
+      OR: [
+        {
+          name: {
+            contains: query,
+          },
+        },
+        {
+          distiller: {
+            contains: query,
+          },
+        },
+        {
+          producer: {
+            contains: query,
+          },
+        },
+        {
+          type: {
+            contains: query,
+          },
+        },
+      ],
+    },
+    skip: skip || undefined,
+    take: take,
+    include: {
+      reviews: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+  return bottles;
+};
+
+export const getTotalBottles = async ({
+  userId,
+  query,
+}: {
+  userId: user["id"];
+  query?: string;
+}) => {
+  const numberOfBottles = await prisma.bottle.count({
+    where: {
+      userId,
+      OR: [
+        {
+          name: {
+            contains: query,
+          },
+        },
+        {
+          distiller: {
+            contains: query,
+          },
+        },
+        {
+          producer: {
+            contains: query,
+          },
+        },
+        {
+          type: {
+            contains: query,
+          },
+        },
+      ],
+    },
+  });
+  return numberOfBottles;
+};
+
+export const getBottlesForGrid = async (
+  userId: user["id"],
+  from: number,
+  to: number
+) => {
+  const bottles = await prisma.bottle.findMany({
+    where: {
+      userId,
+    },
+    skip: from,
+    take: to - from,
+    select: {
+      id: true,
+      status: true,
+      name: true,
+      type: true,
+      distiller: true,
+      producer: true,
+      country: true,
+      region: true,
+      price: true,
+      age: true,
+      year: true,
+      batch: true,
+      alcoholPercent: true,
+      proof: true,
+      size: true,
+      color: true,
+      finishing: true,
+      imageUrl: true,
+      reviews: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+  return bottles;
 };
 
 export const getBottlesForUser = async (userId: user["id"]) => {
