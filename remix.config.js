@@ -4,4 +4,5 @@
 module.exports = {
   cacheDirectory: "./node_modules/.cache/remix",
   ignoredRouteFiles: ["**/.*", "**/*.css", "**/*.test.{js,jsx,ts,tsx}"],
+  serverDependenciesToBundle: ["@table-library/react-table-library", "@table-library/react-table-library/theme", "@table-library/react-table-library/pagination", "@table-library/react-table-library/compact"],
 };
