@@ -46,6 +46,110 @@ export const getReviewListItems = async ({
   return reviews;
 };
 
+export const getTotalReviews = async ({
+  userId,
+  query,
+}: {
+  userId: user["id"];
+  query?: string;
+}) => {
+  const numberOfReviews = await prisma.review.count({
+    where: {
+      userId,
+      bottle: {
+        OR: [
+          {
+            name: {
+              contains: query,
+            },
+          },
+          {
+            distiller: {
+              contains: query,
+            },
+          },
+          {
+            producer: {
+              contains: query,
+            },
+          },
+          {
+            type: {
+              contains: query,
+            },
+          },
+        ],
+      },
+    },
+  });
+  return numberOfReviews;
+};
+
+export const filterReviewsForTable = async ({
+  userId,
+  query,
+  skip,
+  take,
+}: {
+  userId: user["id"];
+  query?: string;
+  skip?: number;
+  take?: number;
+}) => {
+  assertNonNullable(userId);
+  const reviews = await prisma.review.findMany({
+    where: {
+      userId,
+      bottle: {
+        OR: [
+          {
+            name: {
+              contains: query,
+            },
+          },
+          {
+            distiller: {
+              contains: query,
+            },
+          },
+          {
+            producer: {
+              contains: query,
+            },
+          },
+          {
+            type: {
+              contains: query,
+            },
+          },
+        ],
+      },
+    },
+    skip: skip || undefined,
+    take: take,
+    select: {
+      date: true,
+      id: true,
+      overallRating: true,
+      value: true,
+      bottle: {
+        select: {
+          name: true,
+          type: true,
+          distiller: true,
+          producer: true,
+          proof: true,
+          alcoholPercent: true,
+          age: true,
+          price: true,
+          imageUrl: true,
+        },
+      },
+    },
+  });
+  return reviews;
+};
+
 export const getReviewsForTable = async ({
   userId,
 }: {

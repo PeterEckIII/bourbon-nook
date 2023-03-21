@@ -1,13 +1,13 @@
 import { classNames } from "~/utils/cssHelper";
 
-export default function ExternalLink({ className }: { className: string }) {
+export default function ExternalLink({ className }: { className?: string }) {
   return (
     <div className="ml-2 flex items-center justify-center">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className={classNames(
           "relative top-[-2px] mr-[10px] h-5 w-5 fill-blue-600",
-          className
+          className ?? ""
         )}
         viewBox="0 0 20 20"
         fill="currentColor"

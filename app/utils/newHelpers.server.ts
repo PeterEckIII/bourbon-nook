@@ -2,6 +2,14 @@ import { getAnyDataFromRedis } from "~/utils/redis.server";
 import { z, ZodError } from "zod";
 import { BottleStatus } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime";
+import { ColDef, ValueGetterParams } from "ag-grid-community";
+import { getReviewsForTable } from "~/models/review.server";
+import ImageRenderer from "~/components/Review/Grid/ImageRenderer";
+import PriceRenderer from "~/components/Review/Grid/PriceRenderer";
+import ABVRenderer from "~/components/Review/Grid/ABVRenderer";
+import ProofRenderer from "~/components/Review/Grid/ProofRenderer";
+import RatingRenderer from "~/components/Review/Grid/RatingRenderer";
+import LinkRenderer from "~/components/Review/Grid/LinkRenderer";
 
 export type ErrorObject = {
   [name: string]: string;
@@ -122,3 +130,314 @@ export const noteSchema = z.object({
   overallRating: z.string().trim().min(1, { message: "Enter 0 if no rating" }),
   value: z.string().trim().min(1, { message: "Enter 0 if no rating" }),
 });
+
+export const numberParser = (params: { newValue: string }) => {
+  const newValue = params.newValue;
+  let valueAsNumber;
+  if (newValue === null || newValue === undefined || newValue === "") {
+    valueAsNumber = null;
+  } else {
+    valueAsNumber = parseFloat(params.newValue);
+  }
+  return valueAsNumber;
+};
+
+export function nameGetter(params: ValueGetterParams) {
+  if (!params.data) return `loading...`;
+  return {
+    name: params.data.name,
+    imageUrl: params.data.imageUrl,
+  };
+}
+
+export const reviewColumnDefs: ColDef<
+  Awaited<ReturnType<typeof getReviewsForTable>>
+>[] = [
+  {
+    field: "name",
+    minWidth: 300,
+    maxWidth: 350,
+    lockPosition: "left",
+    valueGetter: nameGetter,
+    cellRenderer: ImageRenderer,
+    cellStyle: { display: "flex" },
+    filter: "agTextColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    getQuickFilterText: (params) => params.value,
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "date",
+    sort: "desc",
+    minWidth: 130,
+    maxWidth: 130,
+    cellStyle: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      fontWeight: 500,
+    },
+    filter: "agDateColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "type",
+    minWidth: 150,
+    maxWidth: 150,
+    cellStyle: {
+      display: "flex",
+      // justifyContent: "center",
+      alignItems: "center",
+      fontWeight: "500",
+    },
+    filter: "agTextColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    getQuickFilterText: (params) => params.value,
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "price",
+    minWidth: 97,
+    maxWidth: 100,
+    cellStyle: {
+      display: "flex",
+      alignItems: "center",
+    },
+    filter: "agNumberColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    cellRenderer: PriceRenderer,
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    headerName: "ABV",
+    field: "alcoholPercent",
+    minWidth: 92,
+    maxWidth: 92,
+    cellRenderer: ABVRenderer,
+    cellStyle: {
+      display: "flex",
+      alignItems: "center",
+    },
+    filter: "agNumberColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "proof",
+    minWidth: 107,
+    maxWidth: 110,
+    cellStyle: {
+      display: "flex",
+      alignItems: "center",
+    },
+    cellRenderer: ProofRenderer,
+    filter: "agNumberColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "age",
+    minWidth: 115,
+    maxWidth: 120,
+    cellStyle: {
+      display: "flex",
+      alignItems: "center",
+      fontWeight: 500,
+    },
+    filter: "agNumberColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "distillery",
+    minWidth: 100,
+    maxWidth: 110,
+    cellStyle: {
+      display: "flex",
+      alignItems: "center",
+    },
+    filter: "agTextColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    getQuickFilterText: (params) => params.value,
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "producer",
+    minWidth: 100,
+    maxWidth: 110,
+    cellStyle: {
+      display: "flex",
+      alignItems: "center",
+    },
+    filter: "agTextColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    getQuickFilterText: (params) => params.value,
+    icons: {
+      menu: `
+          <div class="text-xs">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "value",
+    valueParser: numberParser,
+    cellRenderer: RatingRenderer,
+    minWidth: 100,
+    maxWidth: 100,
+    cellStyle: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    filter: "agNumberColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    icons: {
+      menu: `
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    field: "rating",
+    valueParser: numberParser,
+    cellRenderer: RatingRenderer,
+    minWidth: 105,
+    maxWidth: 105,
+    cellStyle: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    filter: "agNumberColumnFilter",
+    filterParams: {
+      buttons: ["apply", "reset"],
+      closeOnApply: true,
+    },
+    icons: {
+      menu: `
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 text-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+            </svg>
+          </div>
+        `,
+    },
+  },
+  {
+    headerName: "Link",
+    field: "reviewId",
+    minWidth: 80,
+    maxWidth: 80,
+    cellRenderer: LinkRenderer,
+    cellStyle: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    sortable: false,
+    filter: false,
+  },
+];
