@@ -18,7 +18,7 @@ export default function Menu({ opened, setOpened, user }: MenuProps) {
       <ul
         className={
           (opened ? "left-0" : "-left-full") +
-          " fixed top-0 h-full w-10/12 space-y-5 bg-gray-50 py-2 text-white transition-left duration-300 lg:static lg:flex lg:w-auto lg:items-center lg:justify-center lg:space-y-0 lg:space-x-7 lg:bg-transparent lg:text-gray-500"
+          " transition-left fixed top-0 h-full w-10/12 space-y-5 bg-gray-50 py-2 text-white duration-300 lg:static lg:flex lg:w-auto lg:items-center lg:justify-center lg:space-y-0 lg:space-x-7 lg:bg-transparent lg:text-gray-500"
         }
       >
         <DesktopMenu user={user} setOpened={setOpened} />
