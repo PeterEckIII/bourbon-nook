@@ -1,7 +1,6 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import {
-  Link,
   Links,
   LiveReload,
   Meta,
@@ -19,7 +18,6 @@ import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
 import { useOptionalUser } from "./utils";
 import { useState } from "react";
-import Glencairn from "./components/Icons/Glencairn";
 import Menu from "./components/UI/Menu/Menu";
 
 export const links: LinksFunction = () => {
@@ -72,6 +70,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function App() {
   const user = useOptionalUser();
   const [opened, setOpened] = useState<boolean>(false);
+
   return (
     <html lang="en" className="h-full" suppressHydrationWarning={true}>
       <head>

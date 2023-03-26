@@ -123,6 +123,12 @@ export async function getComments(reviewId: review["id"], userId: user["id"]) {
   };
 }
 
+export async function getNumComments(reviewId: review["id"]) {
+  return await prisma.comment.count({
+    where: { reviewId },
+  });
+}
+
 export async function toggleCommentLike(
   commentId: comment["id"],
   userId: user["id"]
