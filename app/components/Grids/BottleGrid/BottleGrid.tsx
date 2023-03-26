@@ -12,27 +12,16 @@ import useDebounce from "~/utils/useDebounce";
 import FilterArrowUp from "~/components/Icons/FilterArrowUp";
 import FilterArrowDown from "~/components/Icons/FilterArrowDown";
 import FilterArrows from "~/components/Icons/FilterArrows";
-import GridHeader from "../BottleGrid/GridHeader/GridHeader";
-import GridBody from "../BottleGrid/GridBody/GridBody";
-import GridFooter from "../BottleGrid/GridFooter/GridFooter";
+// import GridHeader from "../BottleGrid/GridHeader/GridHeader";
+// import GridBody from "../BottleGrid/GridBody/GridBody";
+// import GridFooter from "../BottleGrid/GridFooter/GridFooter";
+
+type Limit = 10 | 25 | 50 | 100 | 250;
 
 type Data = {
   nodes: GridBottle[] | [];
   totalPages: number;
 };
-
-function formatImage(imageUrl: string) {
-  const startIndex = imageUrl.indexOf(`/v`);
-  const dimensions = `c_fill,h_125,w_125`;
-  const newString = `${imageUrl.slice(
-    0,
-    startIndex
-  )}/${dimensions}${imageUrl.slice(startIndex)}`;
-
-  return newString;
-}
-
-export type Limit = 10 | 25 | 50 | 75 | 100;
 
 export default function TestGrid() {
   const [data, setData] = useState<Data>({
@@ -151,7 +140,7 @@ export default function TestGrid() {
 
   return (
     <>
-      <GridHeader
+      {/* <GridHeader
         searchFetcher={searchFetcher}
         handleSearch={handleSearch}
         searchParams={params}
@@ -165,7 +154,7 @@ export default function TestGrid() {
         setPage={setPage}
         page={page}
         searchFetcher={searchFetcher}
-      />
+      /> */}
     </>
   );
 }

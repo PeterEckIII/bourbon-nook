@@ -4,36 +4,34 @@ import type { LoaderFunction, LinksFunction } from "@remix-run/server-runtime";
 import { requireUserId } from "~/session.server";
 import { getReviewsForTable } from "~/models/review.server";
 
-import GridStyles from "ag-grid-community/styles/ag-grid.css";
-import AlpineTheme from "ag-grid-community/styles/ag-theme-alpine.css";
 import StatusBarStyles from "~/styles/statusBar.css";
 import DataGrid from "~/components/Review/Grid/DataGrid";
 
 export const links: LinksFunction = () => {
   return [
-    {
-      rel: "preload",
-      href: GridStyles,
-      as: "style",
-    },
-    {
-      rel: "preload",
-      href: AlpineTheme,
-      as: "style",
-    },
+    // {
+    //   rel: "preload",
+    //   href: GridStyles,
+    //   as: "style",
+    // },
+    // {
+    //   rel: "preload",
+    //   href: AlpineTheme,
+    //   as: "style",
+    // },
     {
       rel: "preload",
       href: StatusBarStyles,
       as: "style",
     },
-    {
-      rel: "stylesheet",
-      href: GridStyles,
-    },
-    {
-      rel: "stylesheet",
-      href: AlpineTheme,
-    },
+    // {
+    //   rel: "stylesheet",
+    //   href: GridStyles,
+    // },
+    // {
+    //   rel: "stylesheet",
+    //   href: AlpineTheme,
+    // },
     {
       rel: "stylesheet",
       href: StatusBarStyles,

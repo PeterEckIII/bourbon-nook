@@ -2,20 +2,19 @@ import { classNames } from "~/utils/cssHelper";
 
 type AddIconProps = {
   classes?: string;
+  height?: number;
+  width?: number;
 };
 
-export default function AddIcon({ classes }: AddIconProps) {
+export default function AddIcon({ classes, height, width }: AddIconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      className={classNames(
-        "inline filter hover:translate-y-[1px] hover:translate-x-[1px] hover:text-blue-600 ",
-        classes ?? ""
-      )}
-      height="75"
-      width="125"
+      className={classNames(classes ?? "")}
+      height={height ?? undefined}
+      width={width ?? undefined}
     >
       <filter id="shadow">
         <feDropShadow dx="2" dy="2" stdDeviation={3} floodOpacity={0.5} />

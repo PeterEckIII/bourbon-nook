@@ -45,7 +45,9 @@
     "/postgres-data"
   ],
   "dependencies": {
+    "@emotion/cache": "^11.10.5",
     "@emotion/react": "^11.10.6",
+    "@emotion/server": "^11.10.0",
     "@headlessui/react": "^1.7.7",
     "@headlessui/tailwindcss": "^0.1.2",
     "@prisma/client": "^4.3.1",
@@ -54,9 +56,8 @@
     "@remix-run/react": "^1.7.4",
     "@remix-run/server-runtime": "^1.7.4",
     "@table-library/react-table-library": "^4.0.29",
+    "@tanstack/react-table": "^8.8.0",
     "@types/uuid": "^8.3.4",
-    "ag-grid-community": "^28.2.0",
-    "ag-grid-react": "^28.2.0",
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.1",
@@ -101,6 +102,7 @@
     "@types/node": "^18.7.18",
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
+    "@types/react-table": "^7.7.14",
     "@vitejs/plugin-react": "^2.1.0",
     "@vitest/coverage-c8": "^0.23.4",
     "autoprefixer": "^10.4.11",

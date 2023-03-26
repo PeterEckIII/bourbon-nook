@@ -1,8 +1,8 @@
-interface ChevronDownProps {
-  className?: string;
-}
+type PlusProps = {
+  classes?: string;
+};
 
-export default function ChevronDown({ className }: ChevronDownProps) {
+export default function Plus({ classes }: PlusProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,12 +10,12 @@ export default function ChevronDown({ className }: ChevronDownProps) {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className={className ? className : "h-6 w-6"}
+      className={classes ?? "h-6 w-6"}
     >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+        d="M12 4.5v15m7.5-7.5h-15"
       />
     </svg>
   );
