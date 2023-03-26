@@ -83,14 +83,15 @@ export default function TestRoute() {
   };
 
   return (
-    <ReviewPage
-      bottle={bottle}
-      review={review}
-      handleEditClick={handleEditClick}
-      follow={follow}
-      user={data.user}
-      author={data.reviewAuthor}
-      following={data.following}
-    />
+    <></>
+    // <ReviewPage
+    //   bottle={bottle}
+    //   review={review}
+    //   handleEditClick={handleEditClick}
+    //   follow={follow}
+    //   user={data.user}
+    //   author={data.reviewAuthor}
+    //   following={data.following}
+    // />
   );
 }

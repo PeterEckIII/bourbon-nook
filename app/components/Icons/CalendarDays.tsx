@@ -1,4 +1,8 @@
-export default function CalendarDays() {
+type CalendarDaysProps = {
+  className?: string;
+};
+
+export default function CalendarDays({ className }: CalendarDaysProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,7 +10,7 @@ export default function CalendarDays() {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="h-6 w-6"
+      className={className ? className : "h-6 w-6"}
     >
       <path
         strokeLinecap="round"

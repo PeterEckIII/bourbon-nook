@@ -126,7 +126,10 @@ export default function ReviewCommentsRoute() {
   }, [commentFetcher.state, commentFetcher.data]);
 
   return (
-    <div className="rounded-lg bg-white p-4 shadow-lg shadow-blue-700">
+    <div
+      id="comment-section"
+      className="rounded-lg bg-white p-4 shadow-lg shadow-blue-700"
+    >
       <div>
         <commentFetcher.Form
           method="post"
