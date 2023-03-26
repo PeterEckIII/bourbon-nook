@@ -20,6 +20,7 @@ import ReviewPage from "~/components/Review/ReviewPage/ReviewPage";
 import { getUserById } from "~/models/user.server";
 import { assertNonNullable } from "~/utils/helpers.server";
 import { getFollowing } from "~/models/follower.server";
+import { getNumComments } from "~/models/comment.server";
 
 type LoaderData = {
   review: review;
@@ -28,6 +29,7 @@ type LoaderData = {
   user: user;
   reviewAuthor: user;
   following: any;
+  numComments: number;
 };
 
 export const links: LinksFunction = () => [
@@ -58,6 +60,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const review = await getReviewById(params.reviewId);
   assertNonNullable(review, `Review is undefined`);
   assertNonNullable(review.bottleId, `BottleId is undefined`);
+  const numComments = await getNumComments(review.id);
 
   const reviewAuthorId = review.userId;
   const reviewAuthor = await getUserById(reviewAuthorId);
@@ -74,6 +77,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     user,
     reviewAuthor,
     following,
+    numComments,
   });
 };
 
@@ -117,6 +121,7 @@ export default function ReviewDetailsPage() {
         user={data.user}
         author={data.reviewAuthor}
         following={data.following}
+        numComments={data.numComments}
       />
       <div className="min-h-[200px]">
         <Outlet />

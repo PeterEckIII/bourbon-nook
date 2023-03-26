@@ -42,6 +42,43 @@ export type GridBottle = {
     | null;
 };
 
+export const sortBottlesForTable = async ({
+  userId,
+  sortDirection,
+  field,
+  query,
+}: {
+  userId: string;
+  sortDirection: string;
+  field: keyof GridBottle;
+  query: string;
+}) => {
+  return await prisma.bottle.findMany({
+    where: {
+      userId,
+      OR: [
+        {
+          [field]: {
+            contains: query,
+          },
+        },
+      ],
+    },
+    orderBy: [
+      {
+        [field]: sortDirection,
+      },
+    ],
+    include: {
+      reviews: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+};
+
 export const filterBottlesForTable = async ({
   userId,
   query,

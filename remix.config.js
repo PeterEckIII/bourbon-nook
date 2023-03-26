@@ -10,5 +10,6 @@ module.exports = {
     "@table-library/react-table-library/pagination",
     "@table-library/react-table-library/compact",
     "@table-library/react-table-library/sort",
+    "@table-library/react-table-library/baseline",
   ],
 };

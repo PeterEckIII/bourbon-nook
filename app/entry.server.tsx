@@ -4,7 +4,6 @@ import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
-
 const ABORT_DELAY = 5000;
 
 export default function handleRequest(
@@ -21,7 +20,7 @@ export default function handleRequest(
     let didError = false;
 
     const { pipe, abort } = renderToPipeableStream(
-      <RemixServer context={remixContext} url={request.url} />,
+      <RemixServer context={remixContext} url={request?.url} />,
       {
         [callbackName]: () => {
           const body = new PassThrough();
@@ -47,7 +46,6 @@ export default function handleRequest(
         },
       }
     );
-
     setTimeout(abort, ABORT_DELAY);
   });
 }

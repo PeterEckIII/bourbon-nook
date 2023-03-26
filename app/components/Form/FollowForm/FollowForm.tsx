@@ -28,6 +28,7 @@ const FollowForm: FC<FollowFormProps> = ({
       })
     );
   }, [following, author]);
+
   return (
     <div>
       <CustomForm method="post" action="/reviews/follow" ref={ref}>
@@ -38,14 +39,14 @@ const FollowForm: FC<FollowFormProps> = ({
           value={user.id}
         />
         <input type="hidden" name="authorId" id="authorId" value={author.id} />
-        <div className="flex">
+        <div>
           <button type="submit" disabled={alreadyFollowing}>
             {alreadyFollowing ? (
               <p>Following</p>
             ) : (
-              <p>
-                <FollowButton callToAction="Follow" />
-              </p>
+              <>
+                <FollowButton />
+              </>
             )}
           </button>
         </div>
