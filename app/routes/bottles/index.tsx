@@ -1,5 +1,5 @@
 import type { bottle, review } from "@prisma/client";
-import BottleGrid from "~/components/Grids/BottleGrid";
+import BottleGrid from "~/components/Other/BottleGrid";
 
 export interface LoaderData {
   collection: (bottle & { reviews: review[] })[];
