@@ -1,279 +1,174 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { MouseEventHandler } from "react";
+import type { ChangeEvent } from "react";
 import { useTypedFetcher } from "remix-typedjson";
-import type { BottleSearchData } from "~/routes/services/search/bottle";
-import type { GridBottle } from "~/models/bottle.server";
-import useBottleCols from "~/utils/useBottleCols";
-import ChevronUp from "~/components/Icons/ChevronUp";
-import ChevronDown from "~/components/Icons/ChevronDown";
-import { NONAME } from "dns";
-import FilterArrowUp from "~/components/Icons/FilterArrowUp";
-import FilterArrowDown from "~/components/Icons/FilterArrowDown";
-import FilterArrows from "~/components/Icons/FilterArrows";
 import Spinner from "~/components/Icons/Spinner";
+import type { GridBottle } from "~/models/bottle.server";
+import type { BottleSearchData } from "~/routes/services/search/bottle/fetch";
+import type { Column, Limit } from "./NewTestGrid";
+import useDebounce from "~/utils/useDebounce";
+import GlobalFilter from "../Common/GlobalFilter";
+import Pagination from "../Common/Pagination/Pagination";
+import Table from "../Common/Table";
 
-type Limit = 10 | 25 | 50 | 100 | 250;
-type SortState = {
-  sortDirection: "none" | "ASC" | "DESC";
-  accessor: string;
-};
-
-export default function TestGrid() {
-  const [data, setData] = useState<GridBottle[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+export default function Grid() {
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [limit, setLimit] = useState<Limit>(10);
-  const [sort, setSort] = useState<SortState>({
-    sortDirection: "none",
-    accessor: "",
-  });
+  const [query, setQuery] = useState<string>("");
+  const searchTerm = useDebounce(query, 300);
 
-  const columns = useMemo(
+  const columns: Column[] = useMemo(
     () => [
       {
-        Header: "Bottle",
-        accessor: "imageUrl",
-        id: "image",
+        header: "Name",
+        field: "name",
       },
       {
-        Header: "Name",
-        accessor: "name",
-        id: "name",
-        canSort: true,
-        sortType: "basic",
-        sortDirection: sort.accessor === "name" ? sort.sortDirection : "none",
+        header: "Status",
+        field: "status",
       },
       {
-        Header: "Status",
-        accessor: "status",
-        id: "status",
-        canSort: true,
-        sortType: "basic",
-        sortDirection: sort.accessor === "status" ? sort.sortDirection : "none",
+        header: "Type",
+        field: "type",
       },
       {
-        Header: "Type",
-        accessor: "type",
-        id: "type",
-        canSort: true,
-        sortType: "basic",
-        sortDirection: sort.accessor === "type" ? sort.sortDirection : "none",
+        header: "Distiller",
+        field: "distiller",
       },
       {
-        Header: "Distiller",
-        accessor: "distiller",
-        id: "distiller",
-        canSort: true,
-        sortType: "basic",
-        sortDirection:
-          sort.accessor === "distiller" ? sort.sortDirection : "none",
+        header: "Producer",
+        field: "producer",
       },
       {
-        Header: "Producer",
-        accessor: "producer",
-        id: "producer",
-        canSort: true,
-        sortType: "basic",
-        sortDirection:
-          sort.accessor === "producer" ? sort.sortDirection : "none",
+        header: "Price",
+        field: "price",
       },
       {
-        Header: "ABV",
-        accessor: "alcoholPercent",
-        id: "alcoholPercent",
-        canSort: true,
-        sortType: "basic",
-        sortDirection:
-          sort.accessor === "alcoholPercent" ? sort.sortDirection : "none",
+        header: "Barrel #",
+        field: "batch",
       },
       {
-        Header: "Proof",
-        accessor: "proof",
-        id: "proof",
-        canSort: true,
-        sortType: "basic",
-        sortDirection: sort.accessor === "proof" ? sort.sortDirection : "none",
+        header: "ABV",
+        field: "alcoholPercent",
       },
       {
-        Header: "Price",
-        accessor: "price",
-        id: "price",
-        canSort: true,
-        sortType: "basic",
-        sortDirection: sort.accessor === "price" ? sort.sortDirection : "none",
+        header: "Proof",
+        field: "proof",
       },
       {
-        Header: "Age",
-        accessor: "age",
-        id: "age",
+        header: "Country",
+        field: "country",
       },
       {
-        Header: "Barrel/Batch #",
-        accessor: "batch",
-        id: "batch",
+        header: "Region",
+        field: "region",
       },
       {
-        Header: "Country",
-        accessor: "country",
-        id: "country",
-        canSort: true,
-        sortType: "basic",
-        sortDirection:
-          sort.accessor === "country" ? sort.sortDirection : "none",
+        header: "Color",
+        field: "color",
       },
       {
-        Header: "Region",
-        accessor: "region",
-        id: "region",
-        canSort: true,
-        sortType: "basic",
-        sortDirection: sort.accessor === "region" ? sort.sortDirection : "none",
+        header: "Finishing",
+        field: "finishing",
       },
       {
-        Header: "Color",
-        accessor: "color",
-        id: "color",
-        canSort: true,
-        sortType: "basic",
-        sortDirection: sort.accessor === "color" ? sort.sortDirection : "none",
-      },
-      {
-        Header: "Finishing",
-        accessor: "finishing",
-        id: "finishing",
-        canSort: true,
-        sortType: "basic",
-        sortDirection:
-          sort.accessor === "finishing" ? sort.sortDirection : "none",
-      },
-      {
-        Header: "Review",
-        accessor: "reviews[0].id",
-        id: "review",
+        header: "Size",
+        field: "size",
       },
     ],
-    [sort]
+    []
   );
 
-  const searchFetcher = useTypedFetcher<BottleSearchData>();
+  const { data, load } = useTypedFetcher<BottleSearchData>();
+  const items = useMemo(() => {
+    return data?.items || [];
+  }, [data]);
+
+  const totalPages = data?.totalPages || 0;
+
+  const getInitialData = useCallback(() => {
+    load(`/services/search/bottle/fetch?page=0&limit=${limit}`);
+  }, [load, limit]);
 
   useEffect(() => {
-    if (searchFetcher.type === "init") {
-      setLoading(true);
-      searchFetcher.load(
-        `/services/search/bottle?query=&page=0&limit=${limit}`
+    getInitialData();
+  }, [getInitialData]);
+
+  useEffect(() => {
+    function loadPageData() {
+      load(
+        `/services/search/bottle/fetch?query=${searchTerm}&page=${currentPage}&limit=${limit}`
       );
     }
-    if (searchFetcher.type === "done") {
-      setData(searchFetcher.data.data);
-      setLoading(false);
-    }
-  }, [searchFetcher, limit]);
+    loadPageData();
+  }, [load, currentPage, limit, searchTerm]);
 
-  // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-  //   useTable(
-  //     {
-  //       data,
-  //       columns,
-  //     },
-  //     useSortBy,
-  //     usePagination
-  //   );
-
-  // const onHeaderClick = useCallback(
-  //   (column: Column) => {
-  //     switch (column.sortDirection) {
-  //       case "none": {
-  //         setLoading(true);
-  //         setSort({
-  //           sortDirection: "ASC",
-  //           accessor: column.accessor as string,
-  //         });
-  //         console.log(`Sort: ${sort.sortDirection}`);
-  //         console.log(`Accessor: ${sort.accessor}`);
-  //         searchFetcher.load(
-  //           // Add sort and field to searchFetcher return
-  //           `/services/sort/bottle?query=&page=0&limit=${limit}&sort=${sort.sortDirection}&field=${sort.accessor}`
-  //         );
-  //         if (searchFetcher.type === "done") {
-  //           setData(searchFetcher.data.data);
-  //         }
-  //         setLoading(false);
-  //         break;
-  //       }
-  //       case "ASC": {
-  //         setLoading(true);
-  //         setSort({
-  //           sortDirection: "DESC",
-  //           accessor: column.accessor as string,
-  //         });
-  //         console.log(`Sort: ${sort.sortDirection}`);
-  //         console.log(`Accessor: ${sort.accessor}`);
-
-  //         searchFetcher.load(
-  //           `/services/sort/bottle?query=&page=0&limit=${limit}&sort=${sort.sortDirection}&field=${sort.accessor}`
-  //         );
-  //         if (searchFetcher.type === "done") {
-  //           setData(searchFetcher.data.data);
-  //         }
-  //         setLoading(false);
-  //         break;
-  //       }
-  //       case "DESC": {
-  //         setLoading(true);
-  //         setSort({ sortDirection: "none", accessor: column.id as string });
-  //         console.log(`Sort: ${sort.sortDirection}`);
-  //         console.log(`Accessor: ${sort.accessor}`);
-  //         searchFetcher.load(
-  //           `/services/search/bottle?query=&page=0&limit=${limit}`
-  //         );
-  //         if (searchFetcher.type === "done") {
-  //           setData(searchFetcher.data.data);
-  //         }
-  //         setLoading(false);
-  //         break;
-  //       }
-  //     }
-  //   },
-  //   [searchFetcher, limit, sort]
-  // );
+  const onFirst = () => setCurrentPage(0);
+  const onLast = () => setCurrentPage(totalPages - 1);
+  const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setQuery(e.target.value);
 
   return (
-    <div className="flex max-h-screen max-w-screen-xl justify-center overflow-x-scroll">
-      {/* <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column, index) => (
-                <th
-                  key={a}
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                >
-                  <div className="flex justify-between">
-                    <div>{column.render("Header")}</div>
-                    <div></div>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return loading ? (
-              <Spinner />
-            ) : (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell, i) => (
-                  <td className="px-4 py-2" {...cell.getCellProps()}>
-                    {cell.render("Cell")}
-                  </td>
+    <div className="m-2 w-full rounded bg-white p-4 shadow-lg shadow-blue-700">
+      <div className="flex flex-col">
+        <GlobalFilter
+          query={query}
+          limit={limit}
+          handleQueryChange={handleQueryChange}
+          setLimit={setLimit}
+        />
+        <div>
+          <table>
+            <thead>
+              <tr>
+                {columns.map((column, index) => (
+                  <th key={column.field}>{column.header}</th>
                 ))}
               </tr>
-            );
-          })}
-        </tbody>
-      </table> */}
+            </thead>
+            <tbody>
+              {items.map((bottle, index) => (
+                <tr key={bottle.id}>
+                  <td>{bottle.name}</td>
+                  <td>{bottle.status}</td>
+                  <td>{bottle.type}</td>
+                  <td>{bottle.distiller}</td>
+                  <td>{bottle.producer}</td>
+                  <td>{bottle.price}</td>
+                  <td>{bottle.batch}</td>
+                  <td>{bottle.alcoholPercent}</td>
+                  <td>{bottle.proof}</td>
+                  <td>{bottle.country}</td>
+                  <td>{bottle.region}</td>
+                  <td>{bottle.color}</td>
+                  <td>{bottle.finishing}</td>
+                  <td>{bottle.size}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex justify-between">
+          <div>Total Pages: {totalPages}</div>
+          <div>
+            <button onClick={() => onFirst()}>&#60;&#60;</button>
+            {Array(totalPages)
+              .fill(totalPages)
+              .map((_, index) => (
+                <button
+                  className="rounded border-2 border-black px-2 py-1"
+                  key={index}
+                  onClick={() => setCurrentPage(index)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            <button onClick={() => onLast()}>&#62;&#62;</button>
+          </div>
+          <div>
+            Page {currentPage + 1} of {totalPages}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
