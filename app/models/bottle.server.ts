@@ -1,5 +1,5 @@
 import { assertNonNullable } from "~/utils/helpers.server";
-import type { bottle, BottleStatus, user } from "@prisma/client";
+import type { bottle, BottleStatus, Prisma, user } from "@prisma/client";
 import { prisma } from "~/db.server";
 export type { bottle };
 
@@ -84,13 +84,43 @@ export const filterBottlesForTable = async ({
   query,
   skip,
   take,
+  sort,
+  direction,
 }: {
   userId: user["id"];
   query?: string;
   skip?: number;
   take?: number;
+  sort?: keyof GridBottle;
+  direction?: Prisma.SortOrder;
 }) => {
   assertNonNullable(userId);
+
+  let sortOptions: Prisma.bottleOrderByWithRelationInput = {};
+  if (sort) {
+    if (sort === "name") {
+      sortOptions = { name: direction };
+    }
+    if (sort === "status") {
+      sortOptions = { status: direction };
+    }
+    if (sort === "type") {
+      sortOptions = { type: direction };
+    }
+    if (sort === "distiller") {
+      sortOptions = { distiller: direction };
+    }
+    if (sort === "producer") {
+      sortOptions = { producer: direction };
+    }
+    if (sort === "country") {
+      sortOptions = { country: direction };
+    }
+    if (sort === "region") {
+      sortOptions = { region: direction };
+    }
+  }
+
   const bottles = await prisma.bottle.findMany({
     where: {
       userId,
@@ -115,8 +145,19 @@ export const filterBottlesForTable = async ({
             contains: query,
           },
         },
+        {
+          country: {
+            contains: query,
+          },
+        },
+        {
+          region: {
+            contains: query,
+          },
+        },
       ],
     },
+    orderBy: sortOptions,
     skip: skip || undefined,
     take: take,
     include: {
