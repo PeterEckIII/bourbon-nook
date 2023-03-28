@@ -5,7 +5,7 @@ import Grid from "~/components/Grids/TestGrid/TestGrid";
 
 export default function GridRoute() {
   return (
-    <div className="overflow-x-scroll rounded bg-white shadow-lg shadow-blue-500">
+    <div className="m-2 w-full rounded bg-white p-4 shadow-lg shadow-blue-700">
       <Grid />
     </div>
   );
