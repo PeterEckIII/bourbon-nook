@@ -178,14 +178,6 @@ export default function NewTestGrid() {
         onFilterChange={onFilterChange}
       /> */}
       <Table columns={columns} data={data.bottles} loading={loading} />
-      <Pagination
-        searchData={searchFetcher.data}
-        firstPage={firstPage}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        onPaginationChange={onPaginationChange}
-        handlePageChange={handlePageChange}
-      />
     </div>
   );
 }
