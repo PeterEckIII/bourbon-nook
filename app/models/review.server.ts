@@ -1,7 +1,9 @@
 import { assertNonNullable } from "~/utils/helpers.server";
-import type { user, review } from "@prisma/client";
+import type { user, review, Prisma } from "@prisma/client";
 import { prisma } from "~/db.server";
 import { ErrorBase } from "~/utils/ErrorBase";
+import type { GridReview } from "~/routes/services/search/review";
+import { ReviewSortOptions } from "~/routes/services/search/review/fetch";
 
 type ErrorName =
   | "GET_REVIEW_ERROR"
@@ -78,6 +80,16 @@ export const getTotalReviews = async ({
               contains: query,
             },
           },
+          {
+            country: {
+              contains: query,
+            },
+          },
+          {
+            region: {
+              contains: query,
+            },
+          },
         ],
       },
     },
@@ -90,13 +102,43 @@ export const filterReviewsForTable = async ({
   query,
   skip,
   take,
+  sort,
+  direction,
 }: {
   userId: user["id"];
   query?: string;
   skip?: number;
   take?: number;
+  sort?: ReviewSortOptions;
+  direction?: Prisma.SortOrder;
 }) => {
   assertNonNullable(userId);
+
+  let sortOptions: Prisma.reviewOrderByWithRelationInput = {};
+  if (sort) {
+    if (sort === "name") {
+      sortOptions = { bottle: { name: direction } };
+    }
+    if (sort === "status") {
+      sortOptions = { bottle: { status: direction } };
+    }
+    if (sort === "type") {
+      sortOptions = { bottle: { type: direction } };
+    }
+    if (sort === "distiller") {
+      sortOptions = { bottle: { distiller: direction } };
+    }
+    if (sort === "producer") {
+      sortOptions = { bottle: { producer: direction } };
+    }
+    if (sort === "country") {
+      sortOptions = { bottle: { country: direction } };
+    }
+    if (sort === "region") {
+      sortOptions = { bottle: { region: direction } };
+    }
+  }
+
   const reviews = await prisma.review.findMany({
     where: {
       userId,
@@ -122,11 +164,22 @@ export const filterReviewsForTable = async ({
               contains: query,
             },
           },
+          {
+            country: {
+              contains: query,
+            },
+          },
+          {
+            region: {
+              contains: query,
+            },
+          },
         ],
       },
     },
     skip: skip || undefined,
     take: take,
+    orderBy: sortOptions,
     select: {
       date: true,
       id: true,
@@ -135,6 +188,7 @@ export const filterReviewsForTable = async ({
       bottle: {
         select: {
           name: true,
+          status: true,
           type: true,
           distiller: true,
           producer: true,

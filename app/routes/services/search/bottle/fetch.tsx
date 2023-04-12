@@ -1,9 +1,10 @@
+import type { Ref } from "react";
 import { requireUserId } from "~/session.server";
 import { filterBottlesForTable, getTotalBottles } from "~/models/bottle.server";
 import type { GridBottle } from "~/models/bottle.server";
 import { json } from "@remix-run/server-runtime";
 import type { LoaderArgs } from "@remix-run/server-runtime";
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 export type Limit = 10 | 25 | 50 | 75 | 100 | 250;
 
@@ -17,6 +18,7 @@ export type Column = {
   field: keyof GridBottle;
   sort: boolean;
   sortDirection: Prisma.SortOrder;
+  ref: Ref<HTMLTableCellElement>;
 };
 
 export type BottleSearchData = {
