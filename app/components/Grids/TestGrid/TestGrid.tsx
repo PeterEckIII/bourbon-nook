@@ -1,82 +1,138 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import type { ChangeEvent } from "react";
 import { useTypedFetcher } from "remix-typedjson";
-import Spinner from "~/components/Icons/Spinner";
-import type { GridBottle } from "~/models/bottle.server";
-import type { BottleSearchData } from "~/routes/services/search/bottle/fetch";
-import type { Column, Limit } from "./NewTestGrid";
+import type {
+  BottleSearchData,
+  Column,
+  Limit,
+} from "~/routes/services/search/bottle/fetch";
+import type {} from "./NewTestGrid";
 import useDebounce from "~/utils/useDebounce";
 import GlobalFilter from "../Common/GlobalFilter";
 import Pagination from "../Common/Pagination/Pagination";
-import Table from "../Common/Table";
+import BottleTable from "../BottleTable/BottleTable";
+
+export type SortDirection = "asc" | "desc";
+export type SortFields =
+  | "name"
+  | "status"
+  | "type"
+  | "distiller"
+  | "producer"
+  | "country"
+  | "region";
 
 export default function Grid() {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [limit, setLimit] = useState<Limit>(10);
   const [query, setQuery] = useState<string>("");
+  const [sortField, setSortField] = useState<SortFields>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [tableHeight, setTableHeight] = useState<string | number>("auto");
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const tableRef = useRef<HTMLTableElement | null>(null);
   const searchTerm = useDebounce(query, 300);
 
-  const columns: Column[] = useMemo(
-    () => [
-      {
-        header: "Name",
-        field: "name",
-      },
-      {
-        header: "Status",
-        field: "status",
-      },
-      {
-        header: "Type",
-        field: "type",
-      },
-      {
-        header: "Distiller",
-        field: "distiller",
-      },
-      {
-        header: "Producer",
-        field: "producer",
-      },
-      {
-        header: "Price",
-        field: "price",
-      },
-      {
-        header: "Barrel #",
-        field: "batch",
-      },
-      {
-        header: "ABV",
-        field: "alcoholPercent",
-      },
-      {
-        header: "Proof",
-        field: "proof",
-      },
-      {
-        header: "Country",
-        field: "country",
-      },
-      {
-        header: "Region",
-        field: "region",
-      },
-      {
-        header: "Color",
-        field: "color",
-      },
-      {
-        header: "Finishing",
-        field: "finishing",
-      },
-      {
-        header: "Size",
-        field: "size",
-      },
-    ],
-    []
-  );
+  const columns: Column[] = [
+    {
+      header: "Name",
+      field: "name",
+      sort: true,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Status",
+      field: "status",
+      sort: true,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Type",
+      field: "type",
+      sort: true,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Distiller",
+      field: "distiller",
+      sort: true,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Producer",
+      field: "producer",
+      sort: true,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Price",
+      field: "price",
+      sort: false,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Barrel #",
+      field: "batch",
+      sort: false,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "ABV",
+      field: "alcoholPercent",
+      sort: false,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Proof",
+      field: "proof",
+      sort: false,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Country",
+      field: "country",
+      sort: true,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Region",
+      field: "region",
+      sort: true,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Color",
+      field: "color",
+      sort: false,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Finishing",
+      field: "finishing",
+      sort: false,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+    {
+      header: "Size",
+      field: "size",
+      sort: false,
+      sortDirection: "desc",
+      ref: useRef<HTMLTableCellElement | null>(null),
+    },
+  ];
 
   const { data, load } = useTypedFetcher<BottleSearchData>();
   const items = useMemo(() => {
@@ -84,6 +140,7 @@ export default function Grid() {
   }, [data]);
 
   const totalPages = data?.totalPages || 0;
+  const totalItems = data?.totalBottles || 0;
 
   const getInitialData = useCallback(() => {
     load(`/services/search/bottle/fetch?page=0&limit=${limit}`);
@@ -96,19 +153,34 @@ export default function Grid() {
   useEffect(() => {
     function loadPageData() {
       load(
-        `/services/search/bottle/fetch?query=${searchTerm}&page=${currentPage}&limit=${limit}`
+        `/services/search/bottle/fetch?query=${searchTerm}&page=${currentPage}&limit=${limit}&sort=${sortField}&direction=${sortDirection}`
       );
     }
     loadPageData();
-  }, [load, currentPage, limit, searchTerm]);
+  }, [load, currentPage, limit, searchTerm, sortField, sortDirection]);
+
+  useEffect(() => {
+    const offsetHeight = tableRef.current?.offsetHeight;
+    if (offsetHeight) {
+      setTableHeight(offsetHeight);
+    }
+  }, []);
 
   const onFirst = () => setCurrentPage(0);
   const onLast = () => setCurrentPage(totalPages - 1);
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) =>
     setQuery(e.target.value);
 
+  const handleSortingChange = (field: SortFields) => {
+    const sortOrder =
+      field === sortField && sortDirection === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortDirection(sortOrder);
+  };
+  const mouseDown = (index: number) => setActiveIndex(index);
+
   return (
-    <div className="m-2 w-full rounded bg-white p-4 shadow-lg shadow-blue-700">
+    <div className="">
       <div className="flex flex-col">
         <GlobalFilter
           query={query}
@@ -116,58 +188,24 @@ export default function Grid() {
           handleQueryChange={handleQueryChange}
           setLimit={setLimit}
         />
-        <div>
-          <table>
-            <thead>
-              <tr>
-                {columns.map((column, index) => (
-                  <th key={column.field}>{column.header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((bottle, index) => (
-                <tr key={bottle.id}>
-                  <td>{bottle.name}</td>
-                  <td>{bottle.status}</td>
-                  <td>{bottle.type}</td>
-                  <td>{bottle.distiller}</td>
-                  <td>{bottle.producer}</td>
-                  <td>{bottle.price}</td>
-                  <td>{bottle.batch}</td>
-                  <td>{bottle.alcoholPercent}</td>
-                  <td>{bottle.proof}</td>
-                  <td>{bottle.country}</td>
-                  <td>{bottle.region}</td>
-                  <td>{bottle.color}</td>
-                  <td>{bottle.finishing}</td>
-                  <td>{bottle.size}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex justify-between">
-          <div>Total Pages: {totalPages}</div>
-          <div>
-            <button onClick={() => onFirst()}>&#60;&#60;</button>
-            {Array(totalPages)
-              .fill(totalPages)
-              .map((_, index) => (
-                <button
-                  className="rounded border-2 border-black px-2 py-1"
-                  key={index}
-                  onClick={() => setCurrentPage(index)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            <button onClick={() => onLast()}>&#62;&#62;</button>
-          </div>
-          <div>
-            Page {currentPage + 1} of {totalPages}
-          </div>
-        </div>
+        <BottleTable
+          columns={columns}
+          items={items}
+          sortField={sortField}
+          sortDirection={sortDirection}
+          tableHeight={tableHeight}
+          activeIndex={activeIndex}
+          handleSortingChange={handleSortingChange}
+          mouseDown={mouseDown}
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalItems={totalItems}
+          totalPages={totalPages}
+          onFirst={onFirst}
+          onLast={onLast}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
     </div>
   );
