@@ -1,10 +1,10 @@
 import type { Ref } from "react";
-import { requireUserId } from "~/session.server";
 import { filterBottlesForTable, getTotalBottles } from "~/models/bottle.server";
 import type { GridBottle } from "~/models/bottle.server";
 import { json } from "@remix-run/server-runtime";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import type { Prisma } from "@prisma/client";
+import { requireUserId } from "~/session.server";
 
 export type Limit = 10 | 25 | 50 | 75 | 100 | 250;
 
@@ -48,7 +48,10 @@ export const loader = async ({ request }: LoaderArgs) => {
       skip: offset,
       take: limit,
     });
-    const totalBottles = await getTotalBottles({ userId, query: query });
+    const totalBottles = await getTotalBottles({
+      userId,
+      query: query,
+    });
 
     const totalPages = Math.ceil(totalBottles / limit);
 

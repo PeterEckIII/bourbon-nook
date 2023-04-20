@@ -8,7 +8,11 @@ import { json, redirect } from "@remix-run/server-runtime";
 import { Form, Link, useSearchParams, useActionData } from "@remix-run/react";
 import { getUserId, createUserSession } from "~/session.server";
 
-import { createUser, getUserByEmail } from "~/models/user.server";
+import {
+  createUser,
+  getUserByEmail,
+  getUserByUsername,
+} from "~/models/user.server";
 import { validateEmail } from "~/utils";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -20,6 +24,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 interface ActionData {
   errors: {
     email?: string;
+    username?: string;
     password?: string;
   };
 }
@@ -27,6 +32,7 @@ interface ActionData {
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
+  const username = formData.get("username");
   const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
 
@@ -59,14 +65,41 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const user = await createUser(email, password);
-
-  return createUserSession({
-    request,
-    userId: user.id,
-    remember: false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
-  });
+  if (typeof username === "string") {
+    const existingUsername = await getUserByUsername(username);
+    if (existingUsername) {
+      return json<ActionData>(
+        {
+          errors: {
+            username: "That username is already in use. Please choose another",
+          },
+        },
+        {
+          status: 400,
+          statusText: "That username is already in use. Please choose another",
+        }
+      );
+    }
+    const user = await createUser(email, username, password);
+    return createUserSession({
+      request,
+      userId: user.id,
+      remember: false,
+      redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
+    });
+  } else {
+    return json<ActionData>(
+      {
+        errors: {
+          username: "Username is blank. Please enter a username to continue",
+        },
+      },
+      {
+        status: 400,
+        statusText: "Username is blank. Please enter a username to continue",
+      }
+    );
+  }
 };
 
 export const meta: MetaFunction = () => {
@@ -80,6 +113,7 @@ export default function Join() {
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData() as ActionData;
   const emailRef = React.useRef<HTMLInputElement>(null);
+  const usernameRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -119,6 +153,34 @@ export default function Join() {
                 {actionData?.errors?.email && (
                   <div className="pt-1 text-red-700" id="email-error">
                     {actionData.errors.email}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Username
+              </label>
+              <div className="mt-1">
+                <input
+                  ref={usernameRef}
+                  id="username"
+                  required
+                  autoFocus={true}
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  aria-invalid={actionData?.errors?.username ? true : undefined}
+                  aria-describedby="username-error"
+                  className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                />
+                {actionData?.errors?.username && (
+                  <div className="pt-1 text-red-700" id="username-error">
+                    {actionData.errors.username}
                   </div>
                 )}
               </div>

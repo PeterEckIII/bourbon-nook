@@ -47,6 +47,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const age = formData.get("age")?.toString();
   const year = formData.get("year")?.toString();
   const batch = formData.get("batch")?.toString();
+  const barrel = formData.get("barrel")?.toString();
   const alcoholPercent = formData.get("alcoholPercent")?.toString();
   const proof = formData.get("proof")?.toString();
   const size = formData.get("size")?.toString();
@@ -129,6 +130,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(age, `Age is required`);
   invariant(year, `Year is required`);
   invariant(batch, `Batch is required`);
+  invariant(barrel, `Barrel is required`);
   invariant(alcoholPercent, `Alcohol Percent is required`);
   invariant(proof, `Proof is required`);
   invariant(size, `Size is required`);
@@ -278,6 +280,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     age,
     year,
     batch,
+    barrel,
     alcoholPercent,
     proof,
     price,
