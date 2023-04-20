@@ -87,6 +87,7 @@ export const action = async ({ request }: ActionArgs) => {
     age: bottle.age,
     year: bottle.year,
     batch: bottle.batch,
+    barrel: bottle.barrel,
     alcoholPercent: bottle.alcoholPercent,
     proof: bottle.proof,
     size: bottle.size,
