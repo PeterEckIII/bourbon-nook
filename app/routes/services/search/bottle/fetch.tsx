@@ -1,10 +1,10 @@
 import type { Ref } from "react";
-import { requireUserId } from "~/session.server";
 import { filterBottlesForTable, getTotalBottles } from "~/models/bottle.server";
 import type { GridBottle } from "~/models/bottle.server";
 import { json } from "@remix-run/server-runtime";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import type { Prisma } from "@prisma/client";
+import { auth } from "~/utils/auth.server";
 
 export type Limit = 10 | 25 | 50 | 75 | 100 | 250;
 
@@ -29,7 +29,7 @@ export type BottleSearchData = {
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const userId = await requireUserId(request);
+  let user = await auth.isAuthenticated(request, { failureRedirect: "/login" });
   const url = new URL(request.url);
 
   const query = url.searchParams.get("query") || "";
@@ -43,12 +43,15 @@ export const loader = async ({ request }: LoaderArgs) => {
     const bottles = await filterBottlesForTable({
       sort: sort as keyof GridBottle,
       direction: direction as Prisma.SortOrder,
-      userId,
+      userId: user.id,
       query: query,
       skip: offset,
       take: limit,
     });
-    const totalBottles = await getTotalBottles({ userId, query: query });
+    const totalBottles = await getTotalBottles({
+      userId: user.id,
+      query: query,
+    });
 
     const totalPages = Math.ceil(totalBottles / limit);
 

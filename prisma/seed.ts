@@ -31,6 +31,7 @@ async function seed() {
     const user = await prisma.user.create({
       data: {
         email,
+        username: "rachel",
         password: {
           create: {
             hash: hashedPassword,
@@ -42,6 +43,7 @@ async function seed() {
     const user2 = await prisma.user.create({
       data: {
         email: email2,
+        username: "john",
         password: {
           create: {
             hash: hashedPassword2,
@@ -61,6 +63,7 @@ async function seed() {
           producer: "Sazerac",
           year: "2022",
           batch: "N/A",
+          barrel: "N/A",
           country: "USA",
           region: "Kentucky",
           price: "34.99",
@@ -85,6 +88,7 @@ async function seed() {
           producer: "Sazerac",
           year: "2021",
           batch: "16",
+          barrel: "N/A",
           country: "USA",
           region: "Kentucky",
           price: "59.99",
@@ -109,6 +113,7 @@ async function seed() {
           producer: "Heaven Hill",
           year: "2023",
           batch: "A123",
+          barrel: "N/A",
           country: "USA",
           region: "Kentucky",
           price: "59.99",
@@ -133,6 +138,7 @@ async function seed() {
           producer: "Four Roses",
           year: "2021",
           batch: "Total Wine",
+          barrel: "27-3C",
           country: "USA",
           region: "Kentucky",
           price: "89.99",
@@ -157,6 +163,7 @@ async function seed() {
           producer: "Maker's Mark",
           year: "2021",
           batch: "N/A",
+          barrel: "N/A",
           country: "USA",
           region: "Kentucky",
           price: "64.99",
@@ -181,6 +188,7 @@ async function seed() {
           producer: "Barrell Craft Spirits",
           year: "2022",
           batch: "N/A",
+          barrel: "N/A",
           country: "USA",
           region: "Kentucky",
           price: "55.99",
@@ -204,7 +212,8 @@ async function seed() {
           distiller: "Buffalo Trace",
           producer: "Sazerac",
           year: "2021",
-          batch: "Woodman's",
+          batch: "N/A",
+          barrel: "Woodman's",
           country: "USA",
           region: "Kentucky",
           price: "49.99",
@@ -229,6 +238,7 @@ async function seed() {
           producer: "Wild Turkey",
           year: "2021",
           batch: "Binny's",
+          barrel: "CNA-441",
           country: "USA",
           region: "Kentucky",
           price: "59.99",
@@ -253,6 +263,7 @@ async function seed() {
           producer: "Sazerac",
           year: "2021",
           batch: "N/A",
+          barrel: "N/A",
           country: "USA",
           region: "Kentucky",
           price: "129.99",
@@ -277,6 +288,7 @@ async function seed() {
           producer: "Sazerac",
           year: "2022",
           batch: "Batch #30",
+          barrel: "N/A",
           country: "USA",
           region: "Kentucky",
           price: "44.99",
@@ -301,6 +313,7 @@ async function seed() {
           producer: "Barrell Craft Spirits",
           year: "2022",
           batch: "3",
+          barrel: "N/A",
           country: "USA",
           region: "Kentucky",
           price: "89.99",

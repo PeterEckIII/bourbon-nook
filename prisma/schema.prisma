@@ -23,6 +23,7 @@ model profile {
 model user {
   id       String    @id @default(cuid())
   email    String    @unique
+  username String    @unique
   password password?
 
   profile profile? @relation("userHasProfile")
@@ -179,6 +180,7 @@ model bottle {
   age            String?
   year           String?
   batch          String?
+  barrel         String?
   alcoholPercent String?
   proof          String?
   size           String?
