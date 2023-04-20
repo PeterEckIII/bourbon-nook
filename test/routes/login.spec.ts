@@ -34,7 +34,11 @@ describe("Login", () => {
     });
 
     it("Allows the user to login", async () => {
-      const user = await createUser("test2@example.com", "vItEsT201!");
+      const user = await createUser(
+        "test2@example.com",
+        "myviuser",
+        "vItEsT201!"
+      );
       let body = new URLSearchParams({
         email: user.email,
         password: "vItEsT201!",
@@ -58,7 +62,11 @@ describe("Login", () => {
     });
 
     it("Shows an incorrect password error", async () => {
-      const user = await createUser("test2@example.com", "vItEsT201!");
+      const user = await createUser(
+        "test2@example.com",
+        "myviuser",
+        "vItEsT201!"
+      );
       let body = new URLSearchParams({
         email: user.email,
         password: "akjsdhjkfjaksd",
@@ -81,7 +89,11 @@ describe("Login", () => {
     });
 
     it("Shows a too short password error", async () => {
-      const user = await createUser("test2@example.com", "vItEsT201!");
+      const user = await createUser(
+        "test2@example.com",
+        "myviuser",
+        "vItEsT201!"
+      );
       let body = new URLSearchParams({
         email: user.email,
         password: "jdjk",
@@ -104,7 +116,11 @@ describe("Login", () => {
     });
 
     it("Shows a password required error", async () => {
-      const user = await createUser("test2@example.com", "vItEsT201!");
+      const user = await createUser(
+        "test2@example.com",
+        "myviuser",
+        "vItEsT201!"
+      );
       let body = new URLSearchParams({
         email: user.email,
         redirectTo: "http://localhost:300/reviews",
