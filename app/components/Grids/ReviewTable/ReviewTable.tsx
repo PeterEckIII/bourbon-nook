@@ -44,7 +44,7 @@ export default function ReviewTable({
             <tr className="overflow-hidden border-b-2 text-gray-700">
               {columns.map((column, index) => (
                 <>
-                  {column.kind === "sortable" ? (
+                  {column.kind === "sortable" && column.sort ? (
                     <th
                       ref={column.ref}
                       scope="col"
