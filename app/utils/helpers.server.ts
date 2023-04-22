@@ -56,12 +56,13 @@ export interface CustomFormData {
   region: string;
   price: string;
   age: string;
-  year: string;
-  batch: string;
   alcoholPercent: string;
   proof: string;
-  size: string;
   color: string;
+  year: string;
+  batch: string;
+  barrel: string;
+  size: string;
   finishing: string;
   imageUrl?: string;
 

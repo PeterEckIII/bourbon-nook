@@ -24,7 +24,6 @@ async function seed() {
   }
 
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
-
   const hashedPassword2 = await bcrypt.hash("peteriscool", 10);
 
   try {

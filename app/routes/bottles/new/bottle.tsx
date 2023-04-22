@@ -24,12 +24,20 @@ export const action = async ({ request }: ActionArgs) => {
     request,
     bottleSchema
   );
+  console.log(`Result: ${JSON.stringify(result, null, 2)}`);
 
   const status = formData.get("status")?.toString();
   try {
     await createBottle({
       userId,
       status: status as BottleStatus,
+      size: result.size || "",
+      year: result.year || "",
+      batch: result.batch || "",
+      barrel: result.barrel || "",
+      finishing: result.finishing || "",
+      openDate: result.openDate || "",
+      killDate: result.killDate || "",
       ...result,
     });
     return redirect(`/bottles`);

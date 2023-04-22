@@ -24,15 +24,16 @@ export type BottleErrors = {
   region?: string;
   price?: string;
   age?: string;
-  year?: string;
-  batch?: string;
   alcoholPercent?: string;
   proof?: string;
-  size?: string;
   color?: string;
-  finishing?: string;
-  openDate?: string;
-  killDate?: string;
+  // year?: string;
+  // batch?: string;
+  // barrel?: string;
+  // size?: string;
+  // finishing?: string;
+  // openDate?: string;
+  // killDate?: string;
   general?: string;
 };
 
@@ -110,6 +111,7 @@ export type RedisFormData = {
   age: string;
   year: string;
   batch: string;
+  barrel: string;
   alcoholPercent: string;
   proof: string;
   size: string;
