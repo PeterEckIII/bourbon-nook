@@ -178,13 +178,13 @@ model bottle {
   region         String?
   price          String?
   age            String?
+  alcoholPercent String?
+  proof          String?
+  color          String?
   year           String?
   batch          String?
   barrel         String?
-  alcoholPercent String?
-  proof          String?
   size           String?
-  color          String?
   finishing      String?
   openDate       String?
   killDate       String?

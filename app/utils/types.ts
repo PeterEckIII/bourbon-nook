@@ -26,6 +26,7 @@ export type BottleErrors = {
   age?: string;
   year?: string;
   batch?: string;
+  barrel?: string;
   alcoholPercent?: string;
   proof?: string;
   size?: string;
@@ -110,6 +111,7 @@ export type RedisFormData = {
   age: string;
   year: string;
   batch: string;
+  barrel: string;
   alcoholPercent: string;
   proof: string;
   size: string;

@@ -24,6 +24,7 @@ export const action = async ({ request }: ActionArgs) => {
     request,
     bottleSchema
   );
+  console.log(`Result: ${JSON.stringify(result, null, 2)}`);
 
   const status = formData.get("status")?.toString();
   try {
