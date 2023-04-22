@@ -1,6 +1,7 @@
 import type { bottle } from "@prisma/client";
 import { Form } from "@remix-run/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import type { TypedFetcherWithComponents } from "remix-typedjson";
 import Button from "~/components/UI/Button";
 import ComboBox from "~/components/UI/Combobox/Combobox";
@@ -175,6 +176,7 @@ export default function BottleForm({
               setOpened={setOpened}
               errors={errors}
             />
+
             <div className="flex w-full justify-end">
               <Button
                 type="submit"
