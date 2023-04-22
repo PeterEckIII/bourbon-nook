@@ -9,6 +9,9 @@ export type LikeFormProps = {
 
 export default function LikeForm({ commentId }: LikeFormProps) {
   const like = useFetcher();
+  // TODO: Add "alreadyLiked" boolean to track disabled button status
+  // Upvote disabled = alreadyLiked === true
+  // Downvote disabled = alreadyLiked === false
   return (
     <>
       <like.Form method="post" action="/reviews/like">

@@ -1,4 +1,4 @@
-import { user } from "@prisma/client";
+import type { user } from "@prisma/client";
 import { Link } from "@remix-run/react";
 import { Ref } from "react";
 import { useTypedFetcher } from "remix-typedjson";
@@ -27,6 +27,7 @@ export default function ReviewHeader({
   following,
 }: ReviewHeaderProps) {
   const followFetcher = useTypedFetcher<{ ok: true } | { error: any }>();
+  // const alreadyFollowing = following.find((f) => f.id === author.id);
   return (
     <div className="flex h-36 flex-col rounded bg-white shadow-lg shadow-blue-700">
       <div className="mb-4 pl-4 pt-4">
@@ -46,15 +47,18 @@ export default function ReviewHeader({
               className="inline"
             >
               <input type="hidden" value={author.id} name="authorId" />
-              <button className="group relative inline">
+              <button
+                className="group relative inline"
+                // disabled={alreadyFollowing}
+                // aria-disabled={alreadyFollowing}
+              >
                 <AddIcon
                   classes="bg-none text-blue-500"
                   height={38}
                   width={38}
                 />
                 <span className="absolute top-10 scale-0 rounded bg-gray-600 p-2 text-xs text-white group-hover:scale-100">
-                  {/* ADD FOLLOW / ALREADY FOLLOWING LOGIC */}
-                  Follow
+                  {/* {alreadyFollowing ? "Following" : "Follow"} */}Follow
                 </span>
               </button>
             </followFetcher.Form>

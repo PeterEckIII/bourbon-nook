@@ -30,6 +30,7 @@ export default function IconButton({
       ${isActive ? "icon-button-active" : ""} ${color || ""}`}
       onClick={handler ?? deleteHandler ?? likeHandler}
       disabled={disabled}
+      aria-disabled={disabled}
       {...props}
     >
       <span className={children !== null ? "mr-1" : ""}>

@@ -433,6 +433,7 @@ export default function ReviewGrid() {
             <button
               className="mx-2 my-1 rounded bg-blue-300 p-4 hover:bg-blue-500 hover:text-white disabled:cursor-not-allowed disabled:border disabled:border-gray-400 disabled:bg-slate-200 disabled:text-slate-400"
               disabled={page === 0}
+              aria-disabled={page === 0}
               onClick={() => {
                 setPage(0);
                 pagination.fns.onSetPage(0);
@@ -455,6 +456,8 @@ export default function ReviewGrid() {
                     setPage(index);
                     pagination.fns.onSetPage(index);
                   }}
+                  disabled={page === index}
+                  aria-disabled={page === index}
                 >
                   {index + 1}
                 </button>
@@ -462,6 +465,7 @@ export default function ReviewGrid() {
             <button
               className="mx-2 my-1 rounded bg-blue-300 p-4 hover:bg-blue-500 hover:text-white disabled:cursor-not-allowed disabled:border disabled:border-gray-400 disabled:bg-slate-200 disabled:text-slate-400"
               disabled={page + 1 === searchFetcher?.data?.totalPages}
+              aria-disabled={page + 1 === searchFetcher?.data?.totalPages}
               onClick={() => {
                 setPage(searchFetcher?.data?.totalPages - 1);
                 pagination.fns.onSetPage(searchFetcher?.data?.totalPages - 1);

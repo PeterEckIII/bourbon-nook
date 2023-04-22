@@ -26,6 +26,8 @@ export default function Pagination({
         <button
           className="mx-2 my-1 rounded bg-gray-100 p-4 text-gray-700 hover:bg-blue-500 hover:text-gray-100"
           onClick={() => onFirst()}
+          disabled={currentPage === 0}
+          aria-disabled={currentPage === 0}
         >
           &#60;&#60;
         </button>
@@ -40,6 +42,8 @@ export default function Pagination({
               }
               key={index}
               onClick={() => setCurrentPage(index)}
+              disabled={currentPage === index}
+              aria-disabled={currentPage === index}
             >
               {index + 1}
             </button>
@@ -47,6 +51,8 @@ export default function Pagination({
         <button
           onClick={() => onLast()}
           className="mx-2 my-1 rounded bg-gray-100 p-4 text-gray-700 hover:bg-blue-500 hover:text-gray-100"
+          disabled={currentPage === totalPages}
+          aria-disabled={currentPage === totalPages}
         >
           &#62;&#62;
         </button>

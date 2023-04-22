@@ -5,7 +5,13 @@ import type {
   MetaFunction,
 } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
-import { Form, Link, useSearchParams, useActionData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useSearchParams,
+  useActionData,
+  useTransition,
+} from "@remix-run/react";
 import { getUserId, createUserSession } from "~/session.server";
 
 import {
@@ -115,10 +121,13 @@ export default function Join() {
   const emailRef = React.useRef<HTMLInputElement>(null);
   const usernameRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
+  const transition = useTransition();
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {
       emailRef.current?.focus();
+    } else if (actionData?.errors?.username) {
+      usernameRef.current?.focus();
     } else if (actionData?.errors?.password) {
       passwordRef.current?.focus();
     }
@@ -216,6 +225,14 @@ export default function Join() {
             <button
               type="submit"
               className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+              disabled={
+                transition.state === "submitting" ||
+                transition.state === "loading"
+              }
+              aria-disabled={
+                transition.state === "submitting" ||
+                transition.state === "loading"
+              }
             >
               Create Account
             </button>
