@@ -31,6 +31,13 @@ export const action = async ({ request }: ActionArgs) => {
     await createBottle({
       userId,
       status: status as BottleStatus,
+      size: result.size || "",
+      year: result.year || "",
+      batch: result.batch || "",
+      barrel: result.barrel || "",
+      finishing: result.finishing || "",
+      openDate: result.openDate || "",
+      killDate: result.killDate || "",
       ...result,
     });
     return redirect(`/bottles`);

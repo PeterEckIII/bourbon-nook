@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import ChevronDown from "~/components/Icons/ChevronDown";
 import ChevronUp from "~/components/Icons/ChevronUp";
@@ -24,6 +23,17 @@ export default function DropdownFields({
           <div className="flex">
             <div>Additional details</div>
             <div>{opened ? <ChevronUp /> : <ChevronDown />}</div>
+            {opened ? null : (
+              <>
+                <input type="hidden" name="year" />
+                <input type="hidden" name="batch" />
+                <input type="hidden" name="barrel" />
+                <input type="hidden" name="size" />
+                <input type="hidden" name="finishing" />
+                <input type="hidden" name="openDate" />
+                <input type="hidden" name="killDate" />
+              </>
+            )}
           </div>
         </button>
       </div>
@@ -40,13 +50,7 @@ export default function DropdownFields({
         {opened ? (
           <div className="flex w-full flex-wrap p-2 sm:p-6 lg:w-2/3">
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
-              <TextInput
-                type="text"
-                labelName="Year"
-                name="year"
-                emoji="📅"
-                error={errors?.year}
-              />
+              <TextInput type="text" labelName="Year" name="year" emoji="📅" />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
               <TextInput
@@ -54,7 +58,6 @@ export default function DropdownFields({
                 labelName="Batch"
                 name="batch"
                 emoji="🔡"
-                error={errors?.batch}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -63,17 +66,10 @@ export default function DropdownFields({
                 labelName="Barrel #"
                 name="barrel"
                 emoji="2️⃣"
-                error={errors?.barrel}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
-              <TextInput
-                type="text"
-                labelName="Size"
-                name="size"
-                emoji="🍆"
-                error={errors?.size}
-              />
+              <TextInput type="text" labelName="Size" name="size" emoji="🍆" />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
               <TextInput
@@ -81,7 +77,6 @@ export default function DropdownFields({
                 labelName="Finishing"
                 name="finishing"
                 emoji="🍷"
-                error={errors?.finishing}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -90,7 +85,6 @@ export default function DropdownFields({
                 labelName="Open Date"
                 name="openDate"
                 emoji="📆"
-                error={errors?.openDate}
               />
             </div>
             <div className="mb-2 w-full px-3 md:mb-0 lg:w-1/2 xl:w-1/3">
@@ -99,7 +93,6 @@ export default function DropdownFields({
                 labelName="Kill Date"
                 name="killDate"
                 emoji="📅"
-                error={errors?.killDate}
               />
             </div>
           </div>
