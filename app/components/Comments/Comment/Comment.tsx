@@ -213,8 +213,11 @@ export default function Comment({ comment, user, reviewId }: CommentProps) {
           >
             <button
               aria-label="Hide Replies"
+              aria-pressed={areChildrenHidden}
               onClick={() => setAreChildrenHidden(true)}
               className="collapse-line"
+              disabled={areChildrenHidden}
+              aria-disabled={areChildrenHidden}
             />
             <div className="nested-comments">
               <CommentSection
@@ -227,9 +230,12 @@ export default function Comment({ comment, user, reviewId }: CommentProps) {
           <button
             className={`btn mt-1 ${!areChildrenHidden ? "hide" : ""}`}
             aria-label="Collapse comment"
+            aria-pressed={!areChildrenHidden}
+            disabled={!areChildrenHidden}
+            aria-disabled={!areChildrenHidden}
             onClick={() => setAreChildrenHidden(false)}
           >
-            ShowReplies
+            Show Replies
           </button>
         </>
       ) : null}

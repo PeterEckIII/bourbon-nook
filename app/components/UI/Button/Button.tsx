@@ -29,6 +29,7 @@ export default function Button({
               : "focus:shadow-outline h-10 rounded-lg border border-gray-600 bg-white px-5 text-blue-700 transition-colors duration-150 hover:bg-gray-400 hover:text-blue-900"
           }`}
         disabled={disabled}
+        aria-disabled={disabled}
         name={name}
         value={value}
       >

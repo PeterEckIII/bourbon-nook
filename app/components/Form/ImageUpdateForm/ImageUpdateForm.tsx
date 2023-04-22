@@ -55,6 +55,8 @@ export default function ImageUpdateForm({
               type="button"
               onClick={handleClearSelection}
               className="focus:shadow-outline mr-2 h-10 rounded-lg border border-blue-600 px-5 text-blue-700 transition-colors duration-150 hover:bg-blue-500 hover:text-blue-100"
+              disabled={previewUrl === ""}
+              aria-disabled={previewUrl === ""}
             >
               Clear Image
             </button>

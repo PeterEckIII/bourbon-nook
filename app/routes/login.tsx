@@ -5,7 +5,13 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/server-runtime";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useSearchParams,
+  useTransition,
+} from "@remix-run/react";
 
 import { createUserSession, getUserId } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
@@ -81,6 +87,7 @@ export default function LoginPage() {
   const actionData = useActionData() as ActionData;
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
+  const transition = useTransition();
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {
@@ -154,6 +161,14 @@ export default function LoginPage() {
             <button
               type="submit"
               className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+              disabled={
+                transition.state === "submitting" ||
+                transition.state === "loading"
+              }
+              aria-disabled={
+                transition.state === "submitting" ||
+                transition.state === "loading"
+              }
             >
               Log in
             </button>

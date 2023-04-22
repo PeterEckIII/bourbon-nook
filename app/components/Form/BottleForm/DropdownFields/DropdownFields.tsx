@@ -19,7 +19,11 @@ export default function DropdownFields({
   return (
     <div>
       <div className="ml-10">
-        <button onClick={() => setOpened((opened) => !opened)} type="button">
+        <button
+          onClick={() => setOpened((opened) => !opened)}
+          type="button"
+          aria-pressed={opened}
+        >
           <div className="flex">
             <div>Additional details</div>
             <div>{opened ? <ChevronUp /> : <ChevronDown />}</div>

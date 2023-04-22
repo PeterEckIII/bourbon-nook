@@ -26,6 +26,7 @@ export default function CarouselControl({
           type="button"
           className="rounded-lg border border-blue-500 bg-white px-4 text-blue-500 hover:bg-blue-500 hover:text-white disabled:cursor-not-allowed"
           disabled={currentStep === 0}
+          aria-disabled={currentStep === 0}
           onClick={() => prevStep()}
         >
           Prev
@@ -73,6 +74,7 @@ export default function CarouselControl({
           type="button"
           className="rounded-lg border border-blue-500 bg-white px-4 text-blue-500 hover:bg-blue-500 hover:text-white disabled:cursor-not-allowed"
           disabled={currentStep === 5}
+          aria-disabled={currentStep === 5}
           onClick={() => nextStep()}
         >
           Next

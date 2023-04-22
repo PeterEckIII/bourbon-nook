@@ -20,6 +20,8 @@ export default function HamburgerContainer({
       <button
         onClick={() => setOpened(!opened)}
         className="group mr-2 flex h-12 w-12 cursor-pointer flex-col items-center justify-center rounded border-2 border-black lg:hidden"
+        aria-haspopup="menu"
+        aria-pressed={opened}
       >
         <Hamburger opened={opened} />
       </button>
@@ -28,6 +30,8 @@ export default function HamburgerContainer({
           <button
             type="submit"
             className="hidden rounded-xl bg-gray-100 py-2 px-6 text-sm font-bold text-gray-900 transition duration-200 hover:bg-gray-200 lg:ml-auto lg:mr-3 lg:inline-block"
+            disabled={!user}
+            aria-disabled={!user}
           >
             Logout
           </button>

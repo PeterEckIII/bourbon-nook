@@ -40,7 +40,11 @@ const FollowForm: FC<FollowFormProps> = ({
         />
         <input type="hidden" name="authorId" id="authorId" value={author.id} />
         <div>
-          <button type="submit" disabled={alreadyFollowing}>
+          <button
+            type="submit"
+            disabled={alreadyFollowing}
+            aria-disabled={alreadyFollowing}
+          >
             {alreadyFollowing ? (
               <p>Following</p>
             ) : (
