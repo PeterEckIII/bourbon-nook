@@ -33,13 +33,27 @@ export default function HeadCell({
         <th
           ref={column.ref}
           scope="col"
+          role="columnheader"
+          aria-colindex={index + 1}
+          aria-sort={
+            sortDirection === "asc"
+              ? "ascending"
+              : sortDirection === "desc"
+              ? "descending"
+              : "none"
+          }
           key={key}
           onClick={() => handleSortingChange(column.field as SortFields)}
-          className="border-b-2 text-left text-gray-700 first-of-type:sticky first-of-type:left-0 first-of-type:w-[300px] first-of-type:min-w-[300px] first-of-type:bg-white"
+          className={
+            column.textPosition
+              ? column.textPosition +
+                " border-b-2 text-gray-700 first-of-type:sticky first-of-type:left-0 first-of-type:w-[300px] first-of-type:min-w-[300px] first-of-type:bg-white"
+              : "border-b-2 text-left text-gray-700 first-of-type:sticky first-of-type:left-0 first-of-type:w-[300px] first-of-type:min-w-[300px] first-of-type:bg-white"
+          }
         >
           <div className="flex">
-            <div className="mx-4">{column.header}</div>
-            <div className="mx-4">
+            <div className="mr-2">{column.header}</div>
+            <div className="">
               {column.sort &&
               column.field === sortField &&
               sortDirection === "asc" ? (
@@ -63,8 +77,16 @@ export default function HeadCell({
         <th
           ref={column.ref}
           scope="col"
+          role="columnheader"
+          aria-colindex={index + 1}
+          aria-sort="none"
           key={column.field}
-          className="border-b-2 text-left text-gray-700 first-of-type:sticky first-of-type:left-0 first-of-type:w-[300px] first-of-type:min-w-[300px] first-of-type:bg-white"
+          className={
+            column.textPosition
+              ? column.textPosition +
+                " border-b-2 text-gray-700 first-of-type:sticky first-of-type:left-0 first-of-type:w-[300px] first-of-type:min-w-[300px] first-of-type:bg-white"
+              : "border-b-2 text-left text-gray-700 first-of-type:sticky first-of-type:left-0 first-of-type:w-[300px] first-of-type:min-w-[300px] first-of-type:bg-white"
+          }
         >
           <span>{column.header}</span>
           <div

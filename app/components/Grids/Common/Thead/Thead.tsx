@@ -23,7 +23,11 @@ export default function Thead({
 }: TheadProps) {
   return (
     <thead className="border-b-2 border-blue-500">
-      <tr className="overflow-hidden border-b-2 text-gray-700">
+      <tr
+        className="overflow-hidden border-b-2 text-gray-700"
+        role="row"
+        aria-rowindex={1}
+      >
         {columns.map((column, index) => (
           <HeadCell
             column={column}

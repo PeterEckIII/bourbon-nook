@@ -1,5 +1,6 @@
 import { assertNonNullable } from "~/utils/helpers.server";
 import type { bottle, BottleStatus, Prisma, user } from "@prisma/client";
+import type { GridBottle } from "~/utils/types";
 import { prisma } from "~/db.server";
 export type { bottle };
 
@@ -14,32 +15,6 @@ export const getBottleListItems = async () => {
       name: true,
     },
   });
-};
-
-export type GridBottle = {
-  id: string;
-  status: BottleStatus;
-  name: string;
-  type: string;
-  distiller: string | null;
-  producer: string | null;
-  country: string | null;
-  region: string | null;
-  price: string | null;
-  age: string | null;
-  year: string | null;
-  batch: string | null;
-  alcoholPercent: string | null;
-  proof: string | null;
-  size: string | null;
-  color: string | null;
-  finishing: string | null;
-  imageUrl: string | null;
-  reviews:
-    | {
-        id: string | null;
-      }[]
-    | null;
 };
 
 export const sortBottlesForTable = async ({

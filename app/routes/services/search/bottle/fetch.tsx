@@ -1,32 +1,9 @@
-import type { Ref } from "react";
 import { filterBottlesForTable, getTotalBottles } from "~/models/bottle.server";
-import type { GridBottle } from "~/models/bottle.server";
 import { json } from "@remix-run/server-runtime";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import type { Prisma } from "@prisma/client";
 import { requireUserId } from "~/session.server";
-
-export type Limit = 10 | 25 | 50 | 75 | 100 | 250;
-
-export type BottleData = {
-  bottles: GridBottle[] | [];
-  totalPages: number;
-};
-
-export type Column = {
-  header: string;
-  field: keyof GridBottle;
-  sort: boolean;
-  sortDirection: Prisma.SortOrder;
-  ref: Ref<HTMLTableCellElement>;
-};
-
-export type BottleSearchData = {
-  items: GridBottle[] | [];
-  totalBottles: number;
-  totalPages: number;
-  error?: string;
-};
+import type { TableData, GridBottle } from "~/utils/types";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request);
@@ -55,15 +32,17 @@ export const loader = async ({ request }: LoaderArgs) => {
 
     const totalPages = Math.ceil(totalBottles / limit);
 
-    return json<BottleSearchData>({
+    return json<TableData<GridBottle[]>>({
+      kind: "bottle",
       items: bottles,
-      totalBottles,
+      totalItems: totalBottles,
       totalPages,
     });
   } catch (error) {
-    return json<BottleSearchData>({
+    return json<TableData<GridBottle[]>>({
+      kind: "review",
       items: [],
-      totalBottles: 0,
+      totalItems: 0,
       totalPages: 0,
       error: `Error finding bottles: ${error}`,
     });

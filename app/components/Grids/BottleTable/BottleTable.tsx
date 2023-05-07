@@ -4,10 +4,12 @@ import Caption from "../Common/Caption";
 import TableBody from "../Common/TableBody/TableBody";
 import Thead from "../Common/Thead";
 import type { SortDirection, SortFields } from "../TestGrid/TestGrid";
+import { useCallback, useEffect, useRef } from "react";
 
 type BottleTableProps = {
   columns: Column[];
   items: GridBottle[] | [];
+  totalItems: number;
   sortField: SortFields;
   sortDirection: SortDirection;
   tableHeight: string | number;
@@ -19,6 +21,7 @@ type BottleTableProps = {
 export default function BottleTable({
   columns,
   items,
+  totalItems,
   sortField,
   sortDirection,
   tableHeight,
@@ -29,7 +32,15 @@ export default function BottleTable({
   return (
     <div>
       <div className="overflow-x-scroll">
-        <table className="w-full border-collapse">
+        <table
+          className="w-full border-collapse"
+          role="grid"
+          aria-describedby="caption"
+          tabIndex={0}
+          id="grid"
+          aria-colcount={columns.length}
+          aria-rowcount={totalItems || -1}
+        >
           <Caption
             caption="Bottles in your collection"
             info="Each row represents a bottle in your collection. The first column
