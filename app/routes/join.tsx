@@ -1,10 +1,5 @@
-import * as React from "react";
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/server-runtime";
-import { json, redirect } from "@remix-run/server-runtime";
+import type { ActionFunction, MetaFunction } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
 import {
   Form,
   Link,
@@ -12,99 +7,100 @@ import {
   useActionData,
   useTransition,
 } from "@remix-run/react";
-import { getUserId, createUserSession } from "~/session.server";
+import { createUserSession } from "~/session.server";
 
 import {
   createUser,
   getUserByEmail,
   getUserByUsername,
 } from "~/models/user.server";
-import { validateEmail } from "~/utils";
+import { z } from "zod";
+import { parse } from "@conform-to/zod";
+import { conform, useForm } from "@conform-to/react";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/");
-  return json({});
-};
+const schema = z
+  .object({
+    email: z
+      .string()
+      .min(1, `Email is required`)
+      .email(`Please enter a valid email address`),
+    username: z.string().min(1, `Username is required`),
+    password: z
+      .string()
+      .min(8, `Your password needs to be at least 8 characters`)
+      .regex(
+        /(?=.*[a-z])(?=.*?[A-Z]).*/,
+        `Your password must have at least one uppercase and one lowercase character`
+      ),
+    redirectTo: z.optional(z.string()),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: `Passwords do not match`,
+  });
 
-interface ActionData {
-  errors: {
-    email?: string;
-    username?: string;
-    password?: string;
-  };
+async function isEmailUnique(email: string) {
+  const emailTaken = await getUserByEmail(email);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(emailTaken?.email !== email);
+    }, 300);
+  });
+}
+
+async function isUsernameUnique(username: string) {
+  const usernameTaken = await getUserByUsername(username);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(usernameTaken?.username !== username);
+    }, 300);
+  });
 }
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const username = formData.get("username");
-  const password = formData.get("password");
-  const redirectTo = formData.get("redirectTo");
-
-  if (!validateEmail(email)) {
-    return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
-      { status: 400, statusText: "Email is invalid" }
+  const submission = await parse(formData, {
+    schema: schema
+      .refine(async (data) => await isEmailUnique(data.email), {
+        path: ["email"],
+        message: `That email address has already been registered. Please enter a new one or navigate to the login page`,
+      })
+      .refine(async (data) => await isUsernameUnique(data.username), {
+        path: ["username"],
+        message: `That username is already in use. Please choose another`,
+      }),
+    async: true,
+  });
+  if (!submission.value?.email || submission.intent !== "submit") {
+    return json(
+      { ...submission, payload: { email: submission.payload.email } },
+      { status: 400 }
+    );
+  }
+  if (!submission.value?.username || submission.intent !== "submit") {
+    return json(
+      { ...submission, payload: { username: submission.payload.username } },
+      { status: 400 }
     );
   }
 
-  if (typeof password !== "string") {
-    return json<ActionData>(
-      { errors: { password: "Password is required" } },
-      { status: 400, statusText: "Password is required" }
+  try {
+    const user = await createUser(
+      submission.value?.email,
+      submission.value?.username,
+      submission.value?.password
     );
-  }
-
-  if (password.length < 8) {
-    return json<ActionData>(
-      { errors: { password: "Password is too short" } },
-      { status: 400, statusText: "Password is too short" }
-    );
-  }
-
-  const existingUser = await getUserByEmail(email);
-  if (existingUser) {
-    return json<ActionData>(
-      { errors: { email: "A user already exists with this email" } },
-      { status: 400, statusText: "A user already exists with this email" }
-    );
-  }
-
-  if (typeof username === "string") {
-    const existingUsername = await getUserByUsername(username);
-    if (existingUsername) {
-      return json<ActionData>(
-        {
-          errors: {
-            username: "That username is already in use. Please choose another",
-          },
-        },
-        {
-          status: 400,
-          statusText: "That username is already in use. Please choose another",
-        }
-      );
-    }
-    const user = await createUser(email, username, password);
     return createUserSession({
       request,
       userId: user.id,
       remember: false,
-      redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
+      redirectTo: submission.value?.redirectTo
+        ? submission.value?.redirectTo
+        : "/bottles",
     });
-  } else {
-    return json<ActionData>(
-      {
-        errors: {
-          username: "Username is blank. Please enter a username to continue",
-        },
-      },
-      {
-        status: 400,
-        statusText: "Username is blank. Please enter a username to continue",
-      }
-    );
+  } catch (error) {
+    throw new Error(`Could not submit form ${JSON.stringify(error)}`);
   }
 };
 
@@ -117,107 +113,130 @@ export const meta: MetaFunction = () => {
 export default function Join() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const usernameRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
+  const lastSubmission = useActionData<typeof action>();
   const transition = useTransition();
 
-  React.useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.username) {
-      usernameRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    }
-  }, [actionData]);
+  const [form, { email, username, password, confirmPassword }] = useForm<
+    z.input<typeof schema>
+  >({
+    id: "join",
+    lastSubmission,
+    onValidate({ formData }) {
+      return parse(formData, { schema });
+    },
+  });
 
   return (
     <div className="mt-16 flex items-center justify-center">
       <div className="flex w-[75%] flex-col items-center justify-center rounded bg-white pb-10 pt-6 shadow-lg shadow-blue-700 md:w-[60%] lg:w-[40%] xl:w-[30%]">
         <div className="mx-auto w-full px-8">
           <h1 className="my-6 self-start text-3xl">Sign Up</h1>
-          <Form method="post" className="space-y-6">
+          <Form method="post" className="space-y-6" {...form.props}>
             <div>
               <label
-                htmlFor="email"
+                htmlFor={email.id}
                 className="block text-sm font-medium text-gray-700"
               >
                 Email address
               </label>
               <div className="mt-1">
                 <input
-                  ref={emailRef}
-                  id="email"
-                  required
-                  autoFocus={true}
-                  name="email"
-                  type="email"
                   autoComplete="email"
-                  aria-invalid={actionData?.errors?.email ? true : undefined}
-                  aria-describedby="email-error"
+                  aria-invalid={email.error ? true : undefined}
+                  aria-describedby={email.errorId}
                   className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                  {...conform.input(email, { type: "email" })}
                 />
-                {actionData?.errors?.email && (
-                  <div className="pt-1 text-red-700" id="email-error">
-                    {actionData.errors.email}
+                {email.error ? (
+                  <div
+                    className="mt-1 w-auto rounded bg-red-200 py-4 px-2 text-red-600 shadow-md"
+                    id={email.errorId}
+                    role="alert"
+                  >
+                    {email.error}
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 
             <div>
               <label
-                htmlFor="username"
+                htmlFor={username.id}
                 className="block text-sm font-medium text-gray-700"
               >
                 Username
               </label>
               <div className="mt-1">
                 <input
-                  ref={usernameRef}
-                  id="username"
-                  required
-                  autoFocus={true}
-                  name="username"
-                  type="text"
                   autoComplete="username"
-                  aria-invalid={actionData?.errors?.username ? true : undefined}
-                  aria-describedby="username-error"
+                  aria-invalid={username.error ? true : undefined}
+                  aria-describedby={username.errorId}
                   className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                  {...conform.input(username, { type: "text" })}
                 />
-                {actionData?.errors?.username && (
-                  <div className="pt-1 text-red-700" id="username-error">
-                    {actionData.errors.username}
+                {username.error ? (
+                  <div
+                    className="mt-1 w-auto rounded bg-red-200 py-4 px-2 text-red-600 shadow-md"
+                    id={username.errorId}
+                    role="alert"
+                  >
+                    {username.error}
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 
             <div>
               <label
-                htmlFor="password"
+                htmlFor={password.id}
                 className="block text-sm font-medium text-gray-700"
               >
                 Password
               </label>
               <div className="mt-1">
                 <input
-                  id="password"
-                  ref={passwordRef}
-                  name="password"
-                  type="password"
                   autoComplete="new-password"
-                  aria-invalid={actionData?.errors?.password ? true : undefined}
-                  aria-describedby="password-error"
+                  aria-invalid={password.error ? true : undefined}
+                  aria-describedby={password.errorId}
                   className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                  {...conform.input(password, { type: "password" })}
                 />
-                {actionData?.errors?.password && (
-                  <div className="pt-1 text-red-700" id="password-error">
-                    {actionData.errors.password}
+                {password.error ? (
+                  <div
+                    className="mt-1 w-auto rounded bg-red-200 py-4 px-2 text-red-600 shadow-md"
+                    id={password.errorId}
+                    role="alert"
+                  >
+                    {password.error}
                   </div>
-                )}
+                ) : null}
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor={confirmPassword.id}
+                className="block text-sm font-medium text-gray-700"
+              >
+                Re-enter Password
+              </label>
+              <div className="mt-1">
+                <input
+                  autoComplete="confirm-password"
+                  aria-invalid={confirmPassword.error ? true : undefined}
+                  aria-describedby={confirmPassword.errorId}
+                  className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                  {...conform.input(confirmPassword, { type: "password" })}
+                />
+                {confirmPassword.error ? (
+                  <div
+                    className="mt-1 w-auto rounded bg-red-200 py-4 px-2 text-red-600 shadow-md"
+                    id={confirmPassword.errorId}
+                    role="alert"
+                  >
+                    {confirmPassword.error}
+                  </div>
+                ) : null}
               </div>
             </div>
 

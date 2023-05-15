@@ -60,6 +60,30 @@ export async function deleteUserByEmail(email: user["email"]) {
   return prisma.user.delete({ where: { email } });
 }
 
+export async function verifyWithUsername(
+  username: user["username"],
+  password: password["hash"]
+) {
+  const userWithPassword = await prisma.user.findUnique({
+    where: { username },
+    include: { password: true },
+  });
+
+  if (!userWithPassword || !userWithPassword.password) {
+    return null;
+  }
+
+  const isValid = await bcrypt.compare(
+    password,
+    userWithPassword.password.hash
+  );
+  if (!isValid) return null;
+
+  const { password: _password, ...userWithoutPassword } = userWithPassword;
+
+  return userWithoutPassword;
+}
+
 export async function verifyLogin(
   email: user["email"],
   password: password["hash"]

@@ -47,7 +47,7 @@
 
 ## Database
 
-This project uses sqlite to store data. Anytime you change the `prisma/schema.prisma` file you must run `npm run migrate` to migrate the changes to the actual database. (**Note**, _you may also need to run this command when installing new Cypress packages_)
+This project uses Postgresql to store data. Anytime you change the `prisma/schema.prisma` file you must run `npm run migrate` to migrate the changes to the actual database. (**Note**, _you may also need to run this command when installing new Cypress packages_)
 
 ### Connecting to the database
 
