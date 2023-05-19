@@ -38,7 +38,16 @@ export default function TextInput({
           className="block w-full min-w-0 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
         />
       </div>
-      {error && <ValidationMessage error={error} isSubmitting={false} />}
+      {error && (
+        <div className="ml-1 mt-1 flex w-auto">
+          <div
+            role="alert"
+            className="w-auto rounded bg-red-200 px-2 py-4 text-red-600 shadow-md"
+          >
+            <ValidationMessage error={error} isSubmitting={false} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

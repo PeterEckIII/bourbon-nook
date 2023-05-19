@@ -22,6 +22,8 @@ export default function ValidationMessage({
   return (
     <div
       style={{
+        display: "flex",
+        alignItems: "center",
         opacity: show ? 1 : 0,
         height: show ? "1em" : 0,
         color: "red",
