@@ -13,15 +13,15 @@ import { parse } from "@conform-to/zod";
 import { z } from "zod";
 import { conform, useForm } from "@conform-to/react";
 
-const schema = z.object({
-  accountIdentifier: z.string(),
-  password: z.string(),
+export const loginSchema = z.object({
+  accountIdentifier: z.string().min(1, "Username or email is required"),
+  password: z.string().min(1, "Password is required"),
   redirectTo: z.string().optional(),
 });
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const submission = parse(formData, { schema });
+  const submission = parse(formData, { schema: loginSchema });
 
   if (!submission.value) {
     console.log(`No submission value!`);
@@ -64,13 +64,15 @@ export const meta: MetaFunction = () => {
 export default function LoginPage() {
   const lastSubmission = useActionData<typeof action>();
   const [form, { accountIdentifier, password }] = useForm<
-    z.input<typeof schema>
+    z.input<typeof loginSchema>
   >({
     lastSubmission,
     id: "login",
     onValidate({ formData }) {
-      return parse(formData, { schema });
+      return parse(formData, { schema: loginSchema });
     },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onBlur",
   });
 
   const [searchParams] = useSearchParams();
@@ -100,7 +102,7 @@ export default function LoginPage() {
                 />
                 {accountIdentifier.error ? (
                   <div
-                    className="mt-1 w-auto rounded bg-red-200 py-4 px-2 text-red-600 shadow-md"
+                    className="mt-1 w-auto rounded bg-red-200 px-2 py-4 text-red-600 shadow-md"
                     id={accountIdentifier.errorId}
                     role="alert"
                   >
@@ -126,7 +128,7 @@ export default function LoginPage() {
                 />
                 {password.error ? (
                   <div
-                    className="mt-1 w-auto rounded bg-red-200 py-4 px-2 text-red-600 shadow-md"
+                    className="mt-1 w-auto rounded bg-red-200 px-2 py-4 text-red-600 shadow-md"
                     id={password.errorId}
                     role="alert"
                   >
@@ -139,7 +141,7 @@ export default function LoginPage() {
             <input type="hidden" name="redirectTo" value={redirectTo} />
             <button
               type="submit"
-              className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+              className="w-full rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
               disabled={
                 transition.state === "submitting" ||
                 transition.state === "loading"

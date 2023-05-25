@@ -1,5 +1,5 @@
 import { assertNonNullable } from "~/utils/helpers.server";
-import type { bottle, BottleStatus, Prisma, user } from "@prisma/client";
+import type { bottle, Prisma, user } from "@prisma/client";
 import type { GridBottle } from "~/utils/types";
 import { prisma } from "~/db.server";
 export type { bottle };

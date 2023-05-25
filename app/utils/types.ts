@@ -1,4 +1,5 @@
 import type { BottleStatus, bottle } from "@prisma/client";
+import type { FormEvent, RefObject } from "react";
 import type { Bottle } from "~/components/UI/Combobox/Combobox";
 
 // FETCHER TYPES
@@ -269,18 +270,13 @@ export type ReviewColumn = {
   kind: "review";
   header: string;
   field: string;
-  sort: true;
+  sort: boolean;
 };
 
 export type Column = BottleColumn | ReviewColumn;
 
-type MyBottle = bottle & {
-  reviews: {
-    id: string;
-  }[];
-};
-
-export type GridBottle = {
+export interface GridBottle extends GridItem {
+  kind: "bottle";
   id: string;
   status: BottleStatus;
   name: string;
@@ -305,9 +301,10 @@ export type GridBottle = {
         id: string | null;
       }[]
     | null;
-};
+}
 
-export type GridReview = {
+export interface GridReview extends GridItem {
+  kind: "review";
   id: string;
   date: string | null;
   overallRating: number | null;
@@ -322,9 +319,15 @@ export type GridReview = {
     alcoholPercent: string | null;
     age: string | null;
     price: string | null;
+    barrel: string | null;
+    batch: string | null;
     imageUrl: string | null;
   } | null;
-};
+}
+
+export interface GridItem {
+  kind: "bottle" | "review";
+}
 
 export interface TableData<T> {
   kind: string;
@@ -332,4 +335,20 @@ export interface TableData<T> {
   totalItems: number;
   totalPages: number;
   error?: string;
+}
+
+export interface FormProps {
+  id?: string;
+  ref: RefObject<HTMLFormElement>;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  noValidate: boolean;
+}
+
+export interface Form {
+  id?: string;
+  errorId?: string;
+  error: string;
+  errors: string[];
+  ref: RefObject<HTMLFormElement>;
+  props: FormProps;
 }

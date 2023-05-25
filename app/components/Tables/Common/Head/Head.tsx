@@ -1,10 +1,10 @@
 import type { Column, Sort, SortFields } from "~/utils/types";
-import HeaderCell from "../NewHeaderCell";
+import HeaderCell from "../HeaderCell";
 
 type HeadProps = {
   columns: Column[];
   handleSortingChange: (field: SortFields) => void;
-  sort: Sort;
+  sort: boolean;
 };
 
 export default function Head({

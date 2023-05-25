@@ -15,7 +15,7 @@ export default function EditTextarea({
         {labelName}
       </label>
       <textarea
-        className="w-full flex-1 rounded-md border-2 border-blue-500 py-2 px-3 text-lg leading-6"
+        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
         rows={6}
         name={name}
         defaultValue={defaultValue ?? ""}

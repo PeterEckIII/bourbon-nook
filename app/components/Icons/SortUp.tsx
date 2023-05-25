@@ -1,16 +1,16 @@
 export default function SortUp({ className }: { className: string }) {
   return (
     <svg
-      className={className}
+      viewBox="0 0 100 200"
+      width="100"
+      height="200"
+      fill="none"
+      strokeWidth={1.5}
       stroke="currentColor"
-      fill="currentColor"
-      strokeWidth="0"
-      viewBox="0 0 320 512"
-      height="1em"
-      width="1em"
-      xmlns="http://www.w3.org/2000/svg"
+      className={className ?? "h-3 w-3"}
     >
-      <path d="M279 224H41c-21.4 0-32.1-25.9-17-41L143 64c9.4-9.4 24.6-9.4 33.9 0l119 119c15.2 15.1 4.5 41-16.9 41z"></path>
+      <polyline points="20 50, 50 20, 80 50"></polyline>
+      <line x1="50" y1="20" x2="50" y2="180"></line>
     </svg>
   );
 }

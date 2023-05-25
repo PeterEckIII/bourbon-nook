@@ -29,7 +29,7 @@ export default function HamburgerContainer({
         <Form method="post" action="/logout">
           <button
             type="submit"
-            className="hidden rounded-xl bg-gray-100 py-2 px-6 text-sm font-bold text-gray-900 transition duration-200 hover:bg-gray-200 lg:ml-auto lg:mr-3 lg:inline-block"
+            className="hidden rounded-xl bg-gray-100 px-6 py-2 text-sm font-bold text-gray-900 transition duration-200 hover:bg-gray-200 lg:ml-auto lg:mr-3 lg:inline-block"
             disabled={!user}
             aria-disabled={!user}
           >

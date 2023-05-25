@@ -1,5 +1,7 @@
 import type { Preview } from "@storybook/react";
-import '../app/styles/tailwind.css';
+import "../app/styles/tailwind.css";
+import "@storybook/addon-console";
+import { withConsole } from "@storybook/addon-console";
 
 const preview: Preview = {
   parameters: {
@@ -11,6 +13,7 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [(storyFn, context) => withConsole()(storyFn)(context)],
 };
 
 export default preview;

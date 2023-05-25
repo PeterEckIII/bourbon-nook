@@ -24,7 +24,7 @@ export default function Table({
       ref={tableRef}
     >
       <table
-        className="border-1 my-[25px] mx-auto border-collapse border-solid border-gray-200 font-sans shadow-table"
+        className="border-1 mx-auto my-[25px] border-collapse border-solid border-gray-200 font-sans shadow-table"
         style={{ borderBottom: "4px solid rgb(59, 130, 246)" }}
         role="grid"
         aria-describedby="caption"
