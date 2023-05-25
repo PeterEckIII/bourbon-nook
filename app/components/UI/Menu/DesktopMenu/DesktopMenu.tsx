@@ -24,7 +24,7 @@ export default function DesktopMenu({ user, setOpened }: DesktopMenuProps) {
                 <button
                   onClick={() => setOpened(false)}
                   type="submit"
-                  className="rounded-lg bg-gray-300 py-2 px-6 font-bold text-gray-900 transition duration-200 hover:bg-gray-200 lg:ml-auto lg:mr-3 lg:inline-block"
+                  className="rounded-lg bg-gray-300 px-6 py-2 font-bold text-gray-900 transition duration-200 hover:bg-gray-200 lg:ml-auto lg:mr-3 lg:inline-block"
                   disabled={!user}
                   aria-disabled={!user}
                 >

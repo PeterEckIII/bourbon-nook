@@ -24,7 +24,7 @@ export default function RadioInput({
       />
       <label
         htmlFor={`${field}-field`}
-        className="h-8 cursor-pointer rounded bg-white bg-opacity-0 py-1 px-2 text-sm leading-6 text-gray-600 shadow-none hover:text-gray-800 peer-checked:bg-opacity-100 peer-checked:shadow"
+        className="h-8 cursor-pointer rounded bg-white bg-opacity-0 px-2 py-1 text-sm leading-6 text-gray-600 shadow-none hover:text-gray-800 peer-checked:bg-opacity-100 peer-checked:shadow"
       >
         {label}
       </label>

@@ -1,112 +1,22 @@
-import * as React from "react";
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/server-runtime";
-import { json, redirect } from "@remix-run/server-runtime";
+import type { ActionArgs, MetaFunction } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
 import {
-  Form,
-  Link,
   useSearchParams,
   useActionData,
-  useTransition,
+  useRouteError,
+  isRouteErrorResponse,
 } from "@remix-run/react";
-import { getUserId, createUserSession } from "~/session.server";
-
+import { createUserSession } from "../session.server";
 import {
   createUser,
   getUserByEmail,
   getUserByUsername,
-} from "~/models/user.server";
-import { validateEmail } from "~/utils";
+} from "../models/user.server";
+import RegisterForm from "../components/Form/RegisterForm";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/");
-  return json({});
-};
-
-interface ActionData {
-  errors: {
-    email?: string;
-    username?: string;
-    password?: string;
-  };
-}
-
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const username = formData.get("username");
-  const password = formData.get("password");
-  const redirectTo = formData.get("redirectTo");
-
-  if (!validateEmail(email)) {
-    return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
-      { status: 400, statusText: "Email is invalid" }
-    );
-  }
-
-  if (typeof password !== "string") {
-    return json<ActionData>(
-      { errors: { password: "Password is required" } },
-      { status: 400, statusText: "Password is required" }
-    );
-  }
-
-  if (password.length < 8) {
-    return json<ActionData>(
-      { errors: { password: "Password is too short" } },
-      { status: 400, statusText: "Password is too short" }
-    );
-  }
-
-  const existingUser = await getUserByEmail(email);
-  if (existingUser) {
-    return json<ActionData>(
-      { errors: { email: "A user already exists with this email" } },
-      { status: 400, statusText: "A user already exists with this email" }
-    );
-  }
-
-  if (typeof username === "string") {
-    const existingUsername = await getUserByUsername(username);
-    if (existingUsername) {
-      return json<ActionData>(
-        {
-          errors: {
-            username: "That username is already in use. Please choose another",
-          },
-        },
-        {
-          status: 400,
-          statusText: "That username is already in use. Please choose another",
-        }
-      );
-    }
-    const user = await createUser(email, username, password);
-    return createUserSession({
-      request,
-      userId: user.id,
-      remember: false,
-      redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
-    });
-  } else {
-    return json<ActionData>(
-      {
-        errors: {
-          username: "Username is blank. Please enter a username to continue",
-        },
-      },
-      {
-        status: 400,
-        statusText: "Username is blank. Please enter a username to continue",
-      }
-    );
-  }
-};
+import { z } from "zod";
+import { parse } from "@conform-to/zod";
+import { useForm } from "@conform-to/react";
 
 export const meta: MetaFunction = () => {
   return {
@@ -114,146 +24,153 @@ export const meta: MetaFunction = () => {
   };
 };
 
+export const registerSchema = z
+  .object({
+    email: z
+      .string()
+      .min(1, `Email is required`)
+      .email(`Please enter a valid email address`),
+    username: z.string().min(1, `Username is required`),
+    password: z
+      .string()
+      .min(8, `Your password needs to be at least 8 characters`)
+      .regex(
+        /(?=.*[a-z])(?=.*?[A-Z]).*/,
+        `Your password must have at least one uppercase and one lowercase character`
+      ),
+    redirectTo: z.optional(z.string()),
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: `Passwords do not match`,
+  });
+
+async function isEmailUnique(email: string) {
+  const emailTaken = await getUserByEmail(email);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(emailTaken?.email !== email);
+    }, 300);
+  });
+}
+
+async function isUsernameUnique(username: string) {
+  const usernameTaken = await getUserByUsername(username);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(usernameTaken?.username !== username);
+    }, 300);
+  });
+}
+
+export const action = async ({ request }: ActionArgs) => {
+  const formData = await request.formData();
+  const submission = await parse(formData, {
+    schema: registerSchema
+      .refine(
+        async (data) => {
+          return await isEmailUnique(data.email);
+        },
+        {
+          path: ["email"],
+          message: `That email address has already been registered. Please enter a new one or navigate to the login page`,
+        }
+      )
+      .refine(
+        async (data) => {
+          return await isUsernameUnique(data.username);
+        },
+        {
+          path: ["username"],
+          message: `That username has already been taken. Please choose another`,
+        }
+      ),
+    async: true,
+  });
+
+  if (!submission.value || submission.intent !== "submit") {
+    return json(submission);
+  }
+
+  try {
+    const user = await createUser(
+      submission.payload.email,
+      submission.payload.username,
+      submission.payload.password
+    );
+    return createUserSession({
+      redirectTo: submission.payload.redirectTo,
+      remember: false,
+      request,
+      userId: user.id,
+    });
+  } catch (error) {
+    return json({
+      ...submission,
+      error: {
+        "": "An error occurred while creating your account. Please try again later.",
+      },
+    });
+  }
+};
+
 export default function Join() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const usernameRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
-  const transition = useTransition();
-
-  React.useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.username) {
-      usernameRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    }
-  }, [actionData]);
+  const lastSubmission = useActionData<typeof action>();
+  const [form, { email, username, password, confirmPassword }] = useForm<
+    z.input<typeof registerSchema>
+  >({
+    lastSubmission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: registerSchema });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onBlur",
+  });
 
   return (
     <div className="mt-16 flex items-center justify-center">
       <div className="flex w-[75%] flex-col items-center justify-center rounded bg-white pb-10 pt-6 shadow-lg shadow-blue-700 md:w-[60%] lg:w-[40%] xl:w-[30%]">
         <div className="mx-auto w-full px-8">
           <h1 className="my-6 self-start text-3xl">Sign Up</h1>
-          <Form method="post" className="space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  ref={emailRef}
-                  id="email"
-                  required
-                  autoFocus={true}
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  aria-invalid={actionData?.errors?.email ? true : undefined}
-                  aria-describedby="email-error"
-                  className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-                />
-                {actionData?.errors?.email && (
-                  <div className="pt-1 text-red-700" id="email-error">
-                    {actionData.errors.email}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Username
-              </label>
-              <div className="mt-1">
-                <input
-                  ref={usernameRef}
-                  id="username"
-                  required
-                  autoFocus={true}
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  aria-invalid={actionData?.errors?.username ? true : undefined}
-                  aria-describedby="username-error"
-                  className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-                />
-                {actionData?.errors?.username && (
-                  <div className="pt-1 text-red-700" id="username-error">
-                    {actionData.errors.username}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  ref={passwordRef}
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  aria-invalid={actionData?.errors?.password ? true : undefined}
-                  aria-describedby="password-error"
-                  className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-                />
-                {actionData?.errors?.password && (
-                  <div className="pt-1 text-red-700" id="password-error">
-                    {actionData.errors.password}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <input type="hidden" name="redirectTo" value={redirectTo} />
-            <button
-              type="submit"
-              className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-              disabled={
-                transition.state === "submitting" ||
-                transition.state === "loading"
-              }
-              aria-disabled={
-                transition.state === "submitting" ||
-                transition.state === "loading"
-              }
-            >
-              Create Account
-            </button>
-            <div className="flex items-center justify-center">
-              <div className="text-center text-sm text-gray-500">
-                Already have an account?{" "}
-                <Link
-                  prefetch="intent"
-                  className="text-blue-500 underline"
-                  to={{
-                    pathname: "/login",
-                    search: searchParams.toString(),
-                  }}
-                >
-                  Log in
-                </Link>
-              </div>
-            </div>
-          </Form>
+          <RegisterForm
+            form={form}
+            email={email}
+            username={username}
+            password={password}
+            confirmPassword={confirmPassword}
+            searchParams={searchParams}
+          />
         </div>
       </div>
+    </div>
+  );
+}
+
+export async function ErrorBoundary() {
+  const error = useRouteError();
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div>
+        <h1>Oops!</h1>
+        <p>Status: {error.status}</p>
+        <p>{error.data.message}</p>
+      </div>
+    );
+  }
+
+  let errorMessage = "Unknown error";
+
+  if (typeof error !== "undefined" && error instanceof Error) {
+    errorMessage = error.message;
+  }
+
+  return (
+    <div>
+      <h1>Uh oh...</h1>
+      <p>Something went wrong</p>
+      <p>{errorMessage}</p>
     </div>
   );
 }

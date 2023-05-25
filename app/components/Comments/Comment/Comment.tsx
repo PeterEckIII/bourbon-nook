@@ -1,7 +1,6 @@
 import type { user } from "@prisma/client";
 import { useFetcher } from "@remix-run/react";
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import LikeForm from "~/components/Form/LikeForm";
+import React, { useEffect, useRef, useState } from "react";
 import EditIcon from "~/components/Icons/EditIcon";
 import HeartIcon from "~/components/Icons/HeartIcon";
 import ReplyIcon from "~/components/Icons/ReplyIcon";

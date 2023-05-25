@@ -58,7 +58,7 @@ export default function BottleForm({
             imageIsSubmitting={imageIsSubmitting}
           />
           <Form method="post" className="flex flex-col">
-            <div className="my-3 -mx-3 mb-6 flex w-full flex-wrap p-2 sm:p-7 lg:w-2/3">
+            <div className="-mx-3 my-3 mb-6 flex w-full flex-wrap p-2 sm:p-7 lg:w-2/3">
               {submissionSuccessful ? (
                 <input
                   type="hidden"

@@ -47,7 +47,7 @@ export default function Bottle({ bottle, reviewId }: BottleProps) {
             />
           </div>
         )}
-        <div className="wrap my-2 mx-2 flex w-full flex-col">
+        <div className="wrap mx-2 my-2 flex w-full flex-col">
           <section className="">
             <div className="m-4 grid grid-cols-1 gap-6 md:m-0 md:grid-cols-2 xl:grid-cols-3">
               <Datum field="Type" value={bottle.type} icon={<Abacus />} />

@@ -18,13 +18,13 @@ export default function ImageUploader({
   handlePreviewChange,
 }: ImageUploaderProps) {
   return (
-    <div className="m-2 mt-0 mr-0 mb-2 ml-0 rounded-lg bg-white p-2">
+    <div className="m-2 mb-2 ml-0 mr-0 mt-0 rounded-lg bg-white p-2">
       <span className="text-lg">Image of Bottle</span>
-      <div className="clear-both my-0 mx-auto block w-full max-w-[600px]">
+      <div className="clear-both mx-auto my-0 block w-full max-w-[600px]">
         <div className="flex w-full items-center justify-center">
           <label
             htmlFor="img"
-            className="float-left clear-both my-4 mx-2 w-full cursor-pointer select-none rounded-lg border-[3px] border-gray-300 bg-white py-8 px-6 text-center transition-all duration-200 ease-linear hover:border-blue-500"
+            className="float-left clear-both mx-2 my-4 w-full cursor-pointer select-none rounded-lg border-[3px] border-gray-300 bg-white px-6 py-8 text-center transition-all duration-200 ease-linear hover:border-blue-500"
           >
             <input
               type="file"
@@ -40,7 +40,7 @@ export default function ImageUploader({
                   <img
                     src={previewUrl}
                     alt={`The bottle you uploaded]`}
-                    className="my-0 mx-auto h-[450px] w-[275px] object-cover lg:h-[600px] lg:w-[400px]"
+                    className="mx-auto my-0 h-[450px] w-[275px] object-cover lg:h-[600px] lg:w-[400px]"
                   />
                 </div>
               ) : imageFetcher.type === "actionSubmission" ? (
@@ -56,7 +56,7 @@ export default function ImageUploader({
                   <span>&nbsp;</span>Successfully uploaded!
                 </div>
               ) : (
-                <div className="clear-both mt-0 mr-0 mb-2 ml-0 w-full">
+                <div className="clear-both mb-2 ml-0 mr-0 mt-0 w-full">
                   <Download classes="h-10 w-10 my-4 mx-auto" />
                   <div className="float-left clear-both block w-full">
                     Select an image from your device

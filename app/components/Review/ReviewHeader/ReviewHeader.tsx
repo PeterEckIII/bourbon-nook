@@ -1,12 +1,9 @@
 import type { user } from "@prisma/client";
 import { Link } from "@remix-run/react";
-import { Ref } from "react";
 import { useTypedFetcher } from "remix-typedjson";
-import FollowForm from "~/components/Form/FollowForm";
 import AddIcon from "~/components/Icons/AddIcon";
 import CalendarDays from "~/components/Icons/CalendarDays";
 import ChatBubble from "~/components/Icons/ChatBubble";
-import Plus from "~/components/Icons/Plus";
 import User from "~/components/Icons/User";
 
 type ReviewHeaderProps = {

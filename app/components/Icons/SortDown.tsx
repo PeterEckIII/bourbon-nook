@@ -1,16 +1,16 @@
 export default function SortDown({ className }: { className: string }) {
   return (
     <svg
-      className={className}
+      viewBox="0 0 100 200"
+      width="100"
+      height="200"
+      fill="none"
+      strokeWidth={1.5}
       stroke="currentColor"
-      fill="currentColor"
-      strokeWidth="0"
-      viewBox="0 0 320 512"
-      height="1em"
-      width="1em"
-      xmlns="http://www.w3.org/2000/svg"
+      className={className ?? "h-3 w-3"}
     >
-      <path d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41z"></path>
+      <line x1="50" y1="20" x2="50" y2="180"></line>
+      <polyline points="20 150, 50 180, 80 150"></polyline>
     </svg>
   );
 }

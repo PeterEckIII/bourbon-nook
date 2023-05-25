@@ -1,20 +1,19 @@
 import { assertNonNullable } from "~/utils/helpers.server";
 import type { user, review, Prisma } from "@prisma/client";
 import { prisma } from "~/db.server";
-import { ErrorBase } from "~/utils/ErrorBase";
-import type { GridReview } from "~/routes/services/search/review";
-import { ReviewSortOptions } from "~/routes/services/search/review/fetch";
 
-type ErrorName =
-  | "GET_REVIEW_ERROR"
-  | "GET_REVIEW_BY_ID_ERROR"
-  | "GET_REVIEW_LIST_ITEMS_ERROR"
-  | "GET_REVIEWS_FOR_TABLE_ERROR"
-  | "CREATE_REVIEW_ERROR"
-  | "EDIT_REVIEW_ERROR"
-  | "DELETE_REVIEW_ERROR";
-
-export class ReviewError extends ErrorBase<ErrorName> {}
+export type ReviewSortOptions =
+  | "name"
+  | "date"
+  | "status"
+  | "type"
+  | "distiller"
+  | "producer"
+  | "country"
+  | "region"
+  | "price"
+  | "overallRating"
+  | "value";
 
 export type { review } from "@prisma/client";
 
@@ -196,6 +195,8 @@ export const filterReviewsForTable = async ({
           alcoholPercent: true,
           age: true,
           price: true,
+          barrel: true,
+          batch: true,
           imageUrl: true,
         },
       },

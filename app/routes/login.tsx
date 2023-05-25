@@ -1,10 +1,5 @@
-import * as React from "react";
-import { redirect, json } from "@remix-run/server-runtime";
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
+import type { ActionFunction, MetaFunction } from "@remix-run/server-runtime";
 import {
   Form,
   Link,
@@ -12,66 +7,51 @@ import {
   useSearchParams,
   useTransition,
 } from "@remix-run/react";
+import { createUserSession } from "~/session.server";
+import { verifyLogin, verifyWithUsername } from "~/models/user.server";
+import { parse } from "@conform-to/zod";
+import { z } from "zod";
+import { conform, useForm } from "@conform-to/react";
 
-import { createUserSession, getUserId } from "~/session.server";
-import { verifyLogin } from "~/models/user.server";
-import { validateEmail } from "~/utils";
-
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/");
-  return json({});
-};
-
-interface ActionData {
-  errors?: {
-    email?: string;
-    password?: string;
-  };
-}
+export const loginSchema = z.object({
+  accountIdentifier: z.string().min(1, "Username or email is required"),
+  password: z.string().min(1, "Password is required"),
+  redirectTo: z.string().optional(),
+});
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = formData.get("redirectTo");
-  const remember = formData.get("remember");
+  const submission = parse(formData, { schema: loginSchema });
 
-  if (!validateEmail(email)) {
-    return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
-      { status: 400, statusText: "Email is invalid" }
-    );
+  if (!submission.value) {
+    console.log(`No submission value!`);
+    return json(submission, { status: 400 });
   }
 
-  if (typeof password !== "string") {
-    return json<ActionData>(
-      { errors: { password: "Password is required" } },
-      { status: 400, statusText: "Password is required" }
+  let user;
+
+  if (submission.value.accountIdentifier.match(/^\S+@\S+$/)) {
+    user = await verifyLogin(
+      submission.value.accountIdentifier,
+      submission.value.password
+    );
+  } else {
+    user = await verifyWithUsername(
+      submission.value.accountIdentifier,
+      submission.value.password
     );
   }
-
-  if (password.length < 8) {
-    return json<ActionData>(
-      { errors: { password: "Password is too short" } },
-      { status: 400, statusText: "Password is too short" }
-    );
-  }
-
-  const user = await verifyLogin(email, password);
 
   if (!user) {
-    return json<ActionData>(
-      { errors: { email: "Invalid email or password" } },
-      { status: 400, statusText: "Invalid email or password" }
-    );
+    console.log(`No user!`);
+    return json(submission, { status: 400 });
   }
 
   return createUserSession({
     request,
     userId: user.id,
-    remember: remember === "on" ? true : false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/reviews",
+    remember: false,
+    redirectTo: submission.value?.redirectTo ?? "/bottles",
   });
 };
 
@@ -82,85 +62,86 @@ export const meta: MetaFunction = () => {
 };
 
 export default function LoginPage() {
+  const lastSubmission = useActionData<typeof action>();
+  const [form, { accountIdentifier, password }] = useForm<
+    z.input<typeof loginSchema>
+  >({
+    lastSubmission,
+    id: "login",
+    onValidate({ formData }) {
+      return parse(formData, { schema: loginSchema });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onBlur",
+  });
+
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/reviews";
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
   const transition = useTransition();
-
-  React.useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    }
-  }, [actionData]);
 
   return (
     <div className="mt-16 flex items-center justify-center">
       <div className="flex w-[70%] flex-col items-center justify-center rounded bg-white pb-10 pt-6 shadow-lg shadow-blue-700 md:w-[60%] lg:w-[40%] xl:w-[30%]">
         <div className="mx-auto w-full px-8">
           <h1 className="my-6 self-start text-3xl">Login</h1>
-          <Form method="post" className="space-y-6">
+          <Form method="post" className="space-y-6" {...form.props}>
             <div>
               <label
-                htmlFor="email"
+                htmlFor={accountIdentifier.id}
                 className="block text-sm font-medium text-gray-700"
               >
-                Email address
+                Email or Username
               </label>
               <div className="mt-1">
                 <input
-                  ref={emailRef}
-                  id="email"
-                  required
                   autoFocus={true}
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  aria-invalid={actionData?.errors?.email ? true : undefined}
-                  aria-describedby="email-error"
+                  aria-invalid={accountIdentifier.error ? true : undefined}
+                  aria-describedby={accountIdentifier.errorId}
                   className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                  {...conform.input(accountIdentifier, { type: "text" })}
                 />
-                {actionData?.errors?.email && (
-                  <div className="pt-1 text-red-700" id="email-error">
-                    {actionData.errors.email}
+                {accountIdentifier.error ? (
+                  <div
+                    className="mt-1 w-auto rounded bg-red-200 px-2 py-4 text-red-600 shadow-md"
+                    id={accountIdentifier.errorId}
+                    role="alert"
+                  >
+                    {accountIdentifier.error}
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 
             <div>
               <label
-                htmlFor="password"
+                htmlFor={password.id}
                 className="block text-sm font-medium text-gray-700"
               >
                 Password
               </label>
               <div className="mt-1">
                 <input
-                  id="password"
-                  ref={passwordRef}
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  aria-invalid={actionData?.errors?.password ? true : undefined}
-                  aria-describedby="password-error"
+                  aria-invalid={password.error ? true : undefined}
+                  aria-describedby={password.errorId}
                   className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                  {...conform.input(password, { type: "password" })}
                 />
-                {actionData?.errors?.password && (
-                  <div className="pt-1 text-red-700" id="password-error">
-                    {actionData.errors.password}
+                {password.error ? (
+                  <div
+                    className="mt-1 w-auto rounded bg-red-200 px-2 py-4 text-red-600 shadow-md"
+                    id={password.errorId}
+                    role="alert"
+                  >
+                    {password.error}
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 
             <input type="hidden" name="redirectTo" value={redirectTo} />
             <button
               type="submit"
-              className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+              className="w-full rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
               disabled={
                 transition.state === "submitting" ||
                 transition.state === "loading"

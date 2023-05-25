@@ -85,7 +85,7 @@ export default function Carousel({ review }: CarouselProps) {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-1 flex-col py-4 px-4 sm:px-6">
+      <div className="flex flex-1 flex-col px-4 py-4 sm:px-6">
         <div
           className="flex max-w-[500px] items-start overflow-hidden sm:w-full"
           ref={wrapper}
@@ -133,50 +133,3 @@ export default function Carousel({ review }: CarouselProps) {
     </div>
   );
 }
-
-/*
-  <div className="relative bottom-8 left-[30.5rem] text-2xl font-semibold text-blue-500">
-          <Transition
-            appear={false}
-            unmount={false}
-            show={true}
-            enter="transform transition ease-in-out duration-500"
-            enterFrom={
-              moving === "right"
-                ? `translate-x-96 opacity-0`
-                : `-translate-x-96 opacity-0`
-            }
-            enterTo={`translate-x-0 opacity-100`}
-            leave="transform transition ease-in-out duration-500 "
-            leaveFrom={`translate-x-0 opacity-100`}
-            leaveTo={
-              moving === "right"
-                ? `-translate-x-96 opacity-0`
-                : `translate-x-96 opacity-0`
-            }
-            className="w-0 overflow-visible bg-blue-200"
-            as="div"
-          >
-            <div
-              style={{
-                width: `${wrapperWidth}px`,
-                position: "absolute",
-              }}
-            >
-              <span className="font-['Caveat'] text-[2rem]">
-                {currentStep === 0
-                  ? "Earthy"
-                  : currentStep === 1
-                  ? "Fruit"
-                  : currentStep === 2
-                  ? "Sweet"
-                  : currentStep === 3
-                  ? "Spice"
-                  : currentStep === 4
-                  ? "Grain"
-                  : "Overall"}
-              </span>
-            </div>
-          </Transition>
-        </div>
-*/

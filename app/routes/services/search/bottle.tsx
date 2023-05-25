@@ -1,11 +1,13 @@
 import { requireUserId } from "~/session.server";
 import { filterBottlesForTable, getTotalBottles } from "~/models/bottle.server";
-import type { GridBottle } from "~/models/bottle.server";
+import type { GridBottle } from "~/utils/types";
 import { json } from "@remix-run/server-runtime";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 
+type APIBottle = Omit<GridBottle, "kind">;
+
 export type BottleSearchData = {
-  data: GridBottle[] | [];
+  data: APIBottle[] | [];
   totalBottles: number;
   totalPages: number;
   error?: string;
