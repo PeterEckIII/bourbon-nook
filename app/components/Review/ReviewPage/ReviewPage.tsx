@@ -34,7 +34,7 @@ export default function ReviewPage({
   const ref = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
-    if (follow.type === "done" && follow.data.ok) {
+    if (follow.state === "idle" && follow.data !== null) {
       ref?.current?.reset();
     }
   }, [follow]);

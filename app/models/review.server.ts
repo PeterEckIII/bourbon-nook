@@ -1,19 +1,7 @@
 import { assertNonNullable } from "~/utils/helpers.server";
 import type { user, review, Prisma } from "@prisma/client";
 import { prisma } from "~/db.server";
-
-export type ReviewSortOptions =
-  | "name"
-  | "date"
-  | "status"
-  | "type"
-  | "distiller"
-  | "producer"
-  | "country"
-  | "region"
-  | "price"
-  | "overallRating"
-  | "value";
+import type { ReviewSortOptions } from "~/utils/types";
 
 export type { review } from "@prisma/client";
 
@@ -33,19 +21,6 @@ export async function getReviewById(reviewId: review["id"]) {
     },
   });
 }
-
-export const getReviewListItems = async ({
-  userId,
-}: {
-  userId: user["id"];
-}) => {
-  const reviews = prisma.review.findMany({
-    where: { userId },
-    select: { id: true, bottle: true },
-    orderBy: { createdAt: "desc" },
-  });
-  return reviews;
-};
 
 export const getTotalReviews = async ({
   userId,
@@ -113,10 +88,14 @@ export const filterReviewsForTable = async ({
 }) => {
   assertNonNullable(userId);
 
-  let sortOptions: Prisma.reviewOrderByWithRelationInput = {};
+  let sortOptions: Prisma.reviewOrderByWithRelationInput &
+    Prisma.bottleOrderByWithRelationInput = {};
   if (sort) {
     if (sort === "name") {
       sortOptions = { bottle: { name: direction } };
+    }
+    if (sort === "date") {
+      sortOptions = { date: direction };
     }
     if (sort === "status") {
       sortOptions = { bottle: { status: direction } };
@@ -135,6 +114,15 @@ export const filterReviewsForTable = async ({
     }
     if (sort === "region") {
       sortOptions = { bottle: { region: direction } };
+    }
+    if (sort === "price") {
+      sortOptions = { bottle: { price: direction } };
+    }
+    if (sort === "overallRating") {
+      sortOptions = { overallRating: direction };
+    }
+    if (sort === "value") {
+      sortOptions = { value: direction };
     }
   }
 
@@ -202,40 +190,6 @@ export const filterReviewsForTable = async ({
       },
     },
   });
-  return reviews;
-};
-
-export const getReviewsForTable = async ({
-  userId,
-}: {
-  userId: user["id"];
-}) => {
-  assertNonNullable(userId);
-  const reviews = await prisma.review.findMany({
-    where: {
-      userId,
-    },
-    select: {
-      date: true,
-      id: true,
-      overallRating: true,
-      value: true,
-      bottle: {
-        select: {
-          name: true,
-          type: true,
-          distiller: true,
-          producer: true,
-          proof: true,
-          alcoholPercent: true,
-          age: true,
-          price: true,
-          imageUrl: true,
-        },
-      },
-    },
-  });
-
   return reviews;
 };
 

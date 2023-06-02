@@ -352,3 +352,31 @@ export interface Form {
   ref: RefObject<HTMLFormElement>;
   props: FormProps;
 }
+
+export type ReviewSortOptions =
+  | "name"
+  | "date"
+  | "status"
+  | "type"
+  | "distiller"
+  | "producer"
+  | "country"
+  | "region"
+  | "price"
+  | "overallRating"
+  | "value";
+
+export type BottleSortOptions =
+  | "name"
+  | "status"
+  | "type"
+  | "distiller"
+  | "producer"
+  | "country"
+  | "region"
+  | "price"
+  | "proof"
+  | "alcoholPercent";
+
+export type APIReview = Omit<GridReview, "kind">;
+export type APIBottle = Omit<GridBottle, "kind">;

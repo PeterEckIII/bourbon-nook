@@ -1,57 +1,12 @@
 import { assertNonNullable } from "~/utils/helpers.server";
 import type { bottle, Prisma, user } from "@prisma/client";
-import type { GridBottle } from "~/utils/types";
+import type { BottleSortOptions } from "~/utils/types";
 import { prisma } from "~/db.server";
+
 export type { bottle };
 
 export const getBottle = async (id: bottle["id"]) => {
   return prisma.bottle.findUnique({ where: { id } });
-};
-
-export const getBottleListItems = async () => {
-  return prisma.bottle.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-};
-
-export const sortBottlesForTable = async ({
-  userId,
-  sortDirection,
-  field,
-  query,
-}: {
-  userId: string;
-  sortDirection: string;
-  field: keyof GridBottle;
-  query: string;
-}) => {
-  return await prisma.bottle.findMany({
-    where: {
-      userId,
-      OR: [
-        {
-          [field]: {
-            contains: query,
-          },
-        },
-      ],
-    },
-    orderBy: [
-      {
-        [field]: sortDirection,
-      },
-    ],
-    include: {
-      reviews: {
-        select: {
-          id: true,
-        },
-      },
-    },
-  });
 };
 
 export const filterBottlesForTable = async ({
@@ -66,7 +21,7 @@ export const filterBottlesForTable = async ({
   query?: string;
   skip?: number;
   take?: number;
-  sort?: keyof GridBottle;
+  sort?: BottleSortOptions;
   direction?: Prisma.SortOrder;
 }) => {
   assertNonNullable(userId);
@@ -93,6 +48,15 @@ export const filterBottlesForTable = async ({
     }
     if (sort === "region") {
       sortOptions = { region: direction };
+    }
+    if (sort === "price") {
+      sortOptions = { price: direction };
+    }
+    if (sort === "proof") {
+      sortOptions = { proof: direction };
+    }
+    if (sort === "alcoholPercent") {
+      sortOptions = { alcoholPercent: direction };
     }
   }
 
@@ -183,55 +147,6 @@ export const getTotalBottles = async ({
   return numberOfBottles;
 };
 
-export const getBottlesForGrid = async (
-  userId: user["id"],
-  from: number,
-  to: number
-) => {
-  const bottles = await prisma.bottle.findMany({
-    where: {
-      userId,
-    },
-    skip: from,
-    take: to - from,
-    select: {
-      id: true,
-      status: true,
-      name: true,
-      type: true,
-      distiller: true,
-      producer: true,
-      country: true,
-      region: true,
-      price: true,
-      age: true,
-      year: true,
-      batch: true,
-      alcoholPercent: true,
-      proof: true,
-      size: true,
-      color: true,
-      finishing: true,
-      imageUrl: true,
-      reviews: {
-        select: {
-          id: true,
-        },
-      },
-    },
-  });
-  return bottles;
-};
-
-export const getBottlesForUser = async (userId: user["id"]) => {
-  return prisma.bottle.findMany({
-    where: { userId },
-    include: {
-      reviews: true,
-    },
-  });
-};
-
 export const getBottlesForCombobox = async (userId: string, query: string) => {
   return prisma.bottle.findMany({
     where: {
@@ -305,25 +220,6 @@ export const createBottle = async ({
       color,
       finishing,
       imageUrl,
-    },
-  });
-};
-
-type EditBottleByIdProps = {
-  bottleId: bottle["id"];
-  bottle: Omit<bottle, "id">;
-};
-
-export const editBottleById = async ({
-  bottleId,
-  bottle,
-}: EditBottleByIdProps) => {
-  return prisma.bottle.update({
-    where: {
-      id: bottleId,
-    },
-    data: {
-      ...bottle,
     },
   });
 };

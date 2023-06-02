@@ -5,6 +5,23 @@ type NameCellProps = {
 };
 
 export default function NameCell({ value, batch, barrel }: NameCellProps) {
+  const showBarrel =
+    !batch &&
+    barrel !== "N/A" &&
+    barrel !== "n/a" &&
+    barrel !== "None" &&
+    barrel !== "none" &&
+    barrel !== null &&
+    barrel !== "";
+  const showBatch =
+    !barrel &&
+    batch !== "N/A" &&
+    batch !== "n/a" &&
+    batch !== "None" &&
+    batch !== "none" &&
+    batch !== null &&
+    batch !== "";
+
   return (
     <th
       scope="row"
@@ -13,7 +30,8 @@ export default function NameCell({ value, batch, barrel }: NameCellProps) {
       {value}
       {(batch || barrel) && " - "}{" "}
       <span className="text-xs font-normal">
-        {batch ? `Batch ${batch}` : barrel ? `# ${barrel}` : ``}
+        {showBarrel && `Barrel ${barrel}`}
+        {showBatch && `Batch ${batch}`}
       </span>
     </th>
   );
