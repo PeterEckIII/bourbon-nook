@@ -1,211 +1,278 @@
-// import { Link, Outlet, useLoaderData } from "@remix-run/react";
-// import { json } from "@remix-run/server-runtime";
-// import type { LoaderFunction } from "@remix-run/server-runtime";
-// import { requireUserId } from "~/session.server";
-// import { getReviewsForTable } from "~/models/review.server";
-// import type { SortDirection, SortFields } from "~/routes/bottles/index";
-// import DataGrid from "~/components/Review/Grid/DataGrid";
-// import type { ChangeEvent } from "react";
-// import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-// import useDebounce from "~/utils/useDebounce";
-// import type {
-//   SortableColumn,
-//   UnsortableColumn,
-//   ReviewSortOptions,
-// } from "../services/search/review/fetch";
-// import { useTypedFetcher } from "remix-typedjson";
-// import type { ReviewSearchData } from "../services/search/review/fetch";
-// import Filter from "~/components/Grids/Common/GlobalFilter/GlobalFilter";
-// import Pagination from "~/components/Grids/Common/Pagination/Pagination";
-// import type { Limit } from "../services/search/review/fetch";
-// import ReviewTable from "~/components/Grids/ReviewTable";
-
-import ReviewTable from "~/components/Tables/Review";
-
-// type Column = SortableColumn | UnsortableColumn;
-
-// export default function ReviewIndexPage() {
-//   const [currentPage, setCurrentPage] = useState<number>(0);
-//   const [limit, setLimit] = useState<Limit>(10);
-//   const [query, setQuery] = useState<string>("");
-//   const [sortField, setSortField] = useState<ReviewSortOptions>("name");
-//   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-//   const [tableHeight, setTableHeight] = useState<string | number>("auto");
-//   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-//   const tableRef = useRef<HTMLTableElement | null>(null);
-//   const searchTerm = useDebounce(query, 300);
-
-//   const columns: Column[] = [
-//     {
-//       kind: "sortable",
-//       header: "Name",
-//       field: "name",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "sortable",
-//       header: "Date",
-//       field: "date",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "sortable",
-//       header: "Status",
-//       field: "status",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "sortable",
-//       header: "Type",
-//       field: "type",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "sortable",
-//       header: "Distiller",
-//       field: "distiller",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "sortable",
-//       header: "Producer",
-//       field: "producer",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "unsortable",
-//       header: "ABV",
-//       field: "alcoholPercent",
-//       sort: false,
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "unsortable",
-//       header: "Proof",
-//       field: "proof",
-//       sort: false,
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "unsortable",
-//       header: "Age",
-//       field: "age",
-//       sort: false,
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "sortable",
-//       header: "Price",
-//       field: "price",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "sortable",
-//       header: "Value",
-//       field: "value",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "sortable",
-//       header: "Rating",
-//       field: "overallRating",
-//       sort: true,
-//       sortDirection: "asc",
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//     {
-//       kind: "unsortable",
-//       header: "Review",
-//       field: "id",
-//       sort: false,
-//       ref: useRef<HTMLTableCellElement | null>(null),
-//     },
-//   ];
-
-//   const { data, load } = useTypedFetcher<ReviewSearchData>();
-//   const items = useMemo(() => {
-//     return data?.items || [];
-//   }, [data]);
-
-//   const totalPages = data?.totalPages || 0;
-//   const totalItems = data?.totalReviews || 0;
-
-//   const getInitialData = useCallback(() => {
-//     load(`/services/search/review/fetch?page=0&limit=${limit}`);
-//   }, [load, limit]);
-
-//   useEffect(() => {
-//     getInitialData();
-//   }, [getInitialData]);
-
-//   useEffect(() => {
-//     function loadPageData() {
-//       load(
-//         `/services/search/review/fetch?query=${searchTerm}&page=${currentPage}&limit=${limit}&sort=${sortField}&direction=${sortDirection}`
-//       );
-//     }
-//     loadPageData();
-//   }, [load, currentPage, limit, searchTerm, sortField, sortDirection]);
-
-//   const onFirst = () => setCurrentPage(0);
-//   const onLast = () => setCurrentPage(totalPages - 1);
-//   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) =>
-//     setQuery(e.target.value);
-//   const handleSortingChange = (field: ReviewSortOptions) => {
-//     const sortOrder =
-//       field === sortField && sortDirection === "asc" ? "desc" : "asc";
-//     setSortField(field);
-//     setSortDirection(sortOrder);
-//   };
-
-//   return (
-//     <div className="w-full">
-//       <div className="m-2 w-full rounded bg-white p-4 shadow-lg shadow-blue-700">
-//         <div className="flex flex-col">
-//           <Filter
-//             query={query}
-//             limit={limit}
-//             handleQueryChange={handleQueryChange}
-//             setLimit={setLimit}
-//           />
-//           <ReviewTable
-//             columns={columns}
-//             items={items}
-//             sortField={sortField}
-//             sortDirection={sortDirection}
-//             handleSortingChange={handleSortingChange}
-//           />
-//           <Pagination
-//             currentPage={currentPage}
-//             totalItems={totalItems}
-//             totalPages={totalPages}
-//             onFirst={onFirst}
-//             onLast={onLast}
-//             setCurrentPage={setCurrentPage}
-//           />
-//         </div>
-//       </div>
-//       <Outlet />
-//     </div>
-//   );
-// }
+import { Link, isRouteErrorResponse, useRouteError } from "@remix-run/react";
+import type { ReviewSearchData } from "../services/search/review";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import useDebounce from "~/utils/useDebounce";
+import Pagination from "~/components/Tables/Common/Pagination/Pagination";
+import type { Column, Limit } from "~/utils/types";
+import { useTypedFetcher } from "remix-typedjson";
+import GlobalFilter from "~/components/Tables/Common/GlobalFilter";
+import RightArrowCircle from "~/components/Icons/RightArrowCircle";
+import Caption from "~/components/Tables/Common/Caption";
+import NameCell from "~/components/Tables/Common/NameCell";
+import StatusCell from "~/components/Tables/Common/StatusCell";
+import ExternalLink from "~/components/Icons/ExternalLink";
 
 export default function ReviewsRoute() {
-  return <ReviewTable />;
+  const [query, setQuery] = useState("");
+  const searchTerm = useDebounce(query, 300);
+  const [limit, setLimit] = useState<Limit>(10);
+  const [page, setPage] = useState(0);
+  const [sort, setSort] = useState({
+    field: "name",
+    direction: "asc",
+  });
+
+  const columns: Column[] = useMemo(
+    () => [
+      {
+        kind: "review",
+        header: "Name",
+        field: "name",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Date",
+        field: "date",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Bottle Status",
+        field: "status",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Type",
+        field: "type",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Distiller",
+        field: "distiller",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Producer",
+        field: "producer",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "ABV",
+        field: "alcoholPercent",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Proof",
+        field: "proof",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Price",
+        field: "price",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Value",
+        field: "value",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Rating",
+        field: "overallRating",
+        sort: true,
+      },
+      {
+        kind: "review",
+        header: "Link",
+        field: "link",
+        sort: false,
+      },
+    ],
+    []
+  );
+
+  const { data, load } = useTypedFetcher<ReviewSearchData>();
+  const reviews = useMemo(() => data?.data ?? [], [data?.data]);
+
+  const loadReviews = useCallback(() => {
+    load(`/services/search/review?query=&limit=${limit}&page=0`);
+  }, [load, limit]);
+
+  useEffect(() => {
+    loadReviews();
+  }, [loadReviews]);
+
+  const reloadReviews = useCallback(() => {
+    load(
+      `/services/search/review?query=${searchTerm}&limit=${limit}&page=${page}&sort=${sort.field}&direction=${sort.direction}`
+    );
+  }, [load, searchTerm, limit, page, sort]);
+
+  useEffect(() => {
+    reloadReviews();
+  }, [reloadReviews]);
+
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setQuery(e.target.value);
+
+  return (
+    <div className="m-2 w-full rounded bg-white p-4 shadow-lg shadow-blue-700">
+      <div>
+        <GlobalFilter
+          query={query}
+          handleQueryChange={handleQueryChange}
+          setLimit={setLimit}
+          limit={limit}
+          hideFinished={false}
+          setHideFinished={null}
+        />
+        {reviews.length > 0 ? (
+          <div className="m-4 overflow-x-scroll" role="group">
+            <table
+              role="grid"
+              aria-describedby="caption"
+              id="review-grid"
+              aria-colcount={columns.length}
+              aria-rowcount={data?.totalReviews || -1}
+            >
+              <Caption
+                caption="Your bottle reviews"
+                info="Each row represents a bottle you've reviewed. The first column
+                        is the bottle name. Subsequent columns show the details for each
+                        reviews"
+              />
+              <thead>
+                <tr>
+                  {columns.map((column) => (
+                    <th
+                      key={column.field}
+                      scope="col"
+                      role="columnheader"
+                      // aria-colindex={index + 1}
+                      className={`border-1 border-gray-100 bg-blue-500 px-4 py-6 text-left text-sm uppercase text-white first-of-type:sticky first-of-type:left-0 first-of-type:z-10 first-of-type:min-w-[300px]`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>{column.header}</div>
+                        <div className="flex flex-col">
+                          <button
+                            onClick={() =>
+                              setSort({ field: column.field, direction: "asc" })
+                            }
+                            className={
+                              sort.field === column.field &&
+                              sort.direction === "asc"
+                                ? "-mb-1 text-white"
+                                : "-mb-1 text-blue-300"
+                            }
+                          >
+                            ▲
+                          </button>
+                          <button
+                            onClick={() =>
+                              setSort({
+                                field: column.field,
+                                direction: "desc",
+                              })
+                            }
+                            className={
+                              sort.field === column.field &&
+                              sort.direction === "desc"
+                                ? "-mt-1 text-white"
+                                : "-mt-1 text-blue-300"
+                            }
+                          >
+                            ▼
+                          </button>
+                        </div>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {reviews.map((review) => (
+                  <tr
+                    key={review.id}
+                    role="row"
+                    className="group h-12 hover:bg-gray-200"
+                  >
+                    <NameCell
+                      value={review.bottle?.name}
+                      batch={review.bottle?.batch}
+                      barrel={review.bottle?.barrel}
+                    />
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {new Date(review.date!).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}
+                    </td>
+                    <StatusCell status={review.bottle?.status!} />
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {review.bottle?.type}
+                    </td>
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {review.bottle?.distiller}
+                    </td>
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {review.bottle?.producer}
+                    </td>
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {review.bottle?.alcoholPercent}
+                    </td>
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {review.bottle?.proof}
+                    </td>
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {review.bottle?.price}
+                    </td>
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {review.value}
+                    </td>
+                    <td className="mx-2 whitespace-nowrap px-4">
+                      {review.overallRating}
+                    </td>
+                    <td>
+                      <Link to={`/reviews/${review.id}/comments`}>
+                        <ExternalLink />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="m-8 h-20 p-4">
+            <Link to="/reviews/new/bottle" className="flex text-blue-500">
+              <div className="flex items-center">
+                <p className="text-xl">Add your first review</p>{" "}
+              </div>
+              <div className="mx-2 flex items-center">
+                <RightArrowCircle />
+              </div>
+            </Link>
+          </div>
+        )}
+        <Pagination
+          currentPage={page}
+          totalPages={data?.totalPages || 0}
+          totalItems={data?.totalReviews || 0}
+          onFirst={() => setPage(0)}
+          onLast={() => setPage(data?.totalPages || 0)}
+          setCurrentPage={setPage}
+        />
+      </div>
+    </div>
+  );
 }

@@ -1,33 +1,7 @@
-import { requireUserId } from "../../../session.server";
-import {
-  filterReviewsForTable,
-  getTotalReviews,
-} from "../../../models/review.server";
-import { json } from "@remix-run/server-runtime";
-import type { LoaderArgs } from "@remix-run/server-runtime";
-import type { GridReview } from "~/utils/types";
-
-// export type GridReview = {
-//   id: string;
-//   date: string | null;
-//   overallRating: number | null;
-//   value: number | null;
-//   bottle: {
-//     name: string;
-//     type: string;
-//     distiller: string | null;
-//     producer: string | null;
-//     proof: string | null;
-//     alcoholPercent: string | null;
-//     age: string | null;
-//     barrel: string | null;
-//     batch: string | null;
-//     price: string | null;
-//     imageUrl: string | null;
-//   } | null;
-// };
-
-type APIReview = Omit<GridReview, "kind">;
+import { requireUserId } from "~/session.server";
+import { filterReviewsForTable, getTotalReviews } from "~/models/review.server";
+import type { APIReview } from "~/utils/types";
+import { json, type LoaderArgs } from "@remix-run/server-runtime";
 
 export type ReviewSearchData = {
   data: APIReview[] | [];
@@ -51,8 +25,8 @@ export const loader = async ({ request }: LoaderArgs) => {
       skip: offset,
       take: limit,
     });
-    const totalReviews = await getTotalReviews({ userId, query });
 
+    const totalReviews = await getTotalReviews({ userId, query });
     const totalPages = Math.ceil(totalReviews / limit);
 
     return json<ReviewSearchData>({

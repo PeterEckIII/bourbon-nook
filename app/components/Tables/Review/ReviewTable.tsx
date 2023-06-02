@@ -14,9 +14,10 @@ import { useTypedFetcher } from "remix-typedjson";
 import Table from "../Common/Table";
 import Caption from "../Common/Caption";
 import Body from "../Common/Body";
-import { Link } from "@remix-run/react";
+import { Link, Links } from "@remix-run/react";
 import RightArrowCircle from "~/components/Icons/RightArrowCircle";
 import Pagination from "../Common/Pagination/Pagination";
+import ExternalLink from "~/components/Icons/ExternalLink";
 
 export default function ReviewTable() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -112,14 +113,14 @@ export default function ReviewTable() {
 
   const { data, load } = useTypedFetcher<TableData<GridReview[]>>();
   const items = useMemo(() => {
-    return data?.items;
+    return data?.items || [];
   }, [data]);
 
-  const totalReviews = data?.totalItems;
-  const totalPages = data?.totalPages;
+  const totalReviews = data?.totalItems || 0;
+  const totalPages = data?.totalPages || 0;
 
   const getInitialData = useCallback(() => {
-    load(`/services/search/review/fetch?page=0&limit=${limit}`);
+    load(`/services/search/review?page=0&limit=${limit}`);
   }, [load, limit]);
 
   useEffect(() => {
@@ -128,16 +129,16 @@ export default function ReviewTable() {
 
   const reloadData = useCallback(() => {
     load(
-      `/services/search/review/fetch?page=${currentPage}&query=${searchTerm}&limit=${limit}&sort=${sort.field}&direction=${sort.direction}`
+      `/services/search/review?page=${currentPage}&query=${searchTerm}&limit=${limit}&sort=${sort.field}&direction=${sort.direction}`
     );
-  }, [load, limit, currentPage, searchTerm, sort.field, sort.direction]);
+  }, [load, limit, currentPage, searchTerm, sort]);
 
   useEffect(() => {
     reloadData();
   }, [reloadData]);
 
   const onFirst = () => setCurrentPage(0);
-  const onLast = () => setCurrentPage(totalPages! - 1);
+  const onLast = () => setCurrentPage(totalPages - 1);
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) =>
     setQuery(e.target.value);
 
@@ -149,55 +150,5 @@ export default function ReviewTable() {
     }));
   };
 
-  return (
-    <div className="flex flex-col">
-      <>
-        <GlobalFilter
-          query={query}
-          limit={limit}
-          handleQueryChange={handleQueryChange}
-          setLimit={setLimit}
-        />
-        {items.length > 0 ? (
-          <Table
-            tabIndex={ableToBeTabbedTo ? 0 : undefined}
-            columns={columns}
-            totalItems={totalReviews}
-            tableRef={tableRef}
-          >
-            <Caption
-              caption="Your reviews"
-              info="Each row represents a review you have written. The first column is the bottle name. Subsequent columns show the details for each review"
-              ableToBeTabbedTo={ableToBeTabbedTo}
-            />
-            <Head
-              columns={columns}
-              sort={true}
-              handleSortingChange={handleSortingChange}
-            />
-            <Body items={items} />
-          </Table>
-        ) : (
-          <div className="m-8 h-20 p-4">
-            <Link to="/reviews/new/bottle" className="flex text-blue-500">
-              <div className="flex items-center">
-                <p className="text-xl">Add your first review</p>{" "}
-              </div>
-              <div className="mx-2 flex items-center">
-                <RightArrowCircle />
-              </div>
-            </Link>
-          </div>
-        )}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalReviews}
-          onFirst={onFirst}
-          onLast={onLast}
-          setCurrentPage={setCurrentPage}
-        />
-      </>
-    </div>
-  );
+  return <div className="flex flex-col">{/* unimplemented */}</div>;
 }

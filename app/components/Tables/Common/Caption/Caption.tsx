@@ -1,7 +1,7 @@
 type CaptionProps = {
   caption: string;
   info: string;
-  ableToBeTabbedTo: boolean;
+  ableToBeTabbedTo?: boolean;
 };
 
 export default function Caption({

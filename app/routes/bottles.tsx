@@ -1,4 +1,9 @@
 import { Outlet } from "@remix-run/react";
+import type { ActionArgs } from "@remix-run/server-runtime";
+
+export const action = async ({ request }: ActionArgs) => {
+  return null;
+};
 
 export default function BottlesPage() {
   return (
