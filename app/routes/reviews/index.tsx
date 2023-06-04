@@ -126,7 +126,7 @@ export default function ReviewsRoute() {
 
   return (
     <div className="m-2 w-full rounded bg-white p-4 shadow-lg shadow-blue-700">
-      <div>
+      <div className="">
         <GlobalFilter
           query={query}
           handleQueryChange={handleQueryChange}
