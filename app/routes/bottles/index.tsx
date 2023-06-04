@@ -134,13 +134,13 @@ export default function BottleIndexPage() {
     setQuery(e.target.value);
   };
 
-  const availableBottles = hideFinishedStatus
+  const visibleBottles = hideFinishedStatus
     ? bottles.filter((b) => b.status !== "FINISHED")
     : bottles;
 
   return (
     <div className="m-2 w-full rounded bg-white p-4 shadow-lg shadow-blue-700">
-      <div>
+      <div className="">
         <GlobalFilter
           query={query}
           handleQueryChange={handleQueryChange}
@@ -214,7 +214,7 @@ export default function BottleIndexPage() {
                 </tr>
               </thead>
               <tbody>
-                {availableBottles.map((bottle) => (
+                {visibleBottles.map((bottle) => (
                   <tr key={bottle.id} className="h-12">
                     <NameCell
                       value={bottle.name}

@@ -23,7 +23,7 @@ export default function Filter({
   setHideFinished,
 }: GlobalFilterProps) {
   return (
-    <div className="mx-2 my-8 flex-col">
+    <div className="mx-2 my-8 max-w-[1200px] flex-col">
       <div className="flex justify-between">
         <div className="flex w-2/3 items-center border-b border-blue-500 py-2">
           <span className="mx-2 inline">Search: </span>
@@ -36,7 +36,7 @@ export default function Filter({
             value={query}
           />
         </div>
-        <div className="flex w-1/3 items-center justify-end">
+        <div className="flex w-1/3 items-center justify-center">
           Results per page: &nbsp;
           <PageLimit limit={limit} setLimit={setLimit} />
         </div>
