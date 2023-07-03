@@ -135,6 +135,8 @@ export const action = async ({ request }: ActionArgs) => {
         imageUrl: result.imageUrl,
         openDate: result.openDate,
         killDate: result.killDate,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       try {
@@ -178,6 +180,8 @@ export const action = async ({ request }: ActionArgs) => {
           imageUrl: result.imageUrl,
           openDate: result.openDate,
           killDate: result.killDate,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         });
         await saveAnyDataToRedis({
           redisId: rid,

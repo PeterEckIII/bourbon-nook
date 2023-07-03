@@ -40,7 +40,7 @@ export default function ImageUploader({
                   <img
                     src={previewUrl}
                     alt={`The bottle you uploaded]`}
-                    className="mx-auto my-0 h-[450px] w-[275px] object-cover lg:h-[600px] lg:w-[400px]"
+                    className="mx-auto my-0 h-64 w-64 object-cover lg:h-96 lg:w-64"
                   />
                 </div>
               ) : imageFetcher.type === "actionSubmission" ? (
