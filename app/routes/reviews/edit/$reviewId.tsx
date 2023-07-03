@@ -290,6 +290,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     imageUrl,
     openDate,
     killDate,
+    updatedAt: today,
   });
   if (!newBottle || !newReview) {
     return new Error(`ERROR UPDATING REVIEW`);

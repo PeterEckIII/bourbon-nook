@@ -72,7 +72,7 @@ export const action = async ({ request }: ActionArgs) => {
     });
   }
 
-  const updatedBottleObject: bottle = {
+  const updatedBottleObject: Omit<bottle, "createdAt"> = {
     userId,
     id: bottle.id,
     imageUrl,
@@ -95,6 +95,7 @@ export const action = async ({ request }: ActionArgs) => {
     finishing: bottle.finishing,
     openDate: bottle.openDate,
     killDate: bottle.killDate,
+    updatedAt: new Date(),
   };
 
   try {

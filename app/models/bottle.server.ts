@@ -220,11 +220,13 @@ export const createBottle = async ({
       color,
       finishing,
       imageUrl,
+      updatedAt: new Date(),
+      createdAt: new Date(),
     },
   });
 };
 
-export const editBottle = async (bottle: bottle) => {
+export const editBottle = async (bottle: Omit<bottle, "createdAt">) => {
   return prisma.bottle.update({
     where: {
       id: bottle.id,

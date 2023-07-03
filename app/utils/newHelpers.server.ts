@@ -1,5 +1,14 @@
+import {
+  unstable_composeUploadHandlers as composeUploadHandlers,
+  unstable_createMemoryUploadHandler as createMemoryUploadHandler,
+  unstable_parseMultipartFormData as parseMultipartFormData,
+  type UploadHandler,
+} from "@remix-run/server-runtime";
+import { v4 as uuid } from "uuid";
 import { getAnyDataFromRedis } from "~/utils/redis.server";
 import { z, ZodError } from "zod";
+import { upload } from "./cloudinary.server";
+import type { UploadApiResponse } from "cloudinary";
 
 export type ErrorObject = {
   [name: string]: string;
@@ -18,6 +27,46 @@ export async function handleFormData(request: Request, schema: z.Schema) {
   try {
     const validatedBottle = schema.parse(formPayload);
     result = validatedBottle;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      for (let err of error.issues) {
+        errors[err.path[0]] = err.message;
+      }
+    }
+  }
+  return { result, errors, formData };
+}
+
+export async function handleImageFormData(
+  request: Request,
+  schema: z.Schema,
+  userId: string
+) {
+  const publicId = uuid();
+  const uploadHandler: UploadHandler = composeUploadHandlers(
+    async ({ name, data }) => {
+      if (name !== "img") {
+        console.error("No image in form");
+        return undefined;
+      }
+      const image = (await upload({
+        data,
+        userId,
+        publicId,
+      })) as UploadApiResponse;
+      return image.secure_url;
+    },
+    createMemoryUploadHandler()
+  );
+
+  const formData = await parseMultipartFormData(request, uploadHandler);
+  const formPayload = Object.fromEntries(formData);
+  let result;
+  let errors: ErrorObject = {};
+
+  try {
+    const validatedSubmission = schema.parse(formPayload);
+    result = validatedSubmission;
   } catch (error) {
     if (error instanceof ZodError) {
       for (let err of error.issues) {

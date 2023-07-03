@@ -34,7 +34,7 @@ export default function ImageForm({
   };
 
   return (
-    <div id="image-container" className="w-full lg:block lg:h-full lg:w-1/3">
+    <div id="image-container" className="w-full lg:block lg:h-full">
       <imageFetcher.Form
         encType="multipart/form-data"
         method="post"

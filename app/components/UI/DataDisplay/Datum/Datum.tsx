@@ -9,10 +9,7 @@ type DatumProps = {
     | `Barrel/Batch`
     | `Kill Date`
     | `Open Date`;
-  value:
-    | ValueOf<bottle>
-    | `$${ValueOf<bottle> | `${ValueOf<bottle>}%`}`
-    | `---`;
+  value: any;
   icon: ReactNode;
 };
 

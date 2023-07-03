@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "darwin"]
+  binaryTargets = ["native", "darwin", "darwin-arm64"]
 }
 
 model password {
@@ -164,10 +164,12 @@ enum BottleStatus {
 model bottle {
   id String @id @default(cuid())
 
-  user    user         @relation("UserBottles", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId  String
-  status  BottleStatus @default(CLOSED)
-  reviews review[]
+  user      user         @relation("UserBottles", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    String
+  status    BottleStatus @default(CLOSED)
+  reviews   review[]
+  createdAt DateTime?    @default(now())
+  updatedAt DateTime?    @updatedAt
 
   imageUrl       String?
   name           String

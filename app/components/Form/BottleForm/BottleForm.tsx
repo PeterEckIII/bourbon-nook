@@ -51,14 +51,14 @@ export default function BottleForm({
         <h2 className="text-3xl font-semibold text-white">Add Bottle</h2>
         <div
           id="form-container"
-          className="max-h-800 flex flex-col rounded-xl border border-gray-200 bg-white p-4 lg:flex-row"
+          className="max-h-800 flex flex-col rounded-xl border border-gray-200 bg-white p-4 xl:flex-row 2xl:w-10/12"
         >
           <ImageForm
             imageFetcher={imageFetcher}
             imageIsSubmitting={imageIsSubmitting}
           />
           <Form method="post" className="flex flex-col">
-            <div className="-mx-3 my-3 mb-6 flex w-full flex-wrap p-2 sm:p-7 lg:w-2/3">
+            <div className="-mx-3 my-3 mb-6 flex w-full flex-wrap p-2 sm:p-7">
               {submissionSuccessful ? (
                 <input
                   type="hidden"
