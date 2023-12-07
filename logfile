@@ -1,0 +1,21 @@
+2023-12-07 14:39:31.415 CST [31309] LOG:  starting PostgreSQL 14.10 (Homebrew) on x86_64-apple-darwin22.6.0, compiled by Apple clang version 14.0.3 (clang-1403.0.22.14.1), 64-bit
+2023-12-07 14:39:31.416 CST [31309] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-07 14:39:31.416 CST [31309] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-07 14:39:31.417 CST [31309] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-12-07 14:39:31.420 CST [31310] LOG:  database system was shut down at 2023-12-07 14:38:41 CST
+2023-12-07 14:39:31.424 CST [31309] LOG:  database system is ready to accept connections
+2023-12-07 14:39:40.492 CST [31510] FATAL:  role "postgres" does not exist
+2023-12-07 14:44:50.206 CST [32043] FATAL:  role "whiskey-nook" does not exist
+2023-12-07 14:48:18.235 CST [33224] FATAL:  role "postgres" does not exist
+2023-12-07 14:48:54.108 CST [33344] FATAL:  role "postgres" does not exist
+2023-12-07 14:49:58.153 CST [33466] FATAL:  database "petereck" does not exist
+2023-12-07 14:51:48.633 CST [33827] LOG:  could not receive data from client: Connection reset by peer
+2023-12-07 14:51:48.664 CST [33829] ERROR:  relation "_prisma_migrations" does not exist at character 126
+2023-12-07 14:51:48.664 CST [33829] STATEMENT:  SELECT "id", "checksum", "finished_at", "migration_name", "logs", "rolled_back_at", "started_at", "applied_steps_count" FROM "_prisma_migrations" ORDER BY "started_at" ASC
+2023-12-07 15:39:15.233 CST [38215] FATAL:  database "petereck" does not exist
+2023-12-07 15:39:15.336 CST [38225] FATAL:  database "petereck" does not exist
+2023-12-07 15:39:15.418 CST [38235] FATAL:  database "petereck" does not exist
+2023-12-07 15:39:15.512 CST [38245] FATAL:  database "petereck" does not exist
+2023-12-07 15:39:15.800 CST [38257] FATAL:  database "petereck" does not exist
+2023-12-07 15:39:35.814 CST [38269] ERROR:  relation "public.bottles" does not exist at character 15
+2023-12-07 15:39:35.814 CST [38269] STATEMENT:  select * from public.bottles;

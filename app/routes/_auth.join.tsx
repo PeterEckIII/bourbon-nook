@@ -57,7 +57,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  const user = await createUser(email, password);
+  const username = "pete";
+
+  const user = await createUser(email, username, password);
 
   return createUserSession({
     redirectTo,
