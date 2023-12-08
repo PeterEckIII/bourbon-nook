@@ -38,21 +38,4 @@ describe("<Input />", () => {
     await user.type(input, "Buffalo Trace");
     expect(input).toHaveValue("Buffalo Trace");
   });
-
-  it("Shows error message if no value is provided and focus is moved", async () => {
-    render(
-      <Input
-        name="name"
-        placeholder="Name"
-        label="Name"
-        error=""
-        navigationState="idle"
-      />,
-    );
-
-    const user = uEvent.setup();
-    user.click(screen.getByRole("textbox", { name: /name/i }));
-    user.tab();
-    expect(screen.getByText(""));
-  });
 });

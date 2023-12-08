@@ -3,8 +3,8 @@ import { parse } from "@conform-to/zod";
 import { redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
+import Dropdown from "~/components/Dropdown/Dropdown";
 import Input from "~/components/Input/Input";
-import Status from "~/components/Status/Status";
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 import { handleFormData, bottleSchema } from "~/utils/conform";
@@ -41,6 +41,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function NewBottle() {
+  // const [selectValue, setSelectValue] = useState<BottleStatus>("CLOSED");
   const navigation = useNavigation();
   const lastSubmission = useActionData<typeof action>();
   const [
@@ -88,7 +89,16 @@ export default function NewBottle() {
         placeholder="Buffalo Trace, George T Stagg"
         navigationState={navigation.state}
       />
-      <Status bottleStatus={"OPENED"} />
+      <Dropdown
+        options={[
+          { value: "OPENED", label: "Opened" },
+          { value: "CLOSED", label: "Closed" },
+          { value: "FINISHED", label: "Finished" },
+        ]}
+        label="Bottle Status"
+        id="bottle-status"
+        initialValue={{ value: "CLOSED", label: "Closed" }}
+      />
       <Input
         {...conform.input(type)}
         error={type.error}
