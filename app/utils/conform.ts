@@ -28,8 +28,9 @@ export async function handleFormData<
 }
 
 export const bottleSchema = z.object({
-  status: z.enum(["CLOSED", "OPENED", "FINISHED"]),
+  userId: z.string(),
   name: z.string({ required_error: "Please add a name to the bottle" }),
+  status: z.enum(["CLOSED", "OPENED", "FINISHED"]),
   type: z.string({ required_error: "Please add the spirit type" }),
   distiller: z.string(),
   producer: z.string(),

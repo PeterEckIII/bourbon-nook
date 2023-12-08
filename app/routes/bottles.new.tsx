@@ -7,7 +7,7 @@ import Input from "~/components/Input/Input";
 import Status from "~/components/Status/Status";
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
-import { handleFormData, bottleSchema } from "~/utils/conform.server";
+import { handleFormData, bottleSchema } from "~/utils/conform";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireUserId(request);
@@ -71,6 +71,7 @@ export default function NewBottle() {
     onValidate({ formData }) {
       return parse(formData, { schema: bottleSchema });
     },
+    shouldValidate: "onBlur",
     shouldRevalidate: "onBlur",
   });
 
