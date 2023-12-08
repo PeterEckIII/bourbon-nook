@@ -207,6 +207,7 @@ export default function Dropdown({
 
       if (
         dropdownRef.current &&
+        show &&
         !dropdownRef.current.contains(e.target as Node)
       ) {
         setShow(false);
@@ -215,7 +216,7 @@ export default function Dropdown({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [show]);
 
   return (
     <>
