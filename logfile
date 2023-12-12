@@ -251,3 +251,11 @@
 2023-12-07 17:53:22.661 CST [31309] LOG:  background worker "logical replication launcher" (PID 31316) exited with exit code 1
 2023-12-07 17:53:22.661 CST [31311] LOG:  shutting down
 2023-12-07 17:53:22.676 CST [31309] LOG:  database system is shut down
+2023-12-08 16:13:10.218 CST [5363] LOG:  starting PostgreSQL 14.10 (Homebrew) on x86_64-apple-darwin22.6.0, compiled by Apple clang version 14.0.3 (clang-1403.0.22.14.1), 64-bit
+2023-12-08 16:13:10.220 CST [5363] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-08 16:13:10.220 CST [5363] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-08 16:13:10.220 CST [5363] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-12-08 16:13:10.225 CST [5364] LOG:  database system was shut down at 2023-12-08 16:13:02 CST
+2023-12-08 16:13:10.230 CST [5363] LOG:  database system is ready to accept connections
+2023-12-08 16:13:14.609 CST [5405] FATAL:  role "postgres" does not exist
+2023-12-08 16:15:21.110 CST [5917] LOG:  could not receive data from client: Connection reset by peer

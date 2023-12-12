@@ -202,9 +202,6 @@ export default function Dropdown({
 
   useEffect(() => {
     const handleClickOutside = (e: Event) => {
-      console.log(`Event: ${e}`);
-      console.log(`Typeof Event: ${typeof e}`);
-
       if (
         dropdownRef.current &&
         show &&

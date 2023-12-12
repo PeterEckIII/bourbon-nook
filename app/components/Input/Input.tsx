@@ -47,10 +47,12 @@ export default function Input({
         disabled={disabled}
       />
       {error ?? (
-        <ValidationMessage
-          isSubmitting={navigationState === "submitting"}
-          error={error ? error : ""}
-        />
+        <div>
+          <ValidationMessage
+            isSubmitting={navigationState === "submitting"}
+            error={error ? error : ""}
+          />
+        </div>
       )}
     </div>
   );
