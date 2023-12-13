@@ -25,7 +25,7 @@ export default function Input({
   navigationState,
 }: InputProps) {
   return (
-    <div className="mt-5">
+    <div className="mt-5 w-full lg:w-1/2 xl:w-1/3">
       <label
         className="font-semibold text-lg text-gray-600 block mb-2"
         htmlFor={label}
@@ -35,7 +35,7 @@ export default function Input({
       <input
         aria-invalid={error !== ""}
         className={
-          "outline-none text-base font-normal w-96 text-[rgb(52,64,84)] bg-white border border-gray-100 shadow-inputShadow rounded-lg py-3 px-4 placeholder:text-base placeholder:text-gray-500"
+          "outline-none text-base font-normal w-96 text-[rgb(52,64,84)] bg-white border border-gray-400 shadow-inputShadow rounded-lg py-3 px-4 placeholder:text-base placeholder:text-gray-500"
         }
         style={{ borderColor: error ? "red" : "" }}
         defaultValue={defaultValue ?? ""}

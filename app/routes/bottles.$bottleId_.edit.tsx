@@ -12,10 +12,10 @@ import {
   useNavigate,
   useNavigation,
 } from "@remix-run/react";
+import Select from "react-select";
 import invariant from "tiny-invariant";
 
 import Input from "~/components/Input/Input";
-import Status from "~/components/Status/Status";
 import { editBottle, getBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 
@@ -119,7 +119,7 @@ export default function EditBottle() {
         onChange={(e) => console.log(e.target.value)}
         navigationState={navigation.state}
       />
-      <Status bottleStatus={bottle.status} />
+      <Select options={options} />
       <Input
         type="text"
         label="Type"

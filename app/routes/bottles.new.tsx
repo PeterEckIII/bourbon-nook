@@ -1,9 +1,9 @@
-import { conform, useForm } from "@conform-to/react";
+import { useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
 import { redirect, type ActionFunctionArgs, json } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
-import Input from "~/components/Input/Input";
+import BottleForm from "~/components/Forms/BottleForm/BottleForm";
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 import { bottleSchema } from "~/utils/conform";
@@ -49,30 +49,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function NewBottle() {
   const navigation = useNavigation();
   const lastSubmission = useActionData<typeof action>();
-  const [
-    form,
-    {
-      name,
-      type,
-      distiller,
-      producer,
-      country,
-      region,
-      price,
-      age,
-      year,
-      batch,
-      barrel,
-      alcoholPercent,
-      proof,
-      size,
-      color,
-      finishing,
-      imageUrl,
-      openDate,
-      killDate,
-    },
-  ] = useForm({
+  const [form, payload] = useForm({
     lastSubmission,
     onValidate({ formData }) {
       return parse(formData, { schema: createBottleSchema });
@@ -81,173 +58,16 @@ export default function NewBottle() {
   });
 
   return (
-    <Form
-      method="POST"
-      className="m-4 p-2 flex flex-col max-w-[1000px]"
-      {...form.props}
-    >
-      <Input
-        type="text"
-        label="Name"
-        {...conform.input(name)}
-        placeholder="Buffalo Trace, Elijah Craig Barrel Proof"
-        error={name.error}
-        navigationState={navigation.state}
-      />
-
-      <select name="status" id="status" defaultValue={"CLOSED"}>
-        <option value="CLOSED">Closed</option>
-        <option value="OPENED">Opened</option>
-        <option value="FINISHED">Finished</option>
-      </select>
-      <Input
-        type="text"
-        label="Spirit Type"
-        {...conform.input(type)}
-        placeholder="Bourbon, Rye, Scotch, Rum"
-        error={type.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Distillery"
-        {...conform.input(distiller)}
-        placeholder="Jack Daniels, MGP, Buffalo Trace"
-        error={distiller.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Producer"
-        {...conform.input(producer)}
-        placeholder="Buffalo Trace, Elijah Craig Barrel Proof"
-        error={producer.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Country of Origin"
-        {...conform.input(country)}
-        placeholder="USA, Scotland, Japan, Barbados"
-        error={country.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Region"
-        {...conform.input(region)}
-        placeholder="KY, Islay, Okayama"
-        error={region.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Price"
-        {...conform.input(price)}
-        placeholder="34.99"
-        error={price.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Age"
-        {...conform.input(age)}
-        placeholder="12yr, 7yrs. 5mos., NAS"
-        error={age.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Release Year"
-        {...conform.input(year)}
-        placeholder=""
-        error={year.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Batch"
-        {...conform.input(batch)}
-        placeholder="B 15, A123, N/A"
-        error={batch.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Barrel #"
-        {...conform.input(barrel)}
-        placeholder="A548BHF5, N/A"
-        error={barrel.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="ABV"
-        {...conform.input(alcoholPercent)}
-        placeholder="60"
-        error={alcoholPercent.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Proof"
-        {...conform.input(proof)}
-        defaultValue={Number(alcoholPercent) * 2}
-        placeholder="120"
-        error={proof.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Bottle Size"
-        {...conform.input(size)}
-        placeholder="750mL, 1.75L, 2oz."
-        error={size.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Color"
-        {...conform.input(color)}
-        placeholder="Amber, Tawny, Straw"
-        error={color.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Finishing Barrels"
-        {...conform.input(finishing)}
-        placeholder="Port, Calvados, Double Barrel"
-        error={finishing.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Image"
-        {...conform.input(imageUrl)}
-        placeholder="https://cloudinary.com/<your_account>/image.jpg"
-        error={imageUrl.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Bottle opened on"
-        {...conform.input(openDate)}
-        placeholder="1/9/2022, N/A"
-        error={openDate.error}
-        navigationState={navigation.state}
-      />
-      <Input
-        type="text"
-        label="Bottle finished on"
-        {...conform.input(killDate)}
-        placeholder="6/13/2023, N/A"
-        error={killDate.error}
-        navigationState={navigation.state}
-      />
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 my-4">
-        Submit
-      </button>
-    </Form>
+    <div className="flex flex-col w-full">
+      <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-4 xl:flex-row 2xl:w-10/12">
+        <Form
+          method="POST"
+          className="m-4 p-2 flex flex-col max-w-[1000px]"
+          {...form.props}
+        >
+          <BottleForm inputs={payload} navigationState={navigation.state} />
+        </Form>
+      </div>
+    </div>
   );
 }

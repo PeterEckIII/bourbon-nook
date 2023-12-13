@@ -14,6 +14,21 @@ export const getBottle = async (id: bottle["id"]) => {
   return prisma.bottle.findUnique({ where: { id } });
 };
 
+export const getBottlesForTable = async (userId: user["id"]) => {
+  const bottles = await prisma.bottle.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      distiller: true,
+      price: true,
+      age: true,
+    },
+  });
+  return bottles;
+};
+
 export const filterBottlesForTable = async ({
   userId,
   query,
