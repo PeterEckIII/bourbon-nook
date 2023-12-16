@@ -259,3 +259,7 @@
 2023-12-08 16:13:10.230 CST [5363] LOG:  database system is ready to accept connections
 2023-12-08 16:13:14.609 CST [5405] FATAL:  role "postgres" does not exist
 2023-12-08 16:15:21.110 CST [5917] LOG:  could not receive data from client: Connection reset by peer
+2023-12-16 14:48:40.764 CST [5363] LOG:  received smart shutdown request
+2023-12-16 14:48:40.767 CST [5363] LOG:  background worker "logical replication launcher" (PID 5370) exited with exit code 1
+2023-12-16 14:48:40.767 CST [5365] LOG:  shutting down
+2023-12-16 14:48:40.790 CST [5363] LOG:  database system is shut down

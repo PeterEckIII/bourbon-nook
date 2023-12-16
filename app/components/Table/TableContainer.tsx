@@ -12,12 +12,16 @@ interface TableContainerProps<T extends object> {
   columns: ColumnDef<T>[];
   data: T[];
   tabOptions: TabOption[];
+  caption: string;
+  summary?: string;
 }
 
 export default function TableContainer<T extends object>({
   columns,
   data,
   tabOptions,
+  caption,
+  summary,
 }: TableContainerProps<T>) {
   const table = useReactTable({
     data,
@@ -30,7 +34,7 @@ export default function TableContainer<T extends object>({
       <Tabs tabOptions={tabOptions} />
       <ActionBar />
       <div className="overflow-x-scroll">
-        <Table<T> table={table} />
+        <Table<T> table={table} caption={caption} summary={summary ?? ""} />
       </div>
     </div>
   );

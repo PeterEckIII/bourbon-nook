@@ -12,10 +12,10 @@ import {
   useNavigate,
   useNavigation,
 } from "@remix-run/react";
-import Select from "react-select";
 import invariant from "tiny-invariant";
 
 import Input from "~/components/Input/Input";
+import Status from "~/components/Status/Status";
 import { editBottle, getBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 
@@ -115,17 +115,32 @@ export default function EditBottle() {
         name="name"
         placeholder="Bottle name"
         defaultValue={bottle.name}
-        error={errors?.errors.name ? errors.errors.name : null}
+        error={errors?.errors.name ? errors.errors.name : undefined}
         onChange={(e) => console.log(e.target.value)}
         navigationState={navigation.state}
       />
-      <Select options={options} />
+      <Status
+        options={[
+          {
+            value: "CLOSED",
+            label: "Closed",
+          },
+          {
+            value: "OPENED",
+            label: "Opened",
+          },
+          {
+            value: "FINISHED",
+            label: "Finished",
+          },
+        ]}
+      />
       <Input
         type="text"
         label="Type"
         name="type"
         placeholder="Whiskey type (bourbon, rye, single malt)"
-        error={errors?.errors.type ? errors.errors.type : null}
+        error={errors?.errors.type ? errors.errors.type : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.type}
         navigationState={navigation.state}
@@ -135,7 +150,7 @@ export default function EditBottle() {
         label="Distiller"
         name="distiller"
         placeholder="Distillery"
-        error={errors?.errors.distiller ? errors.errors.distiller : null}
+        error={errors?.errors.distiller ? errors.errors.distiller : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.distiller ?? ""}
         navigationState={navigation.state}
@@ -145,7 +160,7 @@ export default function EditBottle() {
         label="Producer"
         name="producer"
         placeholder="Producer"
-        error={errors?.errors.producer ? errors.errors.producer : null}
+        error={errors?.errors.producer ? errors.errors.producer : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.producer ?? ""}
         navigationState={navigation.state}
@@ -155,7 +170,7 @@ export default function EditBottle() {
         label="Country of Origin"
         name="country"
         placeholder="Country of Origin"
-        error={errors?.errors.country ? errors.errors.country : null}
+        error={errors?.errors.country ? errors.errors.country : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.country ?? ""}
         navigationState={navigation.state}
@@ -165,7 +180,7 @@ export default function EditBottle() {
         label="Region"
         name="region"
         placeholder="Region"
-        error={errors?.errors.region ? errors.errors.region : null}
+        error={errors?.errors.region ? errors.errors.region : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.region ?? ""}
         navigationState={navigation.state}
@@ -175,7 +190,7 @@ export default function EditBottle() {
         label="Price"
         name="price"
         placeholder="$64.99"
-        error={errors?.errors.price ? errors.errors.price : null}
+        error={errors?.errors.price ? errors.errors.price : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.price ?? ""}
         navigationState={navigation.state}
@@ -185,7 +200,7 @@ export default function EditBottle() {
         label="Age"
         name="age"
         placeholder="Age"
-        error={errors?.errors.age ? errors.errors.age : null}
+        error={errors?.errors.age ? errors.errors.age : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.age ?? ""}
         navigationState={navigation.state}
@@ -195,7 +210,7 @@ export default function EditBottle() {
         label="Year"
         name="year"
         placeholder="2023"
-        error={errors?.errors.year ? errors.errors.year : null}
+        error={errors?.errors.year ? errors.errors.year : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.year ?? ""}
         navigationState={navigation.state}
@@ -205,7 +220,7 @@ export default function EditBottle() {
         label="Batch"
         name="batch"
         placeholder="Batch"
-        error={errors?.errors.batch ? errors.errors.batch : null}
+        error={errors?.errors.batch ? errors.errors.batch : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.batch ?? ""}
         navigationState={navigation.state}
@@ -215,7 +230,7 @@ export default function EditBottle() {
         label="Barrel"
         name="barrel"
         placeholder="Barrel"
-        error={errors?.errors.barrel ? errors.errors.barrel : null}
+        error={errors?.errors.barrel ? errors.errors.barrel : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.barrel ?? ""}
         navigationState={navigation.state}
@@ -226,7 +241,9 @@ export default function EditBottle() {
         name="alcoholPercent"
         placeholder="52.7%"
         error={
-          errors?.errors.alcoholPercent ? errors.errors.alcoholPercent : null
+          errors?.errors.alcoholPercent
+            ? errors.errors.alcoholPercent
+            : undefined
         }
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.alcoholPercent ?? ""}
@@ -237,7 +254,7 @@ export default function EditBottle() {
         label="Proof"
         name="proof"
         placeholder="Proof"
-        error={errors?.errors.proof ? errors.errors.proof : null}
+        error={errors?.errors.proof ? errors.errors.proof : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.proof ?? ""}
         navigationState={navigation.state}
@@ -247,7 +264,7 @@ export default function EditBottle() {
         label="Size"
         name="size"
         placeholder="Size"
-        error={errors?.errors.size ? errors.errors.size : null}
+        error={errors?.errors.size ? errors.errors.size : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.size ?? ""}
         navigationState={navigation.state}
@@ -257,7 +274,7 @@ export default function EditBottle() {
         label="Color"
         name="color"
         placeholder="Color"
-        error={errors?.errors.color ? errors.errors.color : null}
+        error={errors?.errors.color ? errors.errors.color : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.color ?? ""}
         navigationState={navigation.state}
@@ -267,7 +284,7 @@ export default function EditBottle() {
         label="Finishing"
         name="finishing"
         placeholder="Finishing"
-        error={errors?.errors.finishing ? errors.errors.finishing : null}
+        error={errors?.errors.finishing ? errors.errors.finishing : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.finishing ?? ""}
         navigationState={navigation.state}
@@ -277,7 +294,7 @@ export default function EditBottle() {
         label="Bottle Image"
         name="imageUrl"
         placeholder="Bottle Image"
-        error={errors?.errors.imageUrl ? errors.errors.imageUrl : null}
+        error={errors?.errors.imageUrl ? errors.errors.imageUrl : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.imageUrl ?? ""}
         navigationState={navigation.state}
@@ -287,7 +304,7 @@ export default function EditBottle() {
         label="Open Date"
         name="openDate"
         placeholder="6/2/2022"
-        error={errors?.errors.openDate ? errors.errors.openDate : null}
+        error={errors?.errors.openDate ? errors.errors.openDate : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.openDate ?? ""}
         navigationState={navigation.state}
@@ -297,7 +314,7 @@ export default function EditBottle() {
         label="Kill Date"
         name="killDate"
         placeholder="11/27/2022"
-        error={errors?.errors.killDate ? errors.errors.killDate : null}
+        error={errors?.errors.killDate ? errors.errors.killDate : undefined}
         onChange={(e) => console.log(e.target.value)}
         defaultValue={bottle.killDate ?? ""}
         navigationState={navigation.state}
