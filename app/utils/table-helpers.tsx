@@ -18,7 +18,7 @@ export function useBottleColumns() {
       bottleHelper.accessor("name", {
         id: "name",
         header: "Name",
-        cell: (props) => <div>{props.getValue()}</div>,
+        cell: (props) => <div className="font-bold">{props.getValue()}</div>,
       }),
       bottleHelper.accessor("type", {
         id: "type",
@@ -33,7 +33,7 @@ export function useBottleColumns() {
       bottleHelper.accessor("price", {
         id: "price",
         header: "Price",
-        cell: (props) => <div className="float-right">{props.getValue()}</div>,
+        cell: (props) => <div className="float-right">${props.getValue()}</div>,
       }),
       bottleHelper.accessor("age", {
         id: "age",
