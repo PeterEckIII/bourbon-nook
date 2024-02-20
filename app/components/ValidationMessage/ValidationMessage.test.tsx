@@ -9,7 +9,6 @@ describe("<ValidationMessage />", () => {
       <ValidationMessage error="Something went wrong" isSubmitting={false} />,
     );
 
-    screen.debug();
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 });

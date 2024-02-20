@@ -5,14 +5,14 @@ import {
   Form,
   useActionData,
   // useNavigate,
-  useNavigation,
+  // useNavigation,
 } from "@remix-run/react";
 
-import Dropdown from "~/components/Dropdown/Dropdown";
-import Input from "~/components/Input/Input";
+// import Dropdown from "~/components/Dropdown/Dropdown";
+// import Input from "~/components/Input/Input";
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
-import { bottleSchema, handleSubmission } from "~/utils/conform";
+import { bottleSchema } from "~/utils/conform";
 
 // export const action = async ({ request }: ActionFunctionArgs) => {
 //   const userId = await requireUserId(request);

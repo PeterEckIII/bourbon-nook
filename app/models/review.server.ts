@@ -383,6 +383,7 @@ const { isHighlyRated, byAuthor, hasRecentComments } = {
       },
     },
   }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } satisfies Record<string, (...args: any) => Prisma.reviewWhereInput>;
 
 export const getSpecificComments = async (userId: user["id"]) => {

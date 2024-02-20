@@ -38,6 +38,7 @@ export default function ReviewDetail({ review, bottle }: ReviewDetailProps) {
           {bottle.region}, {bottle.country}
         </div>
       </div>
+      <span>{review.nose}</span>
     </div>
   );
 }
