@@ -1,8 +1,9 @@
 import type { user, review, Prisma } from "@prisma/client";
 
 import { prisma } from "~/db.server";
-import { assertNonNullable } from "~/utils/helpers.server";
-import type { ReviewSortOptions } from "~/utils/types";
+// import { assertNonNullable } from "~/utils/helpers.server";
+// import type { ReviewSortOptions } from "~/utils/types";
+// import { getBottles } from "./bottle.server";
 
 export type { review } from "@prisma/client";
 
@@ -14,6 +15,41 @@ export const getReview = async ({
 }) => {
   return prisma.review.findFirst({ where: { id, userId } });
 };
+
+export async function getReviewsForUser(userId: user["id"]) {
+  return await prisma.review.findMany({
+    where: { userId },
+  });
+}
+
+export async function getReviews(userId: user["id"]) {
+  return await prisma.review.findMany({
+    where: { userId },
+    select: {
+      date: true,
+      id: true,
+      overallRating: true,
+      value: true,
+      bottle: {
+        select: {
+          id: true,
+          name: true,
+          status: true,
+          type: true,
+          distiller: true,
+          producer: true,
+          proof: true,
+          alcoholPercent: true,
+          age: true,
+          price: true,
+          barrel: true,
+          batch: true,
+          imageUrl: true,
+        },
+      },
+    },
+  });
+}
 
 export async function getReviewById(reviewId: review["id"]) {
   return await prisma.review.findFirstOrThrow({
@@ -72,127 +108,127 @@ export const getTotalReviews = async ({
   return numberOfReviews;
 };
 
-export const filterReviewsForTable = async ({
-  userId,
-  query,
-  skip,
-  take,
-  sort,
-  direction,
-}: {
-  userId: user["id"];
-  query?: string;
-  skip?: number;
-  take?: number;
-  sort?: ReviewSortOptions;
-  direction?: Prisma.SortOrder;
-}) => {
-  assertNonNullable(userId);
+// export const filterReviewsForTable = async ({
+//   userId,
+//   query,
+//   skip,
+//   take,
+//   sort,
+//   direction,
+// }: {
+//   userId: user["id"];
+//   query?: string;
+//   skip?: number;
+//   take?: number;
+//   sort?: ReviewSortOptions;
+//   direction?: Prisma.SortOrder;
+// }) => {
+//   assertNonNullable(userId);
 
-  let sortOptions: Prisma.reviewOrderByWithRelationInput &
-    Prisma.bottleOrderByWithRelationInput = {};
-  if (sort) {
-    if (sort === "name") {
-      sortOptions = { bottle: { name: direction } };
-    }
-    if (sort === "date") {
-      sortOptions = { date: direction };
-    }
-    if (sort === "status") {
-      sortOptions = { bottle: { status: direction } };
-    }
-    if (sort === "type") {
-      sortOptions = { bottle: { type: direction } };
-    }
-    if (sort === "distiller") {
-      sortOptions = { bottle: { distiller: direction } };
-    }
-    if (sort === "producer") {
-      sortOptions = { bottle: { producer: direction } };
-    }
-    if (sort === "country") {
-      sortOptions = { bottle: { country: direction } };
-    }
-    if (sort === "region") {
-      sortOptions = { bottle: { region: direction } };
-    }
-    if (sort === "price") {
-      sortOptions = { bottle: { price: direction } };
-    }
-    if (sort === "overallRating") {
-      sortOptions = { overallRating: direction };
-    }
-    if (sort === "value") {
-      sortOptions = { value: direction };
-    }
-  }
+//   let sortOptions: Prisma.reviewOrderByWithRelationInput &
+//     Prisma.bottleOrderByWithRelationInput = {};
+//   if (sort) {
+//     if (sort === "name") {
+//       sortOptions = { bottle: { name: direction } };
+//     }
+//     if (sort === "date") {
+//       sortOptions = { date: direction };
+//     }
+//     if (sort === "status") {
+//       sortOptions = { bottle: { status: direction } };
+//     }
+//     if (sort === "type") {
+//       sortOptions = { bottle: { type: direction } };
+//     }
+//     if (sort === "distiller") {
+//       sortOptions = { bottle: { distiller: direction } };
+//     }
+//     if (sort === "producer") {
+//       sortOptions = { bottle: { producer: direction } };
+//     }
+//     if (sort === "country") {
+//       sortOptions = { bottle: { country: direction } };
+//     }
+//     if (sort === "region") {
+//       sortOptions = { bottle: { region: direction } };
+//     }
+//     if (sort === "price") {
+//       sortOptions = { bottle: { price: direction } };
+//     }
+//     if (sort === "overallRating") {
+//       sortOptions = { overallRating: direction };
+//     }
+//     if (sort === "value") {
+//       sortOptions = { value: direction };
+//     }
+//   }
 
-  const reviews = await prisma.review.findMany({
-    where: {
-      userId,
-      bottle: {
-        OR: [
-          {
-            name: {
-              contains: query,
-            },
-          },
-          {
-            distiller: {
-              contains: query,
-            },
-          },
-          {
-            producer: {
-              contains: query,
-            },
-          },
-          {
-            type: {
-              contains: query,
-            },
-          },
-          {
-            country: {
-              contains: query,
-            },
-          },
-          {
-            region: {
-              contains: query,
-            },
-          },
-        ],
-      },
-    },
-    skip: skip || undefined,
-    take: take,
-    orderBy: sortOptions,
-    select: {
-      date: true,
-      id: true,
-      overallRating: true,
-      value: true,
-      bottle: {
-        select: {
-          name: true,
-          status: true,
-          type: true,
-          distiller: true,
-          producer: true,
-          proof: true,
-          alcoholPercent: true,
-          age: true,
-          price: true,
-          barrel: true,
-          batch: true,
-          imageUrl: true,
-        },
-      },
-    },
-  });
-  return reviews;
-};
+//   const reviews = await prisma.review.findMany({
+//     where: {
+//       userId,
+//       bottle: {
+//         OR: [
+//           {
+//             name: {
+//               contains: query,
+//             },
+//           },
+//           {
+//             distiller: {
+//               contains: query,
+//             },
+//           },
+//           {
+//             producer: {
+//               contains: query,
+//             },
+//           },
+//           {
+//             type: {
+//               contains: query,
+//             },
+//           },
+//           {
+//             country: {
+//               contains: query,
+//             },
+//           },
+//           {
+//             region: {
+//               contains: query,
+//             },
+//           },
+//         ],
+//       },
+//     },
+//     skip: skip || undefined,
+//     take: take,
+//     orderBy: sortOptions,
+//     select: {
+//       date: true,
+//       id: true,
+//       overallRating: true,
+//       value: true,
+//       bottle: {
+//         select: {
+//           name: true,
+//           status: true,
+//           type: true,
+//           distiller: true,
+//           producer: true,
+//           proof: true,
+//           alcoholPercent: true,
+//           age: true,
+//           price: true,
+//           barrel: true,
+//           batch: true,
+//           imageUrl: true,
+//         },
+//       },
+//     },
+//   });
+//   return reviews;
+// };
 
 export const createReview = async ({
   bottleId,
@@ -330,4 +366,37 @@ export const deleteReview = async ({
   return prisma.review.deleteMany({
     where: { id, userId },
   });
+};
+
+// EXPERIMENTATION
+const { isHighlyRated, byAuthor, hasRecentComments } = {
+  isHighlyRated: () => ({
+    overallRating: { gt: 7.5 },
+  }),
+  byAuthor: (userId: string) => ({
+    userId,
+  }),
+  hasRecentComments: (date: Date) => ({
+    comments: {
+      some: {
+        createdAt: { gte: date },
+      },
+    },
+  }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} satisfies Record<string, (...args: any) => Prisma.reviewWhereInput>;
+
+export const getSpecificComments = async (userId: user["id"]) => {
+  const yesterday = new Date();
+  yesterday.setDate(new Date().getDate() - 1);
+  const reviews = prisma.review.findMany({
+    where: {
+      AND: [
+        isHighlyRated(),
+        byAuthor(userId),
+        hasRecentComments(new Date(yesterday)),
+      ],
+    },
+  });
+  return reviews;
 };

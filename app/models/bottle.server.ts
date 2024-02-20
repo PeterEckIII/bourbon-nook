@@ -1,4 +1,4 @@
-import type { bottle, Prisma, user } from "@prisma/client";
+import { type bottle, type user } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 // import { assertNonNullable } from "~/utils/helpers.server";
@@ -14,56 +14,138 @@ export const getBottle = async (id: bottle["id"]) => {
   return prisma.bottle.findUnique({ where: { id } });
 };
 
+export const getBottlesForTable = async (userId: user["id"]) => {
+  const bottles = await prisma.bottle.findMany({
+    where: { userId },
+    include: {
+      reviews: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+  return bottles;
+};
+
+export const searchBottles = async (
+  userId: user["id"],
+  query: string,
+  skip: number,
+  take: number,
+) => {
+  const bottlesMatchingSearchPhrase = await prisma.bottle.findMany({
+    where: {
+      userId,
+      OR: [
+        {
+          name: {
+            contains: query,
+          },
+        },
+        {
+          type: {
+            contains: query,
+          },
+        },
+        {
+          distiller: {
+            contains: query,
+          },
+        },
+        {
+          producer: {
+            contains: query,
+          },
+        },
+        {
+          country: {
+            contains: query,
+          },
+        },
+        {
+          region: {
+            contains: query,
+          },
+        },
+        {
+          year: {
+            contains: query,
+          },
+        },
+      ],
+    },
+    skip: skip || 0,
+    take: take,
+    select: {
+      id: true,
+      name: true,
+      status: true,
+      type: true,
+      distiller: true,
+      producer: true,
+      price: true,
+      country: true,
+      region: true,
+      age: true,
+      alcoholPercent: true,
+      batch: true,
+      barrel: true,
+      year: true,
+      createdAt: true,
+    },
+  });
+
+  return JSON.parse(JSON.stringify(bottlesMatchingSearchPhrase));
+};
+
 export const filterBottlesForTable = async ({
   userId,
   query,
   skip,
-  take,
-  sort,
-  direction,
-}: {
+  take, // direction,
+} // sort,
+: {
   userId: user["id"];
   query?: string;
   skip?: number;
   take?: number;
-  sort?: BottleSortOptions;
-  direction?: Prisma.SortOrder;
+  // sort?: BottleSortOptions;
+  // direction?: Prisma.SortOrder;
 }) => {
-  assertNonNullable(userId);
-
-  let sortOptions: Prisma.bottleOrderByWithRelationInput = {};
-  if (sort) {
-    if (sort === "name") {
-      sortOptions = { name: direction };
-    }
-    if (sort === "status") {
-      sortOptions = { status: direction };
-    }
-    if (sort === "type") {
-      sortOptions = { type: direction };
-    }
-    if (sort === "distiller") {
-      sortOptions = { distiller: direction };
-    }
-    if (sort === "producer") {
-      sortOptions = { producer: direction };
-    }
-    if (sort === "country") {
-      sortOptions = { country: direction };
-    }
-    if (sort === "region") {
-      sortOptions = { region: direction };
-    }
-    if (sort === "price") {
-      sortOptions = { price: direction };
-    }
-    if (sort === "proof") {
-      sortOptions = { proof: direction };
-    }
-    if (sort === "alcoholPercent") {
-      sortOptions = { alcoholPercent: direction };
-    }
-  }
+  // let sortOptions: Prisma.bottleOrderByWithRelationInput = {};
+  // if (sort) {
+  //   if (sort === "name") {
+  //     sortOptions = { name: direction };
+  //   }
+  //   if (sort === "status") {
+  //     sortOptions = { status: direction };
+  //   }
+  //   if (sort === "type") {
+  //     sortOptions = { type: direction };
+  //   }
+  //   if (sort === "distiller") {
+  //     sortOptions = { distiller: direction };
+  //   }
+  //   if (sort === "producer") {
+  //     sortOptions = { producer: direction };
+  //   }
+  //   if (sort === "country") {
+  //     sortOptions = { country: direction };
+  //   }
+  //   if (sort === "region") {
+  //     sortOptions = { region: direction };
+  //   }
+  //   if (sort === "price") {
+  //     sortOptions = { price: direction };
+  //   }
+  //   if (sort === "proof") {
+  //     sortOptions = { proof: direction };
+  //   }
+  //   if (sort === "alcoholPercent") {
+  //     sortOptions = { alcoholPercent: direction };
+  //   }
+  // }
 
   const bottles = await prisma.bottle.findMany({
     where: {
@@ -101,15 +183,22 @@ export const filterBottlesForTable = async ({
         },
       ],
     },
-    orderBy: sortOptions,
+    // orderBy: sortOptions,
     skip: skip || undefined,
     take: take,
-    include: {
-      reviews: {
-        select: {
-          id: true,
-        },
-      },
+    select: {
+      id: true,
+      name: true,
+      status: true,
+      type: true,
+      distiller: true,
+      price: true,
+      country: true,
+      region: true,
+      age: true,
+      alcoholPercent: true,
+      batch: true,
+      barrel: true,
     },
   });
   return bottles;

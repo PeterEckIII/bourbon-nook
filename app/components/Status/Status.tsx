@@ -1,23 +1,34 @@
-import { BottleStatus } from "@prisma/client";
+import Select, { StylesConfig } from "react-select";
+
+import { Options } from "~/types/options";
 
 interface StatusProps {
-  bottleStatus: BottleStatus;
+  options: Options;
 }
 
-export default function Status({ bottleStatus }: StatusProps) {
+const colorStyles: StylesConfig = {
+  control: (styles) => ({ ...styles, width: "24rem" }),
+};
+
+export default function Status({ options }: StatusProps) {
   return (
-    <div>
-      <label htmlFor="status">Bottle Status</label>
-      <select
+    <div className="mt-2">
+      <label
+        htmlFor="status"
+        className="font-semibold text-lg text-gray-600 block mt-2"
+      >
+        Status
+      </label>
+      <Select
+        styles={colorStyles}
+        className="my-2"
+        options={options}
+        defaultValue={options[0]}
+        isClearable={false}
+        isSearchable={true}
         name="status"
         id="status"
-        className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-        defaultValue={bottleStatus}
-      >
-        <option value="CLOSED">Closed</option>
-        <option value="OPENED">Opened</option>
-        <option value="FINISHED">Finished</option>
-      </select>
+      />
     </div>
   );
 }
