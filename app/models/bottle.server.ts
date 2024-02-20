@@ -104,8 +104,8 @@ export const filterBottlesForTable = async ({
   query,
   skip,
   take, // direction,
-} // sort,
-: {
+  // sort,
+}: {
   userId: user["id"];
   query?: string;
   skip?: number;
