@@ -13,7 +13,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import ActionBar from "~/components/Table/ActionBar";
-import ActionRow from "~/components/Table/ActionRow";
+import ItemActions from "~/components/Table/ItemActions";
 import PageLimit from "~/components/Table/PageLimit";
 // import Pagination from "~/components/Table/Pagination";
 import Pagination from "~/components/Table/Pagination";
@@ -106,7 +106,7 @@ const columns: ColumnDef<TableBottle, any>[] = [
   helper.accessor("id", {
     id: "actions",
     header: "Actions",
-    cell: (props) => <ActionRow value={props.getValue()} />,
+    cell: (props) => <ItemActions value={props.getValue()} />,
   }),
 ];
 

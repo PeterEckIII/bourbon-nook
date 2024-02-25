@@ -1,25 +1,16 @@
-import {
-  isRouteErrorResponse,
-  useFetcher,
-  useRouteError,
-} from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import {
   ColumnDef,
+  RowSelectionState,
   createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 
-import ActionBar from "~/components/Table/ActionBar";
-import ActionRow from "~/components/Table/ActionRow";
-import PageLimit from "~/components/Table/PageLimit";
-import Pagination from "~/components/Table/Pagination";
-import Tabs from "~/components/Table/Tabs";
+import MyTable from "~/components/Table/GenericTable";
+import IndeterminateCheckbox from "~/components/Table/IndeterminateCheckbox";
+import ItemActions from "~/components/Table/ItemActions";
 import { TableBottle } from "~/types/bottle";
-import { Limit } from "~/types/table";
-import useDebounce from "~/utils/useDebounce";
+import { useEventListener } from "~/utils/useEventListener";
 
 import { BottleSearchData } from "./api.search-bottles";
 
@@ -27,20 +18,51 @@ const helper = createColumnHelper<TableBottle>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: ColumnDef<TableBottle, any>[] = [
+  helper.accessor("id", {
+    id: "select",
+    header: ({ table }) => (
+      <IndeterminateCheckbox
+        {...{
+          checked: table.getIsAllRowsSelected(),
+          indeterminate: table.getIsSomeRowsSelected(),
+          onChange: table.getToggleAllRowsSelectedHandler(),
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="px-1">
+        <IndeterminateCheckbox
+          {...{
+            checked: row.getIsSelected(),
+            disabled: !row.getCanSelect(),
+            indeterminate: row.getIsSomeSelected(),
+            onChange: row.getToggleSelectedHandler(),
+          }}
+        />
+      </div>
+    ),
+    footer: (props) => props.column.id,
+    enableResizing: false,
+  }),
   helper.accessor("name", {
     header: "Name",
+    footer: (props) => props.column.id,
+    enableResizing: true,
   }),
   helper.accessor("createdAt", {
-    header: "Added",
+    header: "Added on",
     cell: (props) => {
       const date = new Date(props.getValue());
-      const formattedDate = new Intl.DateTimeFormat(date.toISOString(), {
+      // @ts-expect-error Prisma is stupid -- date errors, but any casting of it to string crashes app
+      const formattedDate = new Intl.DateTimeFormat(date, {
         month: "2-digit",
         day: "2-digit",
         year: "2-digit",
       });
       return <span>{formattedDate.format()}</span>;
     },
+    footer: (props) => props.column.id,
+    enableResizing: true,
   }),
   helper.accessor("status", {
     header: "Status",
@@ -69,157 +91,108 @@ const columns: ColumnDef<TableBottle, any>[] = [
           break;
       }
     },
+    footer: (props) => props.column.id,
+    enableResizing: false,
   }),
   helper.accessor("type", {
     header: "Type",
+    footer: (props) => props.column.id,
+    enableResizing: true,
   }),
   helper.accessor("distiller", {
     header: "Distiller",
     cell: (props) => <span>{props.renderValue()}</span>,
+    footer: (props) => props.column.id,
+    enableResizing: true,
   }),
   helper.accessor("producer", {
     header: "Producer",
     cell: (props) => <span>{props.renderValue()}</span>,
+    footer: (props) => props.column.id,
+    enableResizing: true,
   }),
   helper.accessor("price", {
     header: "Price",
     cell: (props) => <span>${props.renderValue()}</span>,
+    footer: (props) => props.column.id,
+    enableResizing: false,
   }),
   helper.accessor("alcoholPercent", {
     header: "ABV",
     cell: (props) => <span>{props.renderValue()}%</span>,
+    footer: (props) => props.column.id,
+    enableResizing: false,
   }),
   helper.accessor("country", {
     header: "Country",
     cell: (props) => <span>{props.renderValue()}</span>,
+    footer: (props) => props.column.id,
+    enableResizing: true,
   }),
   helper.accessor("region", {
     header: "Region",
     cell: (props) => <span>{props.renderValue()}</span>,
+    footer: (props) => props.column.id,
+    enableResizing: true,
   }),
   helper.accessor("year", {
     header: "Year",
     cell: (props) => <span>{props.renderValue()}</span>,
+    footer: (props) => props.column.id,
+    enableResizing: false,
   }),
   helper.accessor("id", {
     id: "actions",
     header: "Actions",
-    cell: (props) => <ActionRow value={props.getValue()} />,
+    cell: (props) => <ItemActions value={props.getValue()} />,
+    footer: (props) => props.column.id,
+    enableResizing: false,
   }),
 ];
 
 export default function Test() {
-  const [query, setQuery] = useState("");
-  const searchTerm = useDebounce(query, 300);
-  const [limit, setLimit] = useState<Limit>(10);
-  const [page, setPage] = useState(0);
-
-  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  };
-
-  const tabOptions = useMemo(
-    () => [
-      { id: "all", label: "All" },
-      { id: "opened", label: "Opened" },
-      { id: "closed", label: "Closed" },
-      { id: "finished", label: "Finished" },
-    ],
-    [],
-  );
-
-  const { load, data } = useFetcher<BottleSearchData>();
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const { load, data, state } = useFetcher<BottleSearchData>();
 
   const bottles = useMemo(() => {
     return data?.bottles || [];
   }, [data]);
 
-  const table = useReactTable({
-    data: bottles,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
+  const isEmpty = state === "idle" && bottles.length === 0;
+
+  useEffect(() => {
+    load("/api/search-bottles?query=&limit=10&page=0");
+  }, [load]);
+
+  useEventListener("keydown", (event) => {
+    if (event.key === "Tab" && rowSelection && setRowSelection) {
+      event.preventDefault();
+
+      const selectionKeys = Object.entries(rowSelection)
+        .filter(([, value]) => value)
+        .map(([key]) => Number(key));
+
+      const start = Math.min(...selectionKeys);
+      const end = Math.max(...selectionKeys);
+
+      const newSelection = {} as Record<string, true>;
+      for (let i = start; i <= end; i += 1) {
+        newSelection[i] = true;
+      }
+
+      setRowSelection(newSelection);
+    }
   });
 
-  useEffect(() => {
-    load(`/api/search-bottles?query=&limit=${limit}&page=0`);
-  }, [load, limit]);
-
-  useEffect(() => {
-    load(`/api/search-bottles?query=${searchTerm}&limit=${limit}&page=${page}`);
-  }, [load, searchTerm, limit, page]);
-
   return (
-    <main className="flex flex-col items-center">
-      <h1 className="m-6 text-3xl underline place-self-start">Bottles</h1>
-      <div className="w-10/12 flex flex-col shadow-lg p-4 m-4 rounded bg-gray-100">
-        <Tabs tabOptions={tabOptions} />
-        <ActionBar query={query} handleQueryChange={handleQueryChange} />
-        <table
-          aria-labelledby="caption"
-          className="table w-full border-collapse overflow-x-scroll"
-        >
-          <caption className="sr-only">Table</caption>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} scope="col" className="p-2 text-left">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="odd:bg-gray-50 bg-gray-200 hover:bg-blue-200"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-1">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div>
-          <PageLimit limit={limit} setLimit={setLimit} />
-        </div>
-        <Pagination
-          page={page}
-          setPage={(nextPage) => setPage(nextPage)}
-          totalItems={data?.bottleCount || 0}
-          totalPages={data?.totalPages || 0}
-          onFirst={() => setPage(0)}
-          onLast={() => setPage(data?.totalPages || 0)}
-        />
-      </div>
-    </main>
+    <div>
+      <MyTable
+        data={bottles}
+        columns={columns}
+        isEmpty={isEmpty}
+        rowSelection={rowSelection}
+        setRowSelection={setRowSelection}
+      />
+    </div>
   );
-}
-
-export function ErrorBoundary() {
-  const error = useRouteError();
-  if (isRouteErrorResponse(error)) {
-    error.status = 500;
-    error.data = "Error finding bottles";
-    return (
-      <div className="m-4 p-4 border border-red-500 flex items-center justify-center flex-col">
-        <div>
-          <h2 className="text-2xl text-red-500">Error!</h2>
-        </div>
-        <div>
-          <p className="text-lg text-black">Try reloading the window</p>
-        </div>
-      </div>
-    );
-  }
 }

@@ -157,6 +157,50 @@ model review {
   overallRating Float?
 }
 
+// model review {
+//    id       String  @id @default(cuid())
+//    bottle   bottle? @relation(fields: [bottleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//    bottleId String?
+
+//    user   user   @relation("userReviews", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//    userId String
+
+//    comments comment[] @relation("ReviewComments")
+
+//    createdAt DateTime @default(now())
+//    updatedAt DateTime @updatedAt
+//    date          String?
+//    setting       String?
+//    glassware     String?
+//    restTime      String?
+//    nose          String?
+//    palate        String?
+//    finish        String?
+//    thoughts      String?
+//    fruit:        Float?
+//    spice:        Float?
+//    nutty:        Float?
+//    herbal:       Float?
+//    coffee:       Float?
+//    tobacco:      Float?
+//    leather:      Float?
+//    oak:          Float?
+//    oily:         Float?
+//    floral:       Float?
+//    corn          Float?
+//    rye           Float?
+//    wheat         Float?
+//    malt          Float?
+//    dough         Float?
+//    vanilla       Float? 
+//    caramel       Float?
+//    molasses      Float?
+//    chocolate     Float?
+//    honey         Float?
+//    value         Float?
+//    overallRating Float?
+// }
+
 enum BottleStatus {
   CLOSED   @map("CLOSED")
   OPENED   @map("OPENED")

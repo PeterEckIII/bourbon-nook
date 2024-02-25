@@ -1,10 +1,10 @@
 import { Form, Link } from "@remix-run/react";
 
-interface ActionRoleProps {
+interface ItemActionProps {
   value: string;
 }
 
-export default function ActionRow({ value }: ActionRoleProps) {
+export default function ItemActions({ value }: ItemActionProps) {
   return (
     <div className="flex">
       <Link className="mx-2" to={`/bottles/${value}`}>
