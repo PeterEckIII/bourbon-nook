@@ -13,7 +13,7 @@ interface PageLimitProps {
 
 export default function PageLimit({ limit, setLimit }: PageLimitProps) {
   return (
-    <div className="">
+    <div className="px-4 my-3">
       <Listbox value={limit} onChange={setLimit}>
         <div className="relative mt-1">
           <Listbox.Button className="relative w-full cursor-default rounded-lg bg-gray-300 py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-400 sm:text-sm">
@@ -28,7 +28,7 @@ export default function PageLimit({ limit, setLimit }: PageLimitProps) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-gray-300 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options className="z-50 absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-gray-300 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {[10, 25, 50, 100, 250].map((num, index) => (
                 <Listbox.Option
                   key={index}

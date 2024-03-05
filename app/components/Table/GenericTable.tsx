@@ -1,80 +1,63 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  useReactTable,
-  type TableOptions,
-  getCoreRowModel,
   flexRender,
-  RowSelectionState,
+  TableState,
+  Header,
+  HeaderGroup,
+  RowModel,
 } from "@tanstack/react-table";
-import {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, RefObject, SetStateAction, useMemo } from "react";
 
-// import { getTableCellStyle } from "~/utils/table-helpers";
+import Pagination from "./Pagination";
 
-export type TableProps<D extends Record<string, any>> = Pick<
-  TableOptions<D>,
-  "columns" | "data"
-> & {
-  rowSelection?: RowSelectionState;
-  setRowSelection?: Dispatch<SetStateAction<RowSelectionState>>;
+interface MyTableProps<D> {
+  getState: () => TableState;
+  getFlatHeaders: () => Header<D, unknown>[];
+  getTotalSize: () => number;
+  getHeaderGroups: () => HeaderGroup<D>[];
+  getRowModel: () => RowModel<D>;
   isEmpty: boolean;
-};
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  totalItems: number;
+  totalPages: number;
+  tableRef: RefObject<HTMLTableElement>;
+  tableHeight: string | number;
+}
 
 export default function MyTable<D extends Record<string, any>>({
-  columns,
-  data,
-  rowSelection,
-  setRowSelection,
+  getState,
+  getFlatHeaders,
+  getTotalSize,
+  getHeaderGroups,
+  getRowModel,
   isEmpty,
-}: TableProps<D>) {
-  const [tableHeight, setTableHeight] = useState<string | number>("auto");
-  const tableRef = useRef<HTMLTableElement | null>(null);
-
-  const {
-    getHeaderGroups,
-    getFlatHeaders,
-    getRowModel,
-    getTotalSize,
-    getState,
-  } = useReactTable({
-    data,
-    columns,
-    columnResizeMode: "onChange",
-    getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
-    getRowId: (row) => row.id,
-    state: {
-      rowSelection,
-    },
-  });
-
-  useEffect(() => {
-    setTableHeight(tableRef.current?.offsetHeight || "auto");
-  }, []);
-
+  page,
+  setPage,
+  totalItems,
+  totalPages,
+  tableHeight,
+  tableRef,
+}: MyTableProps<D>) {
   const columnSizingInfo = getState().columnSizingInfo;
 
   const columnSizeVars = useMemo(() => {
-    const headers = getFlatHeaders();
-    const colSizes: Record<string, number> = {};
-    for (const header of headers) {
-      colSizes[`--header-${header.id}-size`] = header.getSize();
-      colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
+    if (columnSizingInfo) {
+      const headers = getFlatHeaders();
+      const colSizes: Record<string, number> = {};
+      for (const header of headers) {
+        colSizes[`--header-${header.id}-size`] = header.getSize();
+        colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
+      }
+      return colSizes;
     }
-    return colSizes;
   }, [getFlatHeaders, columnSizingInfo]);
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center">
       {!isEmpty ? (
-        <div className="flex justify-center items-center overflow-x-auto">
+        <div className="flex flex-col justify-center overflow-x-auto">
           <table
             className={`min-w-full h-full flex flex-col`}
             style={{ ...columnSizeVars, width: getTotalSize() }}
@@ -157,6 +140,14 @@ export default function MyTable<D extends Record<string, any>>({
               ))}
             </tbody>
           </table>
+          <Pagination
+            page={page}
+            setPage={(nextPage) => setPage(nextPage)}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            onFirst={() => setPage(0)}
+            onLast={() => setPage(totalPages || 0)}
+          />
         </div>
       ) : (
         // EMPTY TABLE

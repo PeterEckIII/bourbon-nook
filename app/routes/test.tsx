@@ -2,14 +2,21 @@ import { useFetcher } from "@remix-run/react";
 import {
   ColumnDef,
   RowSelectionState,
+  VisibilityState,
   createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import MyTable from "~/components/Table/GenericTable";
 import IndeterminateCheckbox from "~/components/Table/IndeterminateCheckbox";
 import ItemActions from "~/components/Table/ItemActions";
+import NewActionBar from "~/components/Table/NewActionBar";
+import Tabs from "~/components/Table/Tabs";
 import { TableBottle } from "~/types/bottle";
+import { Limit } from "~/types/table";
+import useDebounce from "~/utils/useDebounce";
 import { useEventListener } from "~/utils/useEventListener";
 
 import { BottleSearchData } from "./api.search-bottles";
@@ -43,11 +50,13 @@ const columns: ColumnDef<TableBottle, any>[] = [
     ),
     footer: (props) => props.column.id,
     enableResizing: false,
+    enableHiding: false,
   }),
   helper.accessor("name", {
     header: "Name",
     footer: (props) => props.column.id,
     enableResizing: true,
+    enableHiding: false,
   }),
   helper.accessor("createdAt", {
     header: "Added on",
@@ -147,11 +156,38 @@ const columns: ColumnDef<TableBottle, any>[] = [
     cell: (props) => <ItemActions value={props.getValue()} />,
     footer: (props) => props.column.id,
     enableResizing: false,
+    enableHiding: false,
   }),
 ];
 
 export default function Test() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [query, setQuery] = useState("");
+  const searchTerm = useDebounce(query, 300);
+  const [limit, setLimit] = useState<Limit>(10);
+  const [page, setPage] = useState(0);
+  const [tableHeight, setTableHeight] = useState<string | number>("auto");
+  const tableRef = useRef<HTMLTableElement | null>(null);
+
+  useEffect(() => {
+    setTableHeight(tableRef.current?.offsetHeight || "auto");
+  }, []);
+
+  const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+  };
+
+  const tabOptions = useMemo(
+    () => [
+      { id: "all", label: "All" },
+      { id: "opened", label: "Opened" },
+      { id: "closed", label: "Closed" },
+      { id: "finished", label: "Finished" },
+    ],
+    [],
+  );
+
   const { load, data, state } = useFetcher<BottleSearchData>();
 
   const bottles = useMemo(() => {
@@ -163,6 +199,10 @@ export default function Test() {
   useEffect(() => {
     load("/api/search-bottles?query=&limit=10&page=0");
   }, [load]);
+
+  useEffect(() => {
+    load(`/api/search-bottles?query=${searchTerm}&limit=${limit}&page=${page}`);
+  }, [load, searchTerm, limit, page]);
 
   useEventListener("keydown", (event) => {
     if (event.key === "Tab" && rowSelection && setRowSelection) {
@@ -184,15 +224,53 @@ export default function Test() {
     }
   });
 
+  const {
+    getHeaderGroups,
+    getFlatHeaders,
+    getRowModel,
+    getTotalSize,
+    getState,
+    getAllColumns,
+  } = useReactTable({
+    data: bottles,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: "onChange",
+    onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: setColumnVisibility,
+    getRowId: (row) => row.id,
+    state: {
+      rowSelection,
+      columnVisibility,
+    },
+  });
+
   return (
-    <div>
-      <MyTable
-        data={bottles}
-        columns={columns}
-        isEmpty={isEmpty}
-        rowSelection={rowSelection}
-        setRowSelection={setRowSelection}
-      />
-    </div>
+    <main className="flex flex-col items-center">
+      <div className="w-10/12 flex flex-col justify-between shadow-lg p-4 m-4 rounded bg-gray-100">
+        <Tabs tabOptions={tabOptions} />
+        <NewActionBar<TableBottle>
+          query={query}
+          handleQueryChange={handleQueryChange}
+          getAllColumns={getAllColumns}
+          limit={limit}
+          setLimit={setLimit}
+        />
+        <MyTable<TableBottle>
+          getState={getState}
+          getFlatHeaders={getFlatHeaders}
+          getTotalSize={getTotalSize}
+          getHeaderGroups={getHeaderGroups}
+          getRowModel={getRowModel}
+          isEmpty={isEmpty}
+          page={page}
+          setPage={setPage}
+          totalItems={data?.bottleCount || 0}
+          totalPages={data?.totalPages || 0}
+          tableRef={tableRef}
+          tableHeight={tableHeight}
+        />
+      </div>
+    </main>
   );
 }
