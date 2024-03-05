@@ -10,7 +10,7 @@ export default function SearchBar({
   handleQueryChange,
 }: SearchBarProps) {
   return (
-    <div className="my-3 place-self-end">
+    <div className="my-3 place-self-end w-full h-10 pr-4">
       <input
         type="text"
         name="search"

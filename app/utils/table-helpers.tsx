@@ -1,8 +1,8 @@
 import { bottle, review } from "@prisma/client";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { CSSProperties, useMemo } from "react";
 
-import ActionRow from "~/components/Table/ActionRow";
+import ItemActions from "~/components/Table/ItemActions";
 
 const bottleHelper = createColumnHelper<TableBottle>();
 
@@ -99,7 +99,7 @@ export function useBottleColumns() {
         id: "actions",
         cell: (props) => {
           const val = props.getValue() as string;
-          return <ActionRow value={val} />;
+          return <ItemActions value={val} />;
         },
       }),
     ],
@@ -162,7 +162,7 @@ export function useReviewColumns() {
         id: "actions",
         cell: (props) => {
           const val = props.getValue() as string;
-          return <ActionRow value={val} />;
+          return <ItemActions value={val} />;
         },
       }),
     ],
@@ -171,3 +171,17 @@ export function useReviewColumns() {
 
   return columns;
 }
+
+export const getTableCellStyle = ({
+  size,
+  minSize,
+  maxSize,
+}: {
+  size?: number | string;
+  minSize?: number | string;
+  maxSize?: number | string;
+}): CSSProperties => ({
+  width: size,
+  maxWidth: maxSize,
+  minWidth: minSize,
+});
