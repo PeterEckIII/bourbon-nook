@@ -9,8 +9,6 @@ import {
 } from "@tanstack/react-table";
 import { Dispatch, RefObject, SetStateAction, useMemo } from "react";
 
-import Pagination from "./Pagination";
-
 interface MyTableProps<D> {
   getState: () => TableState;
   getFlatHeaders: () => Header<D, unknown>[];
@@ -33,10 +31,6 @@ export default function MyTable<D extends Record<string, any>>({
   getHeaderGroups,
   getRowModel,
   isEmpty,
-  page,
-  setPage,
-  totalItems,
-  totalPages,
   tableHeight,
   tableRef,
 }: MyTableProps<D>) {
@@ -59,7 +53,7 @@ export default function MyTable<D extends Record<string, any>>({
       {!isEmpty ? (
         <div className="flex flex-col justify-center overflow-x-auto">
           <table
-            className={`min-w-full h-full flex flex-col`}
+            className={"min-w-full h-full flex flex-col"}
             style={{ ...columnSizeVars, width: getTotalSize() }}
             ref={tableRef}
           >
@@ -140,14 +134,6 @@ export default function MyTable<D extends Record<string, any>>({
               ))}
             </tbody>
           </table>
-          <Pagination
-            page={page}
-            setPage={(nextPage) => setPage(nextPage)}
-            totalItems={totalItems}
-            totalPages={totalPages}
-            onFirst={() => setPage(0)}
-            onLast={() => setPage(totalPages || 0)}
-          />
         </div>
       ) : (
         // EMPTY TABLE

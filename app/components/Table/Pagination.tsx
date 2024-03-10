@@ -1,3 +1,8 @@
+import ChevronDoubleLeft from "../Icons/ChevronDoubleLeft";
+import ChevronDoubleRight from "../Icons/ChevronDoubleRight";
+import ChevronLeft from "../Icons/ChevronLeft";
+import ChevronRight from "../Icons/ChevronRight";
+
 interface PaginationProps {
   page: number;
   totalItems: number;
@@ -24,12 +29,20 @@ export default function Pagination({
       </div>
       <div className="flex items-center">
         <button
-          className="mx-2 my-1 rounded bg-gray-100 p-4 text-gray-700 hover:bg-blue-500 hover:text-gray-100"
+          className="mx-2 my-1 rounded bg-gray-100 p-4 text-gray-700 hover:bg-blue-500 hover:text-gray-100 disabled:cursor-not-allowed"
           onClick={() => onFirst()}
           disabled={page === 0}
           aria-disabled={page === 0}
         >
-          &#60;&#60;
+          <ChevronDoubleLeft />
+        </button>
+        <button
+          onClick={() => setPage(page - 1)}
+          className="mx-2 my-1 rounded bg-gray-100 p-4 text-gray-700 hover:bg-blue-500 hover:text-gray-100 disabled:cursor-not-allowed"
+          disabled={page === 0}
+          aria-disabled={page === 0}
+        >
+          <ChevronLeft />
         </button>
         {Array(totalPages)
           .fill(totalPages)
@@ -49,12 +62,19 @@ export default function Pagination({
             </button>
           ))}
         <button
-          onClick={() => onLast()}
-          className="mx-2 my-1 rounded bg-gray-100 p-4 text-gray-700 hover:bg-blue-500 hover:text-gray-100"
-          disabled={page === totalPages}
-          aria-disabled={page === totalPages}
+          className="mx-2 my-1 rounded bg-gray-100 p-4 text-gray-700 hover:bg-blue-500 hover:text-gray-100 disabled:cursor-not-allowed"
+          onClick={() => setPage(page + 1)}
+          disabled={page === totalPages - 1}
         >
-          &#62;&#62;
+          {" "}
+          <ChevronRight />
+        </button>
+        <button
+          onClick={() => onLast()}
+          className="mx-2 my-1 rounded bg-gray-100 p-4 text-gray-700 hover:bg-blue-500 hover:text-gray-100 disabled:cursor-not-allowed"
+          disabled={page === totalPages - 1}
+        >
+          <ChevronDoubleRight />
         </button>
       </div>
       <div className="mx-2 my-1 bg-gray-100 p-4 text-gray-700">
