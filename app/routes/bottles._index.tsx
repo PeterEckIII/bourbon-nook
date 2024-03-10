@@ -24,6 +24,7 @@ import MyTable from "~/components/Table/GenericTable";
 import IndeterminateCheckbox from "~/components/Table/IndeterminateCheckbox";
 import ItemActions from "~/components/Table/ItemActions";
 import NewActionBar from "~/components/Table/NewActionBar";
+import Pagination from "~/components/Table/Pagination";
 import Tabs from "~/components/Table/Tabs";
 import { TableBottle } from "~/types/bottle";
 import { Limit } from "~/types/table";
@@ -288,6 +289,14 @@ export default function Test() {
           totalPages={data?.totalPages || 0}
           tableRef={tableRef as RefObject<HTMLTableElement>}
           tableHeight={tableHeight}
+        />
+        <Pagination
+          page={page}
+          setPage={(nextPage) => setPage(nextPage)}
+          totalItems={data?.bottleCount || 0}
+          totalPages={data?.totalPages || 0}
+          onFirst={() => setPage(0)}
+          onLast={() => setPage(data?.totalPages || 0)}
         />
       </div>
     </main>

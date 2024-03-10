@@ -10,11 +10,14 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
+import { useState } from "react";
 
+import Header from "~/components/FullMenu/Header";
 import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
 
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/FullMenu/Navbar";
+import Overlay from "./components/FullMenu/Overlay";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -26,7 +29,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function App() {
+  const [open, setOpen] = useState(false);
   const { user } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en" className="h-full">
       <head>
@@ -35,8 +40,14 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <Navbar user={user} />
       <body className="h-full">
+        <div className="hidden lg:flex">
+          <Navbar user={user} />
+        </div>
+        <div className="flex justify-end items-center bg-sky-600">
+          <Header open={open} setOpen={setOpen} />
+          <Overlay open={open} setOpen={setOpen} user={user} />
+        </div>
         <Outlet />
         <ScrollRestoration />
         <Scripts />

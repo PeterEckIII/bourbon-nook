@@ -143,6 +143,10 @@ export default function Join() {
     }
   }, [actionData]);
 
+  useEffect(() => {
+    emailRef?.current?.focus();
+  }, []);
+
   return (
     <div className="">
       <div className="">
