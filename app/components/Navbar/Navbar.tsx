@@ -102,7 +102,7 @@ export default function Navbar({ user }: NavbarProps) {
               />
             </svg>
             <br />
-            <span>Log In</span>
+            <span>Sign In</span>
           </button>
         )}
       </div>
