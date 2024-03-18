@@ -1,6 +1,11 @@
 import { useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
-import { redirect, type ActionFunctionArgs, json } from "@remix-run/node";
+import {
+  redirect,
+  type ActionFunctionArgs,
+  json,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
 import BottleForm from "~/components/Forms/BottleForm/BottleForm";
@@ -10,10 +15,20 @@ import { bottleSchema } from "~/utils/conform";
 
 const createBottleSchema = bottleSchema.omit({ userId: true });
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const userId = await requireUserId(request);
+  if (!userId) {
+    redirect("/login");
+  }
+};
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, { schema: createBottleSchema });
+
+  const imageCheck = formData.get("imageCheck");
+  console.log(`Image Check value: ${imageCheck}`);
 
   if (!submission.value || submission.intent !== "submit") {
     return json(submission);
@@ -62,7 +77,7 @@ export default function NewBottle() {
       <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-4 xl:flex-row 2xl:w-10/12">
         <Form
           method="POST"
-          className="m-4 p-2 flex flex-col max-w-[1000px]"
+          className="m-4 p-2 flex flex-col min-w-[1200px]"
           {...form.props}
         >
           <BottleForm inputs={payload} navigationState={navigation.state} />

@@ -19,7 +19,11 @@ import Status from "~/components/Status/Status";
 import { editBottle, getBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  const userId = await requireUserId(request);
+  if (!userId) {
+    return redirect("/login");
+  }
   invariant(params.bottleId, "Missing bottle ID");
   const bottle = await getBottle(params.bottleId);
   if (!bottle) {

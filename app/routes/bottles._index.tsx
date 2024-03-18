@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { LoaderFunctionArgs } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useFetcher,
@@ -19,13 +21,15 @@ import {
   useRef,
   useState,
 } from "react";
+import { redirect } from "remix-typedjson";
 
 import MyTable from "~/components/Table/GenericTable";
 import IndeterminateCheckbox from "~/components/Table/IndeterminateCheckbox";
 import ItemActions from "~/components/Table/ItemActions";
 import NewActionBar from "~/components/Table/NewActionBar";
 import Pagination from "~/components/Table/Pagination";
-import Tabs from "~/components/Table/Tabs";
+// import SkeletonCell from "~/components/Table/SkeletonCell";
+import { requireUserId } from "~/session.server";
 import { TableBottle } from "~/types/bottle";
 import { Limit } from "~/types/table";
 import useDebounce from "~/utils/useDebounce";
@@ -35,7 +39,6 @@ import { BottleSearchData } from "./api.search-bottles";
 
 const helper = createColumnHelper<TableBottle>();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: ColumnDef<TableBottle, any>[] = [
   helper.accessor("id", {
     id: "select",
@@ -172,7 +175,14 @@ const columns: ColumnDef<TableBottle, any>[] = [
   }),
 ];
 
-export default function Test() {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const userId = await requireUserId(request);
+  if (!userId) {
+    return redirect("/login");
+  }
+};
+
+export default function BottlesRoute() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [query, setQuery] = useState("");
@@ -190,21 +200,24 @@ export default function Test() {
     setQuery(e.target.value);
   };
 
-  const tabOptions = useMemo(
-    () => [
-      { id: "all", label: "All" },
-      { id: "opened", label: "Opened" },
-      { id: "closed", label: "Closed" },
-      { id: "finished", label: "Finished" },
-    ],
-    [],
-  );
-
   const { load, data, state } = useFetcher<BottleSearchData>();
 
   const bottles = useMemo(() => {
     return data?.bottles || [];
   }, [data]);
+
+  // const content = useMemo(() => {
+  //   state === "loading" ? Array(10).fill({}) : bottles;
+  // }, [state, bottles]);
+
+  // const skeletonColumns = useMemo(() => {
+  //   state === "loading"
+  //     ? columns.map((column) => ({
+  //         ...column,
+  //         cell: <SkeletonCell />,
+  //       }))
+  //     : columns;
+  // }, [state]);
 
   const isEmpty = state === "idle" && bottles.length === 0;
 
@@ -268,7 +281,6 @@ export default function Test() {
   return (
     <main className="flex flex-col items-center">
       <div className="w-10/12 flex flex-col justify-between shadow-lg p-4 m-4 rounded bg-gray-100">
-        <Tabs tabOptions={tabOptions} />
         <NewActionBar<TableBottle>
           query={query}
           handleQueryChange={handleQueryChange}

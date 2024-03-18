@@ -8,6 +8,7 @@ interface HeaderProps {
 export default function Header({ open, setOpen }: HeaderProps) {
   return (
     <button
+      aria-label="Open Menu"
       className="lg:hidden flex top-0 right-0 z-20 relative w-10 h-10 text-white focus:outline-none bg"
       onClick={() => setOpen(!open)}
     >

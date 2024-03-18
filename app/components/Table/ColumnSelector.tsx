@@ -8,7 +8,7 @@ import Toggle from "../Toggle/Toggle";
 
 interface ColumnSelectorProps<D> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getAllColumns: () => Column<D, any>[];
+  getAllColumns: () => Column<D, any>[] | null;
 }
 
 export default function ColumnSelector<D>({
@@ -46,7 +46,7 @@ export default function ColumnSelector<D>({
               <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-screen max-w-sm -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl">
                 <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5">
                   <div className="relative grid gap-8 bg-white p-7 lg:grid-cols-2">
-                    {getAllColumns().map((column) => {
+                    {getAllColumns()!.map((column) => {
                       let display = "";
                       if (column.id === "actions" || column.id === "select") {
                         display = column.id;

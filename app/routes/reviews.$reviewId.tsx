@@ -1,11 +1,20 @@
-import { LinksFunction } from "@remix-run/node";
+import { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { redirect } from "remix-typedjson";
 
 import ReviewPage from "~/components/ReviewPage/ReviewPage";
+import { requireUserId } from "~/session.server";
 import priceTagHref from "~/styles/Pricetag.css";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: priceTagHref },
 ];
+
+export const loader = ({ request }: LoaderFunctionArgs) => {
+  const userId = requireUserId(request);
+  if (!userId) {
+    return redirect("/login");
+  }
+};
 
 export default function ReviewId() {
   return (

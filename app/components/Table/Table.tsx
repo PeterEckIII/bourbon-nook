@@ -1,51 +1,56 @@
-import { type Table as ReactTable, flexRender } from "@tanstack/react-table";
+// /* eslint-disable jsx-a11y/no-static-element-interactions */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
 
-interface TableProps<T> {
-  table: ReactTable<T>;
-  caption: string;
-  summary?: string;
-}
+// import {
+//   // flexRender,
+//   TableState,
+//   Header,
+//   HeaderGroup,
+//   RowModel,
+// } from "@tanstack/react-table";
+// import { Dispatch, RefObject, SetStateAction, useMemo } from "react";
 
-export default function Table<T>({ table, caption, summary }: TableProps<T>) {
-  return (
-    <table
-      className="table w-full border-collapse overflow-x-auto"
-      aria-labelledby="caption"
-    >
-      <caption>
-        {caption}
-        {summary ? <span>{summary}</span> : null}
-      </caption>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id} scope="col" className="p-2 text-left">
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr
-            key={row.id}
-            className="odd:bg-gray-50 bg-gray-200 hover:bg-blue-200"
-          >
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className="px-4 py-1">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
+// interface TableProps<D> {
+//   getState: () => TableState;
+//   getFlatHeaders: () => Header<D, unknown>[];
+//   getTotalSize: () => number;
+//   getHeaderGroups: () => HeaderGroup<D>[];
+//   getRowModel: () => RowModel<D>;
+//   isEmpty: boolean;
+//   page: number;
+//   setPage: Dispatch<SetStateAction<number>>;
+//   totalItems: number;
+//   totalPages: number;
+//   tableRef: RefObject<HTMLTableElement>;
+//   tableHeight: string | number;
+// }
+
+// export default function Table<D extends Record<string, any>>({} // isEmpty,
+// // page,
+// // totalItems,
+// // totalPages,
+// // tableRef,
+// // tableHeight,
+// // getState,
+// // getFlatHeaders,
+// // getTotalSize,
+// // getHeaderGroups,
+// // getRowModel,
+// // setPage,
+// : TableProps<D>) {
+//   // const columnSizingInfo = getState().columnSizingInfo;
+
+//   // const columnSizeVars = useMemo(() => {
+//   //   if (columnSizingInfo) {
+//   //     const headers = getFlatHeaders();
+//   //     const colSizes: Record<string, number> = {};
+//   //     for (const header of headers) {
+//   //       colSizes[`--header-${header.id}-size`] = header.getSize();
+//   //       colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
+//   //     }
+//   //     return colSizes;
+//   //   }
+//   // }, [getFlatHeaders, columnSizingInfo]);
+
+//   return <div></div>;
+// }

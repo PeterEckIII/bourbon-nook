@@ -1,11 +1,15 @@
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { redirect } from "remix-typedjson";
 
 import { getReviews } from "~/models/review.server";
 import { requireUserId } from "~/session.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
+  if (!userId) {
+    redirect("/login");
+  }
 
   const reviews = await getReviews(userId);
 

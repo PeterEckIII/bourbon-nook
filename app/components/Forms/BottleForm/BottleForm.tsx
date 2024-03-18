@@ -203,15 +203,6 @@ export default function BottleForm({
 
         <Input
           type="text"
-          label="Image"
-          {...conform.input(inputs.imageUrl)}
-          placeholder="https://cloudinary.com/<your_account>/image.jpg"
-          error={inputs.imageUrl.error}
-          navigationState={navigationState}
-        />
-
-        <Input
-          type="text"
           label="Bottle opened on"
           {...conform.input(inputs.openDate)}
           placeholder="1/9/2022, N/A"
@@ -227,6 +218,20 @@ export default function BottleForm({
           error={inputs.killDate.error}
           navigationState={navigationState}
         />
+        <Input
+          type="text"
+          label="Image URL"
+          {...conform.input(inputs.imageUrl)}
+          placeholder="https://example.com/image.jpg"
+          error={inputs.imageUrl.error}
+          navigationState={navigationState}
+        />
+      </div>
+      <div className="mb-10 ml-8">
+        <label htmlFor="imageCheck" className="text-xl px-4">
+          <input type="checkbox" name="imageCheck" id="imageCheck" /> Add an
+          image?
+        </label>
       </div>
       <button
         type="submit"
