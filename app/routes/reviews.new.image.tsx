@@ -5,13 +5,22 @@ import {
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
+  LoaderFunctionArgs,
 } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
+import { redirect } from "remix-typedjson";
 
 import { requireUserId } from "~/session.server";
 import { uploadToCloudinary } from "~/utils/cloudinary.server";
 
 import { ImageUploadPayload } from "./api.upload-file";
+
+export const loader = ({ request }: LoaderFunctionArgs) => {
+  const userId = requireUserId(request);
+  if (!userId) {
+    return redirect("/login");
+  }
+};
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireUserId(request);

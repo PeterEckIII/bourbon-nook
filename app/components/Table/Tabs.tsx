@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 export interface TabOption {
   id: string;
@@ -7,6 +7,8 @@ export interface TabOption {
 
 interface TabProps {
   tabOptions: TabOption[];
+  chosenTab: TabOption;
+  setTabOption: Dispatch<SetStateAction<TabOption>>;
 }
 
 export default function Tabs({ tabOptions }: TabProps) {

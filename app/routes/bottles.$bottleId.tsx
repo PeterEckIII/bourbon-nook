@@ -1,10 +1,17 @@
 import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { redirect } from "remix-typedjson";
 import invariant from "tiny-invariant";
 
 import { getBottle } from "~/models/bottle.server";
+import { requireUserId } from "~/session.server";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  const userId = await requireUserId(request);
+  if (!userId) {
+    redirect("/login");
+  }
+
   invariant(
     params.bottleId,
     "params.bottleId is required, but missing in the URL parameters",

@@ -4,11 +4,6 @@ import { searchBottles } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 import type { TableBottle } from "~/types/bottle";
 
-// type TableBottleWithoutCreatedAt = Omit<TableBottle, "createdAt">;
-// type FormattedTableBottle = TableBottleWithoutCreatedAt & {
-//   createdAt: Date | null;
-// };
-
 export interface BottleSearchData {
   bottles: TableBottle[] | [];
   bottleCount: number;
@@ -19,7 +14,7 @@ export interface BottleSearchData {
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
   const url = new URL(request.url);
-  const query = url.searchParams.get("query") || "";
+  const query = url.searchParams.get("query")?.toLowerCase() || "";
   const limit = Number(url.searchParams.get("limit"));
   const page = Number(url.searchParams.get("page"));
   const offset = page * limit;

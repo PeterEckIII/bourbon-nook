@@ -1,6 +1,11 @@
 import { conform, useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
-import { redirect, json, type ActionFunctionArgs } from "@remix-run/node";
+import {
+  redirect,
+  json,
+  type ActionFunctionArgs,
+  LoaderFunctionArgs,
+} from "@remix-run/node";
 import {
   Form,
   useActionData,
@@ -13,6 +18,13 @@ import {
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 import { bottleSchema } from "~/utils/conform";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const userId = await requireUserId(request);
+  if (!userId) {
+    redirect("/login");
+  }
+};
 
 // export const action = async ({ request }: ActionFunctionArgs) => {
 //   const userId = await requireUserId(request);

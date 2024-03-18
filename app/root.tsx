@@ -12,12 +12,12 @@ import {
 } from "@remix-run/react";
 import { useState } from "react";
 
-import Header from "~/components/FullMenu/Header";
+import Header from "~/components/NewMenu/Header";
 import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
 
-import Navbar from "./components/FullMenu/Navbar";
-import Overlay from "./components/FullMenu/Overlay";
+import Navbar from "./components/NewMenu/Navbar";
+import Overlay from "./components/NewMenu/Overlay";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },

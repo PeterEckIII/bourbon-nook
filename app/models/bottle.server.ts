@@ -41,36 +41,43 @@ export const searchBottles = async (
         {
           name: {
             contains: query,
+            mode: "insensitive",
           },
         },
         {
           type: {
             contains: query,
+            mode: "insensitive",
           },
         },
         {
           distiller: {
             contains: query,
+            mode: "insensitive",
           },
         },
         {
           producer: {
             contains: query,
+            mode: "insensitive",
           },
         },
         {
           country: {
             contains: query,
+            mode: "insensitive",
           },
         },
         {
           region: {
             contains: query,
+            mode: "insensitive",
           },
         },
         {
           year: {
             contains: query,
+            mode: "insensitive",
           },
         },
       ],
