@@ -18,8 +18,9 @@ const createBottleSchema = bottleSchema.omit({ userId: true });
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
   if (!userId) {
-    redirect("/login");
+    return redirect("/login");
   }
+  return null;
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {

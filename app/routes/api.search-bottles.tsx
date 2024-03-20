@@ -1,6 +1,6 @@
 import { LoaderFunction, json } from "@remix-run/node";
 
-import { searchBottles } from "~/models/bottle.server";
+import { getTotalBottles, searchBottles } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 import type { TableBottle } from "~/types/bottle";
 
@@ -21,7 +21,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   try {
     const bottles = await searchBottles(userId, query, offset, limit);
-    const bottleCount = bottles.length;
+    const bottleCount = await getTotalBottles({ userId });
 
     const totalPages = Math.ceil(bottleCount / limit);
 

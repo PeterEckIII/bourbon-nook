@@ -7,10 +7,13 @@ import {
 } from "@remix-run/react";
 import {
   ColumnDef,
+  PaginationState,
   RowSelectionState,
+  SortingState,
   VisibilityState,
   createColumnHelper,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -23,15 +26,14 @@ import {
 } from "react";
 import { redirect } from "remix-typedjson";
 
+import ActionBar from "~/components/Table/ActionBar";
 import MyTable from "~/components/Table/GenericTable";
 import IndeterminateCheckbox from "~/components/Table/IndeterminateCheckbox";
 import ItemActions from "~/components/Table/ItemActions";
-import NewActionBar from "~/components/Table/NewActionBar";
-import Pagination from "~/components/Table/Pagination";
 // import SkeletonCell from "~/components/Table/SkeletonCell";
+import Pagination from "~/components/Table/Pagination/Pagination";
 import { requireUserId } from "~/session.server";
 import { TableBottle } from "~/types/bottle";
-import { Limit } from "~/types/table";
 import useDebounce from "~/utils/useDebounce";
 import { useEventListener } from "~/utils/useEventListener";
 
@@ -180,15 +182,21 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (!userId) {
     return redirect("/login");
   }
+  return null;
 };
 
-export default function BottlesRoute() {
+export default function BottleIndexRoute() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "createdAt", desc: true },
+  ]);
   const [query, setQuery] = useState("");
   const searchTerm = useDebounce(query, 300);
-  const [limit, setLimit] = useState<Limit>(10);
-  const [page, setPage] = useState(0);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [tableHeight, setTableHeight] = useState<string | number>("auto");
   const tableRef = useRef<HTMLTableElement | null>(null);
 
@@ -206,19 +214,6 @@ export default function BottlesRoute() {
     return data?.bottles || [];
   }, [data]);
 
-  // const content = useMemo(() => {
-  //   state === "loading" ? Array(10).fill({}) : bottles;
-  // }, [state, bottles]);
-
-  // const skeletonColumns = useMemo(() => {
-  //   state === "loading"
-  //     ? columns.map((column) => ({
-  //         ...column,
-  //         cell: <SkeletonCell />,
-  //       }))
-  //     : columns;
-  // }, [state]);
-
   const isEmpty = state === "idle" && bottles.length === 0;
 
   useEffect(() => {
@@ -226,8 +221,10 @@ export default function BottlesRoute() {
   }, [load]);
 
   useEffect(() => {
-    load(`/api/search-bottles?query=${searchTerm}&limit=${limit}&page=${page}`);
-  }, [load, searchTerm, limit, page]);
+    load(
+      `/api/search-bottles?query=${searchTerm}&limit=${pagination.pageSize}&page=${pagination.pageIndex}`,
+    );
+  }, [load, searchTerm, pagination]);
 
   useEventListener("keydown", (event) => {
     if (event.key === "Tab" && rowSelection && setRowSelection) {
@@ -256,37 +253,53 @@ export default function BottlesRoute() {
     getTotalSize,
     getState,
     getAllColumns,
+    getPageCount,
+    previousPage,
+    getCanPreviousPage,
+    nextPage,
+    getCanNextPage,
+    setPageIndex,
+    setPageSize,
   } = useReactTable({
     data: bottles,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     columnResizeMode: "onChange",
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     getRowId: (row) => row.id,
+    pageCount: data?.totalPages || 0,
+    manualPagination: true,
     state: {
       rowSelection,
       columnVisibility,
+      sorting,
+      pagination,
     },
   });
 
   useEffect(() => {
-    load(`/api/search-bottles?query=&limit=${limit}&page=0`);
-  }, [load, limit]);
+    load(`/api/search-bottles?query=&limit=${pagination.pageSize}&page=0`);
+  }, [load, pagination]);
 
   useEffect(() => {
-    load(`/api/search-bottles?query=${searchTerm}&limit=${limit}&page=${page}`);
-  }, [load, searchTerm, limit, page]);
+    load(
+      `/api/search-bottles?query=${searchTerm}&limit=${pagination.pageSize}&page=${pagination.pageIndex}`,
+    );
+  }, [load, searchTerm, pagination]);
 
   return (
     <main className="flex flex-col items-center">
       <div className="w-10/12 flex flex-col justify-between shadow-lg p-4 m-4 rounded bg-gray-100">
-        <NewActionBar<TableBottle>
+        <ActionBar<TableBottle>
           query={query}
           handleQueryChange={handleQueryChange}
           getAllColumns={getAllColumns}
-          limit={limit}
-          setLimit={setLimit}
+          setPageSize={setPageSize}
+          pageSize={pagination.pageSize}
         />
         <MyTable<TableBottle>
           getState={getState}
@@ -295,20 +308,22 @@ export default function BottlesRoute() {
           getHeaderGroups={getHeaderGroups}
           getRowModel={getRowModel}
           isEmpty={isEmpty}
-          page={page}
-          setPage={setPage}
+          page={pagination.pageIndex}
           totalItems={data?.bottleCount || 0}
           totalPages={data?.totalPages || 0}
           tableRef={tableRef as RefObject<HTMLTableElement>}
           tableHeight={tableHeight}
         />
         <Pagination
-          page={page}
-          setPage={(nextPage) => setPage(nextPage)}
-          totalItems={data?.bottleCount || 0}
-          totalPages={data?.totalPages || 0}
-          onFirst={() => setPage(0)}
-          onLast={() => setPage(data?.totalPages || 0)}
+          pageIndex={pagination.pageIndex}
+          resultsShown={bottles.length}
+          itemCount={data?.bottleCount || 0}
+          setPageIndex={setPageIndex}
+          getCanPreviousPage={getCanPreviousPage}
+          previousPage={previousPage}
+          getCanNextPage={getCanNextPage}
+          nextPage={nextPage}
+          getPageCount={getPageCount}
         />
       </div>
     </main>

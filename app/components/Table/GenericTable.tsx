@@ -7,7 +7,11 @@ import {
   HeaderGroup,
   RowModel,
 } from "@tanstack/react-table";
-import { Dispatch, RefObject, SetStateAction, useMemo } from "react";
+import { RefObject, useMemo } from "react";
+
+import FilterDown from "../Icons/FilterDown";
+import FilterNeutral from "../Icons/FilterNeutral";
+import FilterUp from "../Icons/FilterUp";
 
 interface MyTableProps<D> {
   getState: () => TableState;
@@ -17,7 +21,6 @@ interface MyTableProps<D> {
   getRowModel: () => RowModel<D>;
   isEmpty: boolean;
   page: number;
-  setPage: Dispatch<SetStateAction<number>>;
   totalItems: number;
   totalPages: number;
   tableRef: RefObject<HTMLTableElement>;
@@ -61,7 +64,6 @@ export default function MyTable<D extends Record<string, any>>({
               {getHeaderGroups().map((headerGroup) => (
                 <div key={headerGroup.id} className="flex items-center">
                   {headerGroup.headers.map((header) => {
-                    // const { size, minSize, maxSize } = header.column.columnDef;
                     return (
                       <th
                         key={header.id}
@@ -71,14 +73,34 @@ export default function MyTable<D extends Record<string, any>>({
                         style={{
                           width: `calc(var(--header-${header?.id}-size) * 1px)`,
                         }}
-
-                        // style={getTableCellStyle({ size, minSize, maxSize })}
                       >
-                        <span>
+                        <span
+                          className={
+                            header.column.getCanSort()
+                              ? "cursor-pointer select-none flex min-w-[36px]"
+                              : ""
+                          }
+                          title={
+                            header.column.getCanSort()
+                              ? header.column.getNextSortingOrder() === "asc"
+                                ? "Sort ascending"
+                                : header.column.getNextSortingOrder() === "desc"
+                                ? "Sort descending"
+                                : "Clear sort"
+                              : undefined
+                          }
+                          onClick={header.column.getToggleSortingHandler()}
+                          onKeyDown={header.column.getToggleSortingHandler()}
+                        >
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
                           )}
+                          {{
+                            asc: <FilterUp />,
+                            desc: <FilterDown />,
+                            default: <FilterNeutral />,
+                          }[header.column.getIsSorted() as string] ?? null}
                         </span>
                         <div
                           onDoubleClick={() => header.column.resetSize()}
@@ -110,7 +132,6 @@ export default function MyTable<D extends Record<string, any>>({
                 >
                   <div className="flex">
                     {row.getVisibleCells().map((cell) => {
-                      // const { size, minSize, maxSize } = cell.column.columnDef;
                       return (
                         <td
                           key={cell.id}
@@ -120,7 +141,6 @@ export default function MyTable<D extends Record<string, any>>({
                           style={{
                             width: `calc(var(--col-${cell.column?.id}-size) * 1px)`,
                           }}
-                          // style={getTableCellStyle({ size, minSize, maxSize })}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
