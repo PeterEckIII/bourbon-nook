@@ -1,14 +1,12 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
-import type { Limit } from "~/types/table";
-
 import Check from "../Icons/Check";
 import ChevronDown from "../Icons/ChevronDown";
 
 interface PageLimitProps {
-  limit: Limit;
-  setLimit: (value: Limit) => void;
+  limit: number;
+  setLimit: (value: number) => void;
 }
 
 export default function PageLimit({ limit, setLimit }: PageLimitProps) {
@@ -29,7 +27,7 @@ export default function PageLimit({ limit, setLimit }: PageLimitProps) {
             leaveTo="opacity-0"
           >
             <Listbox.Options className="z-50 absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-gray-300 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {[10, 25, 50, 100, 250].map((num, index) => (
+              {[10, 25, 50, 75, 100, 125, 200, 250].map((num, index) => (
                 <Listbox.Option
                   key={index}
                   className={({ active }) =>

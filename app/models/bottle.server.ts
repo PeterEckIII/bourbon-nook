@@ -106,6 +106,15 @@ export const searchBottles = async (
   return JSON.parse(JSON.stringify(bottlesMatchingSearchPhrase));
 };
 
+export const getTotalBottles = async ({ userId }: { userId: user["id"] }) => {
+  const numberOfBottles = await prisma.bottle.count({
+    where: {
+      userId,
+    },
+  });
+  return numberOfBottles;
+};
+
 export const filterBottlesForTable = async ({
   userId,
   query,
@@ -209,43 +218,6 @@ export const filterBottlesForTable = async ({
     },
   });
   return bottles;
-};
-
-export const getTotalBottles = async ({
-  userId,
-  query,
-}: {
-  userId: user["id"];
-  query?: string;
-}) => {
-  const numberOfBottles = await prisma.bottle.count({
-    where: {
-      userId,
-      OR: [
-        {
-          name: {
-            contains: query,
-          },
-        },
-        {
-          distiller: {
-            contains: query,
-          },
-        },
-        {
-          producer: {
-            contains: query,
-          },
-        },
-        {
-          type: {
-            contains: query,
-          },
-        },
-      ],
-    },
-  });
-  return numberOfBottles;
 };
 
 export const getBottlesForCombobox = async (userId: string, query: string) => {
