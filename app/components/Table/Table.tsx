@@ -1,56 +1,65 @@
-// /* eslint-disable jsx-a11y/no-static-element-interactions */
-// /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useAsyncValue, useNavigation } from "@remix-run/react";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { useMemo } from "react";
 
-// import {
-//   // flexRender,
-//   TableState,
-//   Header,
-//   HeaderGroup,
-//   RowModel,
-// } from "@tanstack/react-table";
-// import { Dispatch, RefObject, SetStateAction, useMemo } from "react";
+interface TableProps<T> {
+  data: T[];
+  columns: ColumnDef<T, any>[];
+}
 
-// interface TableProps<D> {
-//   getState: () => TableState;
-//   getFlatHeaders: () => Header<D, unknown>[];
-//   getTotalSize: () => number;
-//   getHeaderGroups: () => HeaderGroup<D>[];
-//   getRowModel: () => RowModel<D>;
-//   isEmpty: boolean;
-//   page: number;
-//   setPage: Dispatch<SetStateAction<number>>;
-//   totalItems: number;
-//   totalPages: number;
-//   tableRef: RefObject<HTMLTableElement>;
-//   tableHeight: string | number;
-// }
+export default function Table<T>({ columns }: TableProps<T>) {
+  const value = useAsyncValue();
+  const navigation = useNavigation();
 
-// export default function Table<D extends Record<string, any>>({} // isEmpty,
-// // page,
-// // totalItems,
-// // totalPages,
-// // tableRef,
-// // tableHeight,
-// // getState,
-// // getFlatHeaders,
-// // getTotalSize,
-// // getHeaderGroups,
-// // getRowModel,
-// // setPage,
-// : TableProps<D>) {
-//   // const columnSizingInfo = getState().columnSizingInfo;
+  const isLoading = navigation.state === "loading";
 
-//   // const columnSizeVars = useMemo(() => {
-//   //   if (columnSizingInfo) {
-//   //     const headers = getFlatHeaders();
-//   //     const colSizes: Record<string, number> = {};
-//   //     for (const header of headers) {
-//   //       colSizes[`--header-${header.id}-size`] = header.getSize();
-//   //       colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
-//   //     }
-//   //     return colSizes;
-//   //   }
-//   // }, [getFlatHeaders, columnSizingInfo]);
+  const tableData = useMemo(
+    () => (isLoading ? Array(10).fill({}) : value),
+    [isLoading, value],
+  ) as T[];
 
-//   return <div></div>;
-// }
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+  return (
+    <div className="p-4">
+      <table>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

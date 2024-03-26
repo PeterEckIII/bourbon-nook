@@ -1,4 +1,5 @@
 import { LoaderFunction, json } from "@remix-run/node";
+import { redirect } from "remix-typedjson";
 
 import { getTotalBottles, searchBottles } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
@@ -13,6 +14,9 @@ export interface BottleSearchData {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
+  if (!userId) {
+    redirect("/login");
+  }
   const url = new URL(request.url);
   const query = url.searchParams.get("query")?.toLowerCase() || "";
   const limit = Number(url.searchParams.get("limit"));

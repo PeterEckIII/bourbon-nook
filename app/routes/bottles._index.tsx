@@ -24,13 +24,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { redirect } from "remix-typedjson";
 
 import ActionBar from "~/components/Table/ActionBar";
 import MyTable from "~/components/Table/GenericTable";
 import IndeterminateCheckbox from "~/components/Table/IndeterminateCheckbox";
 import ItemActions from "~/components/Table/ItemActions";
-// import SkeletonCell from "~/components/Table/SkeletonCell";
 import Pagination from "~/components/Table/Pagination/Pagination";
 import { requireUserId } from "~/session.server";
 import { TableBottle } from "~/types/bottle";
@@ -78,14 +76,17 @@ const columns: ColumnDef<TableBottle, any>[] = [
   helper.accessor("createdAt", {
     header: "Added on",
     cell: (props) => {
-      const date = new Date(props.getValue());
-      // @ts-expect-error Prisma is stupid -- date errors, but any casting of it to string crashes app
-      const formattedDate = new Intl.DateTimeFormat(date, {
-        month: "2-digit",
-        day: "2-digit",
-        year: "2-digit",
-      });
-      return <span>{formattedDate.format()}</span>;
+      const val = props.getValue();
+      if (val) {
+        const date = new Date(val);
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "2-digit",
+        });
+        return <span>{formattedDate.format(date)}</span>;
+      }
+      return <span>null</span>;
     },
     footer: (props) => props.column.id,
     enableResizing: true,
@@ -178,10 +179,7 @@ const columns: ColumnDef<TableBottle, any>[] = [
 ];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const userId = await requireUserId(request);
-  if (!userId) {
-    return redirect("/login");
-  }
+  await requireUserId(request);
   return null;
 };
 
@@ -215,16 +213,6 @@ export default function BottleIndexRoute() {
   }, [data]);
 
   const isEmpty = state === "idle" && bottles.length === 0;
-
-  useEffect(() => {
-    load("/api/search-bottles?query=&limit=10&page=0");
-  }, [load]);
-
-  useEffect(() => {
-    load(
-      `/api/search-bottles?query=${searchTerm}&limit=${pagination.pageSize}&page=${pagination.pageIndex}`,
-    );
-  }, [load, searchTerm, pagination]);
 
   useEventListener("keydown", (event) => {
     if (event.key === "Tab" && rowSelection && setRowSelection) {
