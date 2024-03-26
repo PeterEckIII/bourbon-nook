@@ -59,50 +59,96 @@ export async function getReviewById(reviewId: review["id"]) {
   });
 }
 
-export const getTotalReviews = async ({
-  userId,
-  query,
-}: {
-  userId: user["id"];
-  query?: string;
-}) => {
-  const numberOfReviews = await prisma.review.count({
+export const searchReviews = async (
+  userId: user["id"],
+  query: string,
+  skip: number,
+  take: number,
+) => {
+  const reviewsMatchingSearchPhrase = await prisma.review.findMany({
     where: {
       userId,
-      bottle: {
-        OR: [
-          {
+      OR: [
+        {
+          bottle: {
             name: {
               contains: query,
             },
           },
-          {
+        },
+        {
+          bottle: {
             distiller: {
               contains: query,
             },
           },
-          {
+        },
+        {
+          bottle: {
             producer: {
               contains: query,
             },
           },
-          {
+        },
+        {
+          bottle: {
             type: {
               contains: query,
             },
           },
-          {
+        },
+        {
+          bottle: {
             country: {
               contains: query,
             },
           },
-          {
+        },
+        {
+          bottle: {
             region: {
               contains: query,
             },
           },
-        ],
+        },
+      ],
+    },
+    skip: skip || 0,
+    take: take,
+    select: {
+      date: true,
+      id: true,
+      overallRating: true,
+      value: true,
+      createdAt: true,
+      bottle: {
+        select: {
+          id: true,
+          name: true,
+          status: true,
+          type: true,
+          distiller: true,
+          producer: true,
+          price: true,
+          country: true,
+          region: true,
+          age: true,
+          alcoholPercent: true,
+          batch: true,
+          barrel: true,
+          year: true,
+          createdAt: true,
+        },
       },
+    },
+  });
+  return JSON.parse(JSON.stringify(reviewsMatchingSearchPhrase));
+};
+
+export const getTotalReviews = async ({ userId }: { userId: user["id"] }) => {
+  const numberOfReviews = await prisma.review.count({
+    where: {
+      userId,
     },
   });
   return numberOfReviews;

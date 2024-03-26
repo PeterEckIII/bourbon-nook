@@ -9,6 +9,7 @@ import {
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
 import BottleForm from "~/components/Forms/BottleForm/BottleForm";
+import Spinner from "~/components/Icons/Spinner";
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 import { bottleSchema } from "~/utils/conform";
@@ -16,10 +17,7 @@ import { bottleSchema } from "~/utils/conform";
 const createBottleSchema = bottleSchema.omit({ userId: true });
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const userId = await requireUserId(request);
-  if (!userId) {
-    return redirect("/login");
-  }
+  await requireUserId(request);
   return null;
 };
 
@@ -82,6 +80,16 @@ export default function NewBottle() {
           {...form.props}
         >
           <BottleForm inputs={payload} navigationState={navigation.state} />
+          <button className="bg-blue-500 text-white p-4 m-2 w-1/12 self-end rounded">
+            {navigation.formAction === "/bottles/new" ? (
+              <div className="flex justify-center">
+                <Spinner />
+                Submitting...
+              </div>
+            ) : (
+              <div className="flex justify-center">Submit</div>
+            )}
+          </button>
         </Form>
       </div>
     </div>

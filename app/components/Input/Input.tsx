@@ -28,7 +28,7 @@ export default function Input({
     <div className="mt-5 w-full lg:w-1/2 xl:w-1/3">
       <label
         className="font-semibold text-lg text-gray-600 block mb-2"
-        htmlFor={label}
+        htmlFor={`${name}-field`}
       >
         {label}
       </label>
@@ -40,7 +40,7 @@ export default function Input({
         style={{ borderColor: error ? "red" : "" }}
         defaultValue={defaultValue ?? ""}
         type={type}
-        id={label}
+        id={`${name}-field`}
         name={name}
         value={value}
         placeholder={placeholder}

@@ -2,8 +2,6 @@ import { parse } from "@conform-to/zod";
 import { json } from "@remix-run/node";
 import { TypeOf, ZodType, z } from "zod";
 
-import { getUserByEmail, getUserByUsername } from "~/models/user.server";
-
 export type ErrorObject = Record<string, string>;
 
 export function validateSchema<
@@ -41,23 +39,23 @@ export async function handleSubmission<
   return { result, submission };
 }
 
-export const userSchema = z.object({
-  username: z.string().refine(async (i) => {
-    const userExists = await getUserByUsername(i);
-    if (userExists) return false;
-    if (!userExists) return true;
-  }),
-  email: z
-    .string()
-    .email()
-    .refine(async (i) => {
-      const emailExists = await getUserByEmail(i);
-      if (emailExists) return false;
-      if (!emailExists) return true;
-    }),
-  password: z.string(),
-  confirmPassword: z.string(),
-});
+// export const userSchema = z.object({
+//   username: z.string().refine(async (i) => {
+//     const userExists = await getUserByUsername(i);
+//     if (userExists) return false;
+//     if (!userExists) return true;
+//   }),
+//   email: z
+//     .string()
+//     .email()
+//     .refine(async (i) => {
+//       const emailExists = await getUserByEmail(i);
+//       if (emailExists) return false;
+//       if (!emailExists) return true;
+//     }),
+//   password: z.string(),
+//   confirmPassword: z.string(),
+// });
 
 export const bottleSchema = z.object({
   userId: z.string(),

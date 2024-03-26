@@ -230,15 +230,9 @@ export default function BottleForm({
       <div className="mb-10 ml-8">
         <label htmlFor="imageCheck" className="text-xl px-4">
           <input type="checkbox" name="imageCheck" id="imageCheck" /> Add an
-          image?
+          image of this bottle?
         </label>
       </div>
-      <button
-        type="submit"
-        className="bg-blue-500 text-white px-4 py-2 my-4 w-96"
-      >
-        Submit
-      </button>
     </>
   );
 }
