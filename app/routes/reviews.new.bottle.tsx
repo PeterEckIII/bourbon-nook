@@ -12,8 +12,8 @@ import BottleForm from "~/components/Forms/BottleForm/BottleForm";
 import Spinner from "~/components/Icons/Spinner";
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
-import { bottleSchema } from "~/utils/conform";
 import { generateCode, saveToRedis } from "~/utils/redis.server";
+import { bottleSchema } from "~/utils/schemas";
 
 const createBottleSchema = bottleSchema.omit({ userId: true });
 

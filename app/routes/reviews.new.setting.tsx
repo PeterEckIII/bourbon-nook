@@ -4,8 +4,8 @@ import { Form } from "@remix-run/react";
 import { redirect } from "remix-typedjson";
 
 import { requireUserId } from "~/session.server";
-import { settingSchema } from "~/utils/conform";
 import { saveToRedis } from "~/utils/redis.server";
+import { settingSchema } from "~/utils/schemas";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const rid = new URL(request.url).searchParams.get("rid") ?? "";
