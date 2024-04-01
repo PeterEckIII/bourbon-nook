@@ -2,9 +2,8 @@ import { Fieldset, conform } from "@conform-to/react";
 
 import Input from "~/components/Input/Input";
 import Status from "~/components/Status/Status";
-import { Options } from "~/types/options";
 
-type Inputs = Fieldset<{
+export type Inputs = Fieldset<{
   name: string;
   status: "CLOSED" | "OPENED" | "FINISHED";
   type: string;
@@ -32,21 +31,6 @@ interface BottleFormProps {
   navigationState: "idle" | "submitting" | "loading";
 }
 
-const options: Options = [
-  {
-    value: "CLOSED",
-    label: "Closed",
-  },
-  {
-    value: "OPENED",
-    label: "Opened",
-  },
-  {
-    value: "FINISHED",
-    label: "Finished",
-  },
-];
-
 export default function BottleForm({
   inputs,
   navigationState,
@@ -63,7 +47,7 @@ export default function BottleForm({
           navigationState={navigationState}
         />
         <div className="mb-2 flex w-full px-3">
-          <Status options={options} />
+          <Status />
         </div>
 
         <Input

@@ -11,12 +11,10 @@ import {
 } from "@remix-run/react";
 import { useState } from "react";
 
-import Header from "~/components/NewMenu/Header";
 import { getUser } from "~/session.server";
 import "~/tailwind.css";
 
-import Navbar from "./components/NewMenu/Navbar";
-import Overlay from "./components/NewMenu/Overlay";
+import Menu from "./components/Menu/Menu";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ user: await getUser(request) });
@@ -35,13 +33,7 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <div className="hidden lg:flex">
-          <Navbar user={user} />
-        </div>
-        <div className="flex justify-end items-center bg-sky-600">
-          <Header open={open} setOpen={setOpen} />
-          <Overlay open={open} setOpen={setOpen} user={user} />
-        </div>
+        <Menu user={user} open={open} setOpen={setOpen} />
         <Outlet />
         <ScrollRestoration />
         <LiveReload />

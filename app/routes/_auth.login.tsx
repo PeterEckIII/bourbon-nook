@@ -4,9 +4,16 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useNavigation,
+  useSearchParams,
+} from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
+import Button from "~/components/Button/Button";
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
@@ -65,6 +72,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export const meta: MetaFunction = () => [{ title: "Login" }];
 
 export default function LoginPage() {
+  const navigation = useNavigation();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/bottles";
   const actionData = useActionData<typeof action>();
@@ -139,12 +147,14 @@ export default function LoginPage() {
           </div>
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
+          <Button
+            primary
+            label="Log in"
             type="submit"
-            className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Log in
-          </button>
+            loading={navigation.state === "submitting"}
+            loadingText="Logging in..."
+            onClick={() => console.log("submitting")}
+          />
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input

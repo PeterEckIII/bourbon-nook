@@ -25,7 +25,7 @@ export default function Input({
   navigationState,
 }: InputProps) {
   return (
-    <div className="mt-5 w-full lg:w-1/2 xl:w-1/3">
+    <div className="mt-5 w-full lg:w-1/2 xl:w-1/3 flex flex-col">
       <label
         className="font-semibold text-lg text-gray-600 block mb-2"
         htmlFor={`${name}-field`}
@@ -47,7 +47,7 @@ export default function Input({
         disabled={disabled}
       />
       {error ?? (
-        <div>
+        <div className="block">
           <ValidationMessage
             isSubmitting={navigationState === "submitting"}
             error={error ? error : ""}

@@ -8,8 +8,8 @@ import {
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
+import Button from "~/components/Button/Button";
 import BottleForm from "~/components/Forms/BottleForm/BottleForm";
-import Spinner from "~/components/Icons/Spinner";
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 import { bottleSchema } from "~/utils/schemas";
@@ -80,16 +80,14 @@ export default function NewBottle() {
           {...form.props}
         >
           <BottleForm inputs={payload} navigationState={navigation.state} />
-          <button className="bg-blue-500 text-white p-4 m-2 w-1/12 self-end rounded">
-            {navigation.formAction === "/bottles/new" ? (
-              <div className="flex justify-center">
-                <Spinner />
-                Submitting...
-              </div>
-            ) : (
-              <div className="flex justify-center">Submit</div>
-            )}
-          </button>
+          <Button
+            primary
+            label="Submit"
+            onClick={() => console.log("Submit")}
+            type="submit"
+            loading={navigation.formAction === "/bottles/new"}
+            loadingText="Submitting..."
+          />
         </Form>
       </div>
     </div>

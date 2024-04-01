@@ -8,8 +8,8 @@ import {
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
+import Button from "~/components/Button/Button";
 import BottleForm from "~/components/Forms/BottleForm/BottleForm";
-import Spinner from "~/components/Icons/Spinner";
 import { createBottle } from "~/models/bottle.server";
 import { requireUserId } from "~/session.server";
 import { generateCode, saveToRedis } from "~/utils/redis.server";
@@ -82,23 +82,14 @@ export default function NewReviewBottle() {
           {...form.props}
         >
           <BottleForm inputs={payload} navigationState={navigation.state} />
-          <button
-            className="bg-blue-500 text-white p-4 m-2 w-1/12 rounded mb-8"
+          <Button
+            primary
             type="submit"
-          >
-            {navigation.state === "submitting" ? (
-              <div className="flex justify-center">
-                <div>
-                  <Spinner />
-                </div>
-                <div>Processing....</div>
-              </div>
-            ) : (
-              <div className="flex justify-center">
-                <div>Next</div>
-              </div>
-            )}
-          </button>
+            loading={navigation.state === "submitting"}
+            loadingText="Loading..."
+            label="Next"
+            onClick={() => console.log(`submitting`)}
+          />
         </Form>
       </div>
     </div>

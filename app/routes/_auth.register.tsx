@@ -1,6 +1,7 @@
 import { type ActionFunctionArgs, json } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, useNavigation } from "@remix-run/react";
 
+import Button from "~/components/Button/Button";
 import { validateEmail } from "~/utils";
 
 interface ActionData {
@@ -41,12 +42,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Register() {
+  const navigation = useNavigation();
   return (
     <Form action="post">
       <input type="email" name="email" />
       <input type="password" name="password" />
       <input type="confirmPassword" name="confirmPassword" />
-      <button type="submit">Submit</button>
+      <Button
+        primary
+        label="Submit"
+        type="submit"
+        loading={navigation.state === "submitting"}
+        loadingText="Creating..."
+        onClick={() => console.log("submitting")}
+      />
     </Form>
   );
 }

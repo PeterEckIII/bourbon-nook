@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import { mergeConfig, mergeAlias } from "vite";
 
 const config: StorybookConfig = {
   stories: [
@@ -11,13 +12,29 @@ const config: StorybookConfig = {
     "@storybook/addon-essentials",
     "@storybook/addon-onboarding",
     "@storybook/addon-interactions",
+    "@storybook/addon-a11y",
+    "@storybook/addon-actions",
   ],
+  core: {},
   framework: {
     name: "@storybook/react-vite",
-    options: {},
+    options: {
+      builder: {
+        viteConfigPath: "./.storybook/sbvite.config.ts",
+      },
+    },
   },
   docs: {
     autodocs: "tag",
+  },
+  async viteFinal(config) {
+    return mergeConfig(config, {
+      ...config,
+      resolve: {
+        ...config.resolve,
+        alias: [{ find: "~", replacement: "/app" }],
+      },
+    });
   },
 };
 export default config;
