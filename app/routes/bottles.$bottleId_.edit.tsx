@@ -14,6 +14,7 @@ import {
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
+import Button from "~/components/Button/Button";
 import Input from "~/components/Input/Input";
 import Status from "~/components/Status/Status";
 import { editBottle, getBottle } from "~/models/bottle.server";
@@ -123,22 +124,7 @@ export default function EditBottle() {
         onChange={(e) => console.log(e.target.value)}
         navigationState={navigation.state}
       />
-      <Status
-        options={[
-          {
-            value: "CLOSED",
-            label: "Closed",
-          },
-          {
-            value: "OPENED",
-            label: "Opened",
-          },
-          {
-            value: "FINISHED",
-            label: "Finished",
-          },
-        ]}
-      />
+      <Status />
       <Input
         type="text"
         label="Type"
@@ -324,10 +310,20 @@ export default function EditBottle() {
         navigationState={navigation.state}
       />
       <p>
-        <button type="submit">Save</button>
-        <button onClick={() => navigate(-1)} type="button">
-          Cancel
-        </button>
+        <Button
+          primary
+          label="Save"
+          type="submit"
+          onClick={() => console.log("submitting")}
+          loading={navigation.state === "submitting"}
+          loadingText="Saving..."
+        />
+        <Button
+          onClick={() => navigate(-1)}
+          type="button"
+          label="Cancel"
+          primary={false}
+        />
       </p>
     </Form>
   );

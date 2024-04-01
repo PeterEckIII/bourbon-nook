@@ -7,9 +7,10 @@ import {
   unstable_parseMultipartFormData,
   LoaderFunctionArgs,
 } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { redirect } from "remix-typedjson";
 
+import Button from "~/components/Button/Button";
 import { requireUserId } from "~/session.server";
 import { uploadToCloudinary } from "~/utils/cloudinary.server";
 
@@ -56,13 +57,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function NewReviewImage() {
   const data = useActionData<typeof action>();
+  const navigation = useNavigation();
 
   return (
     <div>
       <Form method="POST">
         <label htmlFor="img-src">Image to upload</label>
         <input type="file" id="img-src" name="img" accept="image/*" />
-        <button type="submit">Upload</button>
+        <Button
+          type="submit"
+          label="Upload"
+          primary
+          loading={navigation.state === "submitting"}
+          loadingText="Uploading..."
+          onClick={() => console.log("Uploading image")}
+        />
       </Form>
       {data?.error ? <h2>{data.error}</h2> : null}
 

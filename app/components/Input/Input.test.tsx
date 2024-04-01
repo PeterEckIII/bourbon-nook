@@ -38,4 +38,17 @@ describe("<Input />", () => {
     await user.type(input, "Buffalo Trace");
     expect(input).toHaveValue("Buffalo Trace");
   });
+  it("Shows error message if triggered", () => {
+    render(
+      <Input
+        name="name"
+        placeholder="Name"
+        label="Name"
+        error="Error"
+        navigationState="idle"
+      />,
+    );
+
+    expect(screen.getByText("Error")).toBeInTheDocument();
+  });
 });

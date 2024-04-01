@@ -180,7 +180,7 @@ const columns: ColumnDef<TableBottle, any>[] = [
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUserId(request);
-  return null;
+  return {};
 };
 
 export default function BottleIndexRoute() {

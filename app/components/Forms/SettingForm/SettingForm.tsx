@@ -1,6 +1,6 @@
 import { Fieldset, conform } from "@conform-to/react";
 
-import Spinner from "~/components/Icons/Spinner";
+import Button from "~/components/Button/Button";
 import Input from "~/components/Input/Input";
 import Textarea from "~/components/Textarea/Textarea";
 
@@ -86,23 +86,14 @@ export default function SettingForm({
           navigationState={navigationState}
         />
       </div>
-      <button
-        className="bg-blue-500 text-white px-4 py-2 my-4 w-96"
+      <Button
         type="submit"
-      >
-        {isSubmitting ? (
-          <div className="flex justify-center">
-            <div>
-              <Spinner />
-            </div>
-            <div>Navigating...</div>
-          </div>
-        ) : (
-          <div className="flex justify-center">
-            <div>Next</div>
-          </div>
-        )}
-      </button>
+        primary
+        label="Next"
+        onClick={() => console.log("Submitting settings...")}
+        loading={isSubmitting}
+        loadingText="Submitting..."
+      />
     </>
   );
 }

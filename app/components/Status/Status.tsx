@@ -2,15 +2,17 @@ import Select, { StylesConfig } from "react-select";
 
 import { Options } from "~/types/options";
 
-interface StatusProps {
-  options: Options;
-}
+const options = [
+  { value: "OPENED", label: "Opened" },
+  { value: "FINISHED", label: "Finished" },
+  { value: "CLOSED", label: "Closed" },
+] satisfies Options;
 
 const colorStyles: StylesConfig = {
   control: (styles) => ({ ...styles, width: "24rem" }),
 };
 
-export default function Status({ options }: StatusProps) {
+export default function Status() {
   return (
     <div className="mt-2">
       <label
@@ -28,6 +30,7 @@ export default function Status({ options }: StatusProps) {
         isSearchable={true}
         name="status"
         id="status"
+        inputId="status"
       />
     </div>
   );

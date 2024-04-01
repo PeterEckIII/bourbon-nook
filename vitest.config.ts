@@ -1,6 +1,8 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 
+import path from "path";
+
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
@@ -17,5 +19,8 @@ export default defineConfig({
       ".*\\/build\\/.*",
       ".*\\/postgres-data\\/.*",
     ],
+  },
+  resolve: {
+    alias: [{ find: "~", replacement: path.resolve(__dirname, "app") }],
   },
 });
