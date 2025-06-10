@@ -1,12 +1,8 @@
+import { getBottlesForUser } from '~/models/bottle';
 import type { Route } from '../+types/home';
-import prisma from '~/lib/prisma';
 
 export async function loader() {
-  const bottles = await prisma.bottle.findMany({
-    include: {
-      user: true,
-    },
-  });
+  const bottles = await getBottlesForUser('userId');
   return { bottles };
 }
 

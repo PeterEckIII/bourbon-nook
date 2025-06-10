@@ -1,13 +1,6 @@
 import type { Route } from './+types/home';
 import prisma from '~/lib/prisma';
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: 'New React Router App' },
-    { name: 'description', content: 'Welcome to React Router!' },
-  ];
-}
-
 export async function loader() {
   const users = await prisma.user.findMany();
   return { users };
