@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import type { user } from '~/generated/prisma';
 import type { userCreateInput } from '~/generated/prisma/models';
 import prisma from '~/lib/prisma';
@@ -5,6 +6,13 @@ import prisma from '~/lib/prisma';
 export async function getUserById(userId: user['id']) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+  });
+  return user;
+}
+
+export async function getUserByEmail(email: user['email']) {
+  const user = await prisma.user.findUnique({
+    where: { email },
   });
   return user;
 }
@@ -21,9 +29,22 @@ export async function getUsers() {
   return users;
 }
 
-export async function createUser(user: userCreateInput) {
-  const newUser = await prisma.user.create({
-    data: { ...user },
+export async function createUser(
+  email: user['email'],
+  username: user['username'],
+  password: string
+) {
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  return prisma.user.create({
+    data: {
+      email,
+      username,
+      password: {
+        create: {
+          hash: hashedPassword,
+        },
+      },
+    },
   });
-  return newUser;
 }

@@ -49,7 +49,7 @@ export default function Login({ loaderData }: Route.ComponentProps) {
   const { redirectTo } = loaderData;
   return (
     <Form method="post">
-      <input type="email" name="email" placeholder="Email" />
+      <input type="text" name="username" placeholder="Username" />
       <input type="password" name="password" placeholder="Password" />
       <input
         type="hidden"

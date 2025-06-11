@@ -71,7 +71,7 @@ export async function createUserSession({
   redirectTo,
 }: {
   request: Request;
-  userId: user['id'];
+  userId: string;
   remember: boolean;
   redirectTo: string;
 }) {
@@ -80,7 +80,9 @@ export async function createUserSession({
   return redirect(redirectTo, {
     headers: {
       'Set-Cookie': await sessionStorage.commitSession(session, {
-        maxAge: remember ? 60 * 60 * 24 * 7 : undefined,
+        maxAge: remember
+          ? 60 * 60 * 24 * 7 // 7 days
+          : undefined,
       }),
     },
   });
