@@ -6,7 +6,7 @@ import {
   verifyCredentials,
 } from '~/utils/session';
 
-export async function loader({ params, request }: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const searchParams = new URL(request.url).searchParams;
   const redirectTo = searchParams.get('redirectTo') || '/';
   const userId = await getUserId(request);
@@ -18,10 +18,10 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const username = formData.get('username') as string;
-  const password = formData.get('password') as string;
-  const remember = formData.get('remember') as string;
-  const redirectTo = formData.get('redirectTo') as string;
+  const username = String(formData.get('username'));
+  const password = String(formData.get('password'));
+  const remember = String(formData.get('remember'));
+  const redirectTo = String(formData.get('redirectTo'));
 
   if (!username || typeof username !== 'string') {
     throw new Error('Invalid credentials');

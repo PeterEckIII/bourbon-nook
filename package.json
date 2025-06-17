@@ -12,11 +12,14 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@mjackson/form-data-parser": "^0.9.1",
+    "@mjackson/multipart-parser": "^0.10.1",
     "@prisma/client": "^6.9.0",
     "@prisma/extension-accelerate": "^2.0.1",
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
     "isbot": "^5.1.27",
     "lucide-react": "^0.514.0",

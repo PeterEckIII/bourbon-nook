@@ -53,7 +53,7 @@ export default function Navbar() {
                 className={({ isActive }) =>
                   isActive
                     ? 'text-sky-500 cursor-pointer'
-                    : 'text-secondary cursor-pointer'
+                    : 'hover:text-blue-500 cursor-pointer'
                 }
                 onClick={closeMenuOnMobile}
               >
