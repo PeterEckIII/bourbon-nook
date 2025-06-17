@@ -1,7 +1,7 @@
 import type { Route } from './+types/new';
 import { redirect } from 'react-router';
 import { requireUserId } from '~/utils/session';
-import BottleForm from '~/components/BottleForm';
+import BottleForm from '~/components/Forms/BottleForm';
 import { createBottle } from '~/models/bottle';
 
 export async function loader({ request }: Route.LoaderArgs) {

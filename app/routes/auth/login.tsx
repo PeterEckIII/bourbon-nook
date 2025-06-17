@@ -1,10 +1,12 @@
-import { Form, redirect } from 'react-router';
+import { data, redirect, useActionData } from 'react-router';
 import type { Route } from './+types/login';
 import {
   createUserSession,
   getUserId,
   verifyCredentials,
 } from '~/utils/session';
+import { useEffect, useRef } from 'react';
+import LoginForm from '~/components/Forms/LoginForm';
 
 export async function loader({ request }: Route.LoaderArgs) {
   const searchParams = new URL(request.url).searchParams;
@@ -16,6 +18,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { redirectTo };
 }
 
+type ActionData = {
+  errors: {
+    username: string | null;
+    password: string | null;
+  };
+};
+
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const username = String(formData.get('username'));
@@ -24,17 +33,23 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = String(formData.get('redirectTo'));
 
   if (!username || typeof username !== 'string') {
-    throw new Error('Invalid credentials');
+    return data<ActionData>({
+      errors: { username: 'Please enter a valid username', password: null },
+    });
   }
 
   if (!password || typeof password !== 'string') {
-    throw new Error('Invalid credentials');
+    return data<ActionData>({
+      errors: { username: null, password: 'Please enter a valid password' },
+    });
   }
 
   const user = await verifyCredentials(username, password);
 
   if (!user) {
-    throw new Error('Invalid credentials');
+    return data<ActionData>({
+      errors: { username: null, password: 'Invalid credentials' },
+    });
   }
 
   return createUserSession({
@@ -47,18 +62,25 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Login({ loaderData }: Route.ComponentProps) {
   const { redirectTo } = loaderData;
+  const actionData = useActionData<ActionData>();
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (actionData?.errors?.username) {
+      usernameRef.current?.focus();
+    } else if (actionData?.errors.password) {
+      passwordRef.current?.focus();
+    }
+  }, []);
+
   return (
-    <Form method="post">
-      <input type="text" name="username" placeholder="Username" />
-      <input type="password" name="password" placeholder="Password" />
-      <input
-        type="hidden"
-        name="redirectTo"
-        id="redirectTo"
-        value={redirectTo}
-      />
-      <input type="checkbox" name="remember" id="remember" />
-      <button type="submit">Login</button>
-    </Form>
+    <LoginForm
+      usernameError={actionData?.errors.username}
+      passwordError={actionData?.errors.password}
+      redirectTo={redirectTo}
+      usernameRef={usernameRef}
+      passwordRef={passwordRef}
+    />
   );
 }

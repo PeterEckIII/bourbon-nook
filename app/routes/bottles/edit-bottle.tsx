@@ -1,7 +1,7 @@
 import { Form, redirect, useNavigate } from 'react-router';
 import type { Route } from './+types/edit-bottle';
 import prisma from '~/lib/prisma';
-import TextEditInput from '~/components/TextEditInput';
+import TextEditInput from '~/components/Inputs/TextEditInput';
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { bottleId } = params;

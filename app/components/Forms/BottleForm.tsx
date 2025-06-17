@@ -1,5 +1,5 @@
 import { Form } from 'react-router';
-import TextInput from './TextInput';
+import TextInput from '../Inputs/TextInput';
 
 export default function BottleForm({ userId }: { userId: string }) {
   return (
