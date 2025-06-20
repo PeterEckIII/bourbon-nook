@@ -12,6 +12,7 @@ export default [
       route('bottles/', 'routes/bottles/home.tsx'),
       route('bottles/new', 'routes/bottles/new.tsx'),
       route('bottles/:bottleId/image', 'routes/bottles/image.tsx'),
+      route('bottles/:bottleId/images', 'routes/bottles/images.tsx'),
       route('bottles/:bottleId', 'routes/bottles/bottle.tsx'),
       route('bottles/:bottleId/edit', 'routes/bottles/edit-bottle.tsx'),
       route('bottles/:bottleId/destroy', 'routes/bottles/destroy-bottle.tsx'),

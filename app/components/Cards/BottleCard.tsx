@@ -9,7 +9,7 @@ export default function BottleCard({ bottle }: BottleCardProps) {
   return (
     <Link
       to={`/bottles/${bottle.id}`}
-      className="p-8 m-4 shadow-lg rounded-md grid grid-cols-2 max-w-lg hover:-translate-1"
+      className="grid max-w-lg grid-cols-2 p-8 m-4 rounded-md shadow-lg hover:-translate-1"
     >
       <div className="flex items-center px-1">
         <img
@@ -17,7 +17,7 @@ export default function BottleCard({ bottle }: BottleCardProps) {
           alt={`A bottle of ${bottle.name}`}
           className="border-2 border-black"
         />
-        <p className="uppercase absolute self-end text-white bg-purple-700 font-semibold p-2">
+        <p className="absolute self-end p-2 font-semibold text-white uppercase bg-purple-700">
           {bottle.status}
         </p>
       </div>
@@ -25,8 +25,10 @@ export default function BottleCard({ bottle }: BottleCardProps) {
         <h4 className="text-xl font-semibold text-center">{bottle.name}</h4>
         <p className="text-sm text-gray-600">{bottle.type}</p>
         <p className="text-sm text-gray-600">{bottle.distiller}</p>
+        <p className="text-sm text-gray-600">
+          {bottle.barrel !== 'N/A' ? bottle.barrel : ''}
+        </p>
         <p className="text-sm text-gray-600">{Number(bottle.proof) / 2}%</p>
-        <p>{bottle.id}</p>
       </div>
     </Link>
   );
