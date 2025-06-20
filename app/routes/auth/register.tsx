@@ -45,7 +45,7 @@ export async function action({ request }: Route.ActionArgs) {
     });
   }
 
-  if (!username || typeof username === 'string') {
+  if (!username || typeof username !== 'string') {
     return data<ActionData>({
       errors: {
         username: 'Please enter a valid username',

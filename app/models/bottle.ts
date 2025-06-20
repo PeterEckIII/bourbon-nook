@@ -18,6 +18,32 @@ export async function getBottle(bottleId: bottle['id']) {
   return bottle;
 }
 
+export async function getFilteredBottles(userId: user['id'], query: string) {
+  const bottles = await prisma.bottle.findMany({
+    where: {
+      userId,
+      OR: [
+        {
+          name: {
+            contains: query,
+          },
+        },
+        {
+          distiller: {
+            contains: query,
+          },
+        },
+        {
+          producer: {
+            contains: query,
+          },
+        },
+      ],
+    },
+  });
+  return bottles;
+}
+
 export async function createBottle({
   userId,
   name,

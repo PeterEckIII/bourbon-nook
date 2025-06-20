@@ -1,4 +1,4 @@
-import { Form } from 'react-router';
+import { Form, Link, useNavigation } from 'react-router';
 import AuthInput from '../Inputs/AuthInput';
 import type { RefObject } from 'react';
 
@@ -17,11 +17,13 @@ export default function LoginForm({
   passwordRef,
   redirectTo,
 }: LoginFormProps) {
+  const navigation = useNavigation();
+  const isNavigating = Boolean(navigation.location);
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-300">
+    <div className="min-h-screen flex justify-center items-center bg-gray-300 shadow-lg">
       <Form
         method="post"
-        className="flex flex-col justify-center items-center border border-black bg-gray-50 rounded-lg w-1/5"
+        className="flex flex-col justify-center items-center border border-black bg-gray-50 rounded-lg w-10/12 sm:w-9/12 md:w-7/12 lg:w-5/12 xl:w-4/12"
       >
         <h1 className="text-4xl my-4">Login</h1>
         <AuthInput
@@ -44,18 +46,24 @@ export default function LoginForm({
           id="redirectTo"
           value={redirectTo}
         />
-        <div>
+        <div className="my-4">
           <label htmlFor="remember" className="mx-2">
-            Remember Me
+            Remember Me{' '}
           </label>
           <input type="checkbox" name="remember" id="remember" />
         </div>
         <button
-          className="bg-blue-500 py-2 px-4 my-2 rounded-md cursor-pointer hover:bg-blue-600"
           type="submit"
+          className="w-3/4 bg-blue-500 text-white py-2 px-4 my-2 rounded-md cursor-pointer hover:bg-blue-600"
         >
-          Login
+          {isNavigating ? 'Logging in...' : 'Login'}
         </button>
+        <div className="my-4">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-blue-500 underline">
+            Register here
+          </Link>
+        </div>
       </Form>
     </div>
   );

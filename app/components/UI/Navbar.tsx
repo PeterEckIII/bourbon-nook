@@ -11,7 +11,7 @@ interface NavLinkType {
 
 const navLinks: NavLinkType[] = [
   { name: 'Home', path: '/' },
-  { name: 'Collection', path: '/bottles' },
+  { name: 'Bottles', path: '/bottles' },
   { name: 'Reviews', path: '/reviews' },
 ];
 
@@ -31,8 +31,8 @@ export default function Navbar() {
   };
 
   return (
-    <header className="w-full px-8 shadow-sm shadow-neutral-500 h-[80px] flex items-center">
-      <nav className="flex justify-between items-center w-full">
+    <header className="w-full px-8 shadow-sm shadow-neutral-500 h-[80px] flex items-center z-10">
+      <nav className="flex items-center justify-between w-full">
         <NavLink to="/" className="font-bold">
           BourbonNook
         </NavLink>
@@ -64,7 +64,7 @@ export default function Navbar() {
           <li>
             <Form action="/logout" method="post">
               <button
-                className="hover:text-blue-500 cursor-pointer"
+                className="cursor-pointer hover:text-blue-500"
                 type="submit"
               >
                 Logout
@@ -78,9 +78,9 @@ export default function Navbar() {
           onClick={toggleMenu}
         >
           {menuOpen ? (
-            <XIcon className="size-6 text-secondary cursor-pointer" />
+            <XIcon className="cursor-pointer size-6 text-secondary" />
           ) : (
-            <MenuIcon className="size-6 text-secondary cursor-pointer" />
+            <MenuIcon className="z-10 cursor-pointer size-6 text-secondary" />
           )}
         </button>
       </nav>

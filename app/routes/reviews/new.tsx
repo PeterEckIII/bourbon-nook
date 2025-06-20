@@ -4,9 +4,7 @@ import { requireUserId } from '~/utils/session';
 import { createReview } from '~/models/review';
 
 export async function loader({ params, request }: Route.LoaderArgs) {
-  const { bottleId } = params;
   const userId = await requireUserId(request);
-  return bottleId;
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -44,10 +42,9 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function NewReview({ loaderData }: Route.ComponentProps) {
-  const { bottleId } = loaderData;
   return (
     <Form method="post">
-      <input type="hidden" name="bottleId" value={bottleId} id="bottleId" />
+      {/* <input type="hidden" name="bottleId" value={bottleId} id="bottleId" /> */}
       <input type="text" name="date" id="date" />
       <input type="text" name="setting" id="setting" />
       <input type="text" name="glassware" id="glassware" />
