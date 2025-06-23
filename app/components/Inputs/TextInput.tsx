@@ -15,7 +15,7 @@ export default function TextInput({
 }: TextInput) {
   return (
     <div>
-      <label htmlFor={name} className="block text-lg mb-2">
+      <label htmlFor={name} className="block mb-2 text-lg">
         {label}
       </label>
       <input

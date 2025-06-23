@@ -2,9 +2,11 @@ import { Form, redirect } from 'react-router';
 import type { Route } from '../reviews/+types/new';
 import { requireUserId } from '~/utils/session';
 import { createReview } from '~/models/review';
+import TextInput from '~/components/Inputs/TextInput';
+import TextareaInput from '~/components/Inputs/TextareaInput';
 
-export async function loader({ params, request }: Route.LoaderArgs) {
-  const userId = await requireUserId(request);
+export async function loader({ request }: Route.LoaderArgs) {
+  await requireUserId(request);
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -45,33 +47,61 @@ export default function NewReview({ loaderData }: Route.ComponentProps) {
   return (
     <Form method="post">
       {/* <input type="hidden" name="bottleId" value={bottleId} id="bottleId" /> */}
-      <input type="text" name="date" id="date" />
-      <input type="text" name="setting" id="setting" />
-      <input type="text" name="glassware" id="glassware" />
-      <input type="text" name="restTime" id="restTime" />
-      <textarea
+      <TextInput
+        type="text"
+        name="date"
+        id="date"
+        label="Review date"
+        placeholder="5/25/2024"
+      />
+      <TextInput
+        type="text"
+        name="setting"
+        id="setting"
+        label="Review setting"
+        placeholder="Having a drink before going out for dinner"
+      />
+      <TextInput
+        type="text"
+        name="glassware"
+        id="glassware"
+        label="Glassware"
+        placeholder="Glencairn, rocks glass"
+      />
+      <TextInput
+        type="text"
+        name="restTime"
+        id="restTime"
+        label="Rest time"
+        placeholder="15min"
+      />
+      <TextareaInput
         name="nose"
         id="nose"
-        rows={6}
+        label="Nose"
         placeholder="Enter your nose notes here"
-      />
-      <textarea
-        name="palate]"
-        id="palate"
         rows={6}
-        placeholder="Enter your  palate notes here"
       />
-      <textarea
+      <TextareaInput
+        name="palate"
+        id="palate"
+        label="Palate"
+        placeholder="Enter your palate notes here"
+        rows={6}
+      />
+      <TextareaInput
         name="finish"
         id="finish"
-        rows={6}
+        label="Finish"
         placeholder="Enter your finish notes here"
+        rows={6}
       />
-      <textarea
+      <TextareaInput
         name="thoughts"
         id="thoughts"
+        label="Final thoughts"
+        placeholder="Enter your thoughts notes here"
         rows={6}
-        placeholder="Enter your thoughts here"
       />
       <input type="text" name="value" id="value" />
       <input type="text" name="overallRating" id="overallRating" />

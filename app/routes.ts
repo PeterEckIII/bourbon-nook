@@ -19,7 +19,7 @@ export default [
     ]),
     layout('layouts/reviews.tsx', [
       route('reviews/', 'routes/reviews/home.tsx'),
-      route('reviews/new', 'routes/reviews/new.tsx'),
+      route('reviews/:bottleId/new', 'routes/reviews/new.tsx'),
       route('reviews/:reviewId', 'routes/reviews/review.tsx'),
       route('reviews/:reviewId/edit', 'routes/reviews/edit-review.tsx'),
       route('reviews/:reviewId/destroy', 'routes/reviews/destroy-review.tsx'),

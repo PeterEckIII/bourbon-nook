@@ -61,7 +61,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function NewBottle({ loaderData }: Route.ComponentProps) {
   const { userId } = loaderData;
   return (
-    <div className="max-w-2xl p-4 mx-auto">
+    <div className="max-w-2xl p-4 mx-auto my-4 rounded-lg shadow-lg">
       <h1 className="mb-6 text-2xl font-bold">Create New Bottle</h1>
       <BottleForm userId={userId} />
     </div>

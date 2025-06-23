@@ -54,13 +54,18 @@ export default function Images() {
   const [photo, setPhoto] = useState<string | null>(null);
 
   return (
-    <>
-      <fetcher.Form method="post" encType="multipart/form-data">
+    <div className="flex items-center justify-center min-h-screen">
+      <fetcher.Form
+        method="post"
+        encType="multipart/form-data"
+        className="border border-black"
+      >
         <input
           type="file"
           name="image"
           id="image"
           onChange={(e) => setPhoto(URL.createObjectURL(e.target.files![0]))}
+          className="block w-full text-sm rounded-md cursor-pointer file:cursor-pointer text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         />
         <input type="hidden" name="userId" id="userId" value={userId} />
         {photo ? (
@@ -70,10 +75,10 @@ export default function Images() {
             alt="Uploaded bottle"
           />
         ) : null}
-        <button type="submit">
+        <button type="submit" className="justify-self-end">
           {fetcher.state !== 'idle' ? 'Uploading...' : 'Upload'}
         </button>
       </fetcher.Form>
-    </>
+    </div>
   );
 }
